@@ -18,7 +18,7 @@ Chaque ticket : objectif, périmètre, critères d'acceptation, dépendances. Un
 ## Décisions à prendre
 
 - ~~**D1. Technologie du jeu**~~ — **tranchée le 2026-11-08 : Godot 4.7** (le modèle actuel), avec le plugin AdMob de poingstudios. Voir `docs/architecture.md`, décision 16.
-- **D2. Genre du jeu** (2026-11-08) : jeu idle de gestion (recommandé), puzzle de fusion ou réflexion à niveaux. Analyse : `docs/strategies-pub.md`, section 8. → bloque la conception (`docs/conception-du-jeu.md`).
+- **D2. Genre du jeu** (2026-11-08) : Stelio préfère un classique simple avec une accroche ; recommandé : puzzle de blocs façon Block Blast / Tetris (accroches proposées), sinon tri de couleurs ou mahjong. Analyse : `docs/strategies-pub.md`, section 8. → bloque la conception (`docs/conception-du-jeu.md`).
 - **D3. Public cible** (2026-11-08) : 13 ans et plus recommandé, pour éviter le programme Familles qui interdit la plupart des leviers pub (`docs/deploiement-android.md`, section 6).
 
 ## Actions attendues du joueur

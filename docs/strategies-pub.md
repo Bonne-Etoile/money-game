@@ -207,7 +207,54 @@ Sans joueurs, aucune stratégie de pub ne rapporte. Pour un premier jeu :
 
 ## 8. Quel jeu construire autour de la pub
 
-### Recommandation : un jeu *idle* (« incrémental ») de gestion
+
+### Ce que le marché télécharge (2025–2026)
+
+Chiffres AppMagic (année 2025, App Store + Google Play, monde) et FoxData (août 2026) :
+
+| Rang 2025 | Jeu | Téléchargements 2025 | Genre | Modèle |
+|---|---|---|---|---|
+| 1 | **Block Blast** | 368 M | **puzzle de blocs (façon Tetris, sans chute)** | **presque 100 % pub** |
+| 2 | Roblox | 295 M | plateforme de jeux | achats |
+| 3 | Free Fire | 287 M | battle royale | achats |
+| 4 | Subway Surfers | 191 M | course infinie | pub + achats |
+| 5 | Pizza Ready | 166 M | gestion de restaurant (*idle* arcade) | pub + achats |
+| 6 | Ludo King | 151 M | jeu de plateau (petits chevaux) | pub + achats |
+| 7 | Vita Mahjong | ≈ 122 M | mahjong solitaire | pub + achats |
+| 8 | My Talking Tom 2 | 122 M | animal virtuel (enfants) | pub + achats |
+| 9 | Hole.io | 121 M | arcade « .io » | pub |
+| 12 | Candy Crush Saga | 111 M | match-3 | achats |
+| 15 | Paper.io 2 | 102 M | arcade « .io » | pub |
+| 19 | Tile Explorer | 96 M | association de tuiles | pub + achats |
+
+Ce qu'on en tire :
+
+- **Les jeux les plus téléchargés au monde sont des classiques très simples** : blocs, mahjong, tuiles, petits chevaux, billard, course infinie. L'intuition « un jeu bateau avec une accroche » est celle du marché.
+- **Block Blast est le cas d'école** : n°1 mondial en 2025 et encore en août 2026 (≈ 25 M de téléchargements par mois), monétisé presque uniquement par la pub (plus gros revenu publicitaire de jeu mobile de janvier à mai 2026 selon Sensor Tower, ≈ 127 M $). Plus de 2 000 clones sont sortis au premier semestre 2026 : le genre marche, mais il est encombré, d'où l'importance de l'accroche.
+- **Genres casual en croissance** (AppMagic) : puzzle de blocs (revenus ×10 en 2025), tri (*sort* : billes, couleurs, liquides ; ×2 puis ×3), vis et écrous (*screw*, ×2), mahjong (+189 % de téléchargements), flèches à faire sortir (*arrow puzzle*, surtout financé par la pub). En recul : match-3 (sauf les géants) et casino.
+- **L'hypercasual** (parties de 30 s, un seul geste) fait encore ≈ 44 % des téléchargements mondiaux, mais rapporte peu par joueur : la rétention est courte. Les classiques de réflexion gardent leurs joueurs des mois, ce qui compte pour la pub.
+- **Ces classiques de réflexion attirent surtout des adultes** (hypothèse courante dans le secteur, non chiffrée dans nos sources) : un public hors du programme Familles, qui joue en pause ou le soir et accepte bien la pub récompensée.
+
+### Recommandation révisée : un puzzle de blocs avec une accroche
+
+À la suite de la remarque de Stelio (2026-11-08 : un jeu de gestion ne touche peut-être pas assez large et n'est pas si simple à faire), la meilleure piste est **un classique de réflexion type Block Blast / Tetris, avec une accroche nouvelle** :
+
+- **Public le plus large du marché**, règles comprises en 3 secondes, aucune lecture nécessaire (toutes les langues).
+- **Très simple à développer** : une grille, des pièces, des lignes qui disparaissent, un score. La logique tient dans `game/core/` et se teste unitairement.
+- **Parties de 2 à 5 minutes** qui se terminent par un échec : moments naturels pour la **seconde chance** (4.2), le **×2 du score ou des pièces** (4.1) et un interstitiel à l'écran de fin (section 5).
+- **Leviers ajoutables sans complexifier le jeu** : « joker » qui change les pièces proposées ou supprime un bloc (une pub = un joker), défi quotidien, série (4.7), thèmes et blocs cosmétiques (4.10).
+- **Vidéos courtes faciles** : une grille qui se vide en cascade est très satisfaisante à regarder.
+
+Idées d'accroche (à départager en prototype, quelques jours chacune) :
+
+1. **Gravité et matières** : les blocs ont une matière (sable qui s'écoule, glace qui glisse, bois qui flotte) ; effacer une ligne fait bouger le reste, avec des combos en chaîne.
+2. **Couleurs** : une ligne d'une seule couleur rapporte ×5 ; donne une décision à chaque pose sans changer les règles.
+3. **Image à révéler** : chaque ligne effacée dévoile une partie d'une illustration (collection d'images à compléter, très bon pour la rétention et le cosmétique).
+4. **Aventure par niveaux** : objectifs courts (« libère les 3 gemmes », « 20 lignes en 15 coups ») sur une carte, en plus du mode infini.
+
+Autres classiques « bateau » possibles avec la même logique : **tri de couleurs** (*sort*), **mahjong / association de tuiles**, **flèches à faire sortir**. Le puzzle de blocs reste en tête pour sa simplicité et son public.
+
+### Autre piste : un jeu *idle* (« incrémental ») de gestion
 
 Exemple de thème : **un petit empire qui grandit** (stand de citronnade → chaîne de magasins, ou une usine, une mine, une ferme). Le joueur tape, achète des améliorations, automatise, et ses revenus grimpent pendant son absence.
 
@@ -254,7 +301,7 @@ Autres genres possibles, si l'idle ne plaît pas : **puzzle de fusion** (*merge*
 
 ### Décision
 
-**Godot 4.7**, choisi par Stelio le 8 novembre 2026 (`docs/architecture.md`, décision 16). Le genre reste à décider (`docs/backlog.md`, D2) : le jeu idle recommandé se fait très bien en Godot (interface en nœuds `Control`, logique pure dans `game/core/`, équilibrage en ressources `.tres`).
+**Godot 4.7**, choisi par Stelio le 8 novembre 2026 (`docs/architecture.md`, décision 16). Le genre reste à décider (`docs/backlog.md`, D2) : un puzzle de blocs en 2D se fait très simplement en Godot (grille en nœuds 2D, logique pure dans `game/core/`, réglages en ressources `.tres`).
 
 ## Sources
 
@@ -272,6 +319,14 @@ Chiffres du marché (sources d'éditeurs, à prendre comme ordres de grandeur) :
 - Udonis, eCPM par région, données Appodeal 2021–2022 : https://blog.udonis.co/mobile-marketing/mobile-apps/ecpms
 - Appodeal, *eCPM Report* (octobre–décembre 2024) : https://appodeal.com/the-mobile-ecpm-report-updated-q4-2024-view
 - Segwise, *AdMob for game monetization* (mis à jour juillet 2026) : https://segwise.ai/blog/google-ads-game-monetization.md
+
+Marché des jeux (lus le 8 novembre 2026) :
+
+- Jeux les plus téléchargés en 2025 (AppMagic) : https://mobilegamer.biz/the-top-mobile-game-downloads-of-2025/ et https://www.pocketgamer.biz/the-most-downloaded-mobile-games-of-2025
+- AppMagic, *Casual Games Report H1 2026* : https://appmagic.rocks/research/casual-report-H12026
+- AppMagic, jeux casual 2025 (résumé) : https://mobidictum.com/appmagic-casual-games-report-2025-summary/
+- FoxData, classement d'août 2026 : https://foxdata.com/en/blogs/global-mobile-game-rankings-august-2026-top-15-downloads-revenue/
+- Synthèse des tendances casual 2026 (source secondaire) : https://app.cinevva.com/guides/casual-games-trends-2026
 
 Technologie :
 
