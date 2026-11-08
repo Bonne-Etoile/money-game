@@ -98,3 +98,10 @@ Les décisions 1 à 15 viennent du modèle (validées sur *River Cleaner: India*
 - **Pourquoi** : le dépôt est déjà outillé (tests, captures, CI, règles) ; Godot laisse ouverts tous les genres, y compris l'action.
 - **Conséquences** (tickets à créer) : passer au rendu Mobile ou Compatibility ; ajouter le préréglage d'export Android (AAB, Gradle build, API cible 36, `minSdk` 24) ; installer le SDK Android, un JDK 17 et les modèles d'export Android dans `tools/setup-cloud.sh` et la CI ; entrées tactiles par actions de l'Input Map ; pubs derrière un autoload (comme `Platform` pour Steam) avec une version factice pour le développement et les tests.
 
+
+## 17. Jeu 2D en portrait, rendu Compatibility (2026-11-08, G0)
+
+- **Contexte** : le modèle visait un jeu 3D sur PC (Forward+, Jolt, 1920 × 1080, déplacement ZQSD). Le jeu est un puzzle 2D sur téléphone.
+- **Choix** : fenêtre de référence **720 × 1280 en portrait** (`display/window/handheld/orientation` = portrait), étirement `canvas_items` avec l'aspect `expand` (l'image s'allonge sur les téléphones plus hauts au lieu d'avoir des bandes noires : l'interface s'ancre en haut et en bas) ; rendu **Compatibility** (OpenGL ES 3) partout ; une seule action de pointage, `pointer` (clic gauche), le toucher étant converti en souris (`emulate_mouse_from_touch`, réglage par défaut) ; sur PC, fenêtre 450 × 800 pour tester. Retirés : la physique Jolt, les actions de déplacement, la scène 3D, les outils de modèles 3D.
+- **Pourquoi** : Compatibility tourne sur le plus de téléphones Android (y compris les anciens sans Vulkan correct), démarre plus vite, et suffit largement à un jeu 2D ; un seul doigt suffit à un puzzle de glisser-déposer, et la conversion toucher → souris permet de tester à la souris sur PC et dans les tests de scénario.
+- **Garde-fou** : `test/unit/project_settings_test.gd`.

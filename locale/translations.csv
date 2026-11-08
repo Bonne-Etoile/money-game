@@ -1,5 +1,5 @@
 keys,en,fr,_notes
-GAME_TITLE,My Game,My Game,Game name: never translated
+GAME_TITLE,Block Tiles,Block Tiles,Game name: never translated
 MENU_PLAY,Play,Jouer,"Start menu: continues the latest save, or starts a new game"
 MENU_QUIT,Quit,Quitter,Start menu
 HUD_MONEY,Money: %d,Argent : %d,"Money of the playthrough, top left; %d is the amount"

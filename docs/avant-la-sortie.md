@@ -4,7 +4,7 @@ Tout ce qui est fait « au mieux » pour avancer et doit être repris, vérifié
 
 ## Contenu à peaufiner
 
-- [ ] …
+- [ ] Nom du jeu : « Block Tiles » est un titre de travail (G0, `tools/new-game.sh`) ; choisir le vrai nom (recherche de marque, Google Play) et relancer `tools/new-game.sh` depuis l'ancien nom.
 
 ## Boutons et outils de développement à retirer
 

@@ -8,5 +8,4 @@ Comment faire les choses courantes dans un jeu tiré de ce modèle, pas à pas. 
 - `mesurer.md` : performance, journal de partie, rapport de crash, équilibrage.
 - `build-de-test.md` : faire tester un lot par le joueur.
 - `sons-et-musique.md` : bruitages, ambiances et musiques, de la liste au jeu (banques, génération ElevenLabs, traitement `ffmpeg`, intégration, tests).
-- `modeles-3d.md` : modèles 3D, des références au jugement dans le jeu (Godot, Blender, outil par IA, import, niveaux de détail).
 - `assets.md` : licences et crédits de tous les assets.

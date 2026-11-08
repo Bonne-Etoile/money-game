@@ -35,12 +35,13 @@ Chaque ticket : objectif, périmètre, critères d'acceptation, dépendances. Un
 
 ## Phase 0 — Proof of concept
 
-### G0. Préparer le dépôt pour un jeu mobile 2D — prêt
+### G0. Préparer le dépôt pour un jeu mobile 2D — en revue (branche `claude/project-thread-yrd89m`)
 
 - **Objectif** : un projet qui se lance en portrait, en 2D, avec le rendu mobile, et des entrées tactiles.
 - **Périmètre** : renommer le jeu (`tools/new-game.sh`) ; rendu Mobile ou Compatibility ; fenêtre portrait (720 × 1280 par exemple) avec étirement adapté aux écrans de téléphone ; actions de l'Input Map pour le toucher et la souris ; retirer ce qui ne sert qu'à la 3D sur PC ; créer la branche `dev`.
 - **Critères** : `make lint check test build` verts ; capture d'écran du menu en portrait.
 - **Dépend de** : rien.
+- **Fait (2026-11-08)** : titre de travail « Block Tiles » (`block_tiles`) ; décision 17 de `docs/architecture.md`. La branche `dev` n'est pas créée : la session ne peut pousser que sur sa branche ; G0 à G2 sont dans une seule PR empilée sur la PR #1, un commit par ticket.
 
 ### G1. Prototype piste 1 « blocs de tuiles » — prêt
 

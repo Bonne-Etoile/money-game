@@ -1,5 +1,5 @@
-extends Node3D
-## The game scene (placeholder): a lit ground and the money counter. Escape saves and goes back
+extends Control
+## The game scene (placeholder): the money counter on a plain background. Escape saves and goes back
 ## to the start menu. Replace its content with the game; keep it launchable on its own (tests,
 ## screenshots).
 

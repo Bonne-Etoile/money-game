@@ -10,10 +10,10 @@ XVFB_RUN ?= xvfb-run -a -s "-screen 0 1920x1080x24"
 GD_SOURCES := game test tools
 
 # Name of the exported binaries (tools/new-game.sh renames it).
-GAME_NAME := my_game
+GAME_NAME := block_tiles
 BUILD_DIR := build
 
-.PHONY: lint check test build import screenshot screenshots model-view
+.PHONY: lint check test build import screenshot screenshots
 
 lint:
 	$(GDLINT) $(GD_SOURCES)
@@ -42,26 +42,18 @@ build: import
 
 # Renders a scene and saves a PNG (tools/screenshot.gd). Needs Xvfb, like the tests.
 #   make screenshot SCENE=res://game/ui/main_menu.tscn OUT=build/screenshots/menu.png
-#   optional: CAMERA=x,y,z LOOK_AT=x,y,z LOCALE=fr FRAMES=10 RESOLUTION=1280x720
-RESOLUTION ?= 1280x720
+#   optional: LOCALE=fr FRAMES=10 RESOLUTION=720x1280 (a phone in portrait, the default)
+RESOLUTION ?= 720x1280
 screenshot: import
 	$(XVFB_RUN) $(GODOT) --path . --audio-driver Dummy --resolution $(RESOLUTION) \
 		--script res://tools/screenshot.gd -- --scene=$(SCENE) --out=$(abspath $(OUT)) \
-		$(if $(CAMERA),--camera=$(CAMERA)) $(if $(LOOK_AT),--look-at=$(LOOK_AT)) \
 		$(if $(LOCALE),--locale=$(LOCALE)) $(if $(FRAMES),--frames=$(FRAMES))
 
 # Screenshots Claude looks at before a PR (not run in CI). Add every scene worth reviewing.
 SCREENSHOT_DIR := $(BUILD_DIR)/screenshots
 screenshots:
-	$(MAKE) screenshot SCENE=res://test/fixtures/screenshot_fixture.tscn \
-		OUT=$(SCREENSHOT_DIR)/fixture.png CAMERA=4,3,6 LOOK_AT=0,0.5,0
 	for locale in en fr; do \
 		$(MAKE) screenshot SCENE=res://game/ui/main_menu.tscn FRAMES=10 LOCALE=$$locale \
 			OUT=$(SCREENSHOT_DIR)/main_menu_$$locale.png || exit 1; \
 	done
 
-# Models side by side under the game's light, to judge them in the game (docs/recettes/modeles-3d.md).
-#   make model-view MODELS=res://assets/models/a.res,res://assets/models/b.glb OUT=build/screenshots/models.png
-model-view:
-	MODELS=$(MODELS) $(MAKE) screenshot SCENE=res://test/fixtures/model_view.tscn FRAMES=20 \
-		OUT=$(or $(OUT),$(SCREENSHOT_DIR)/models.png)

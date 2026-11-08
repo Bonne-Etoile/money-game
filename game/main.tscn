@@ -2,52 +2,27 @@
 
 [ext_resource type="Script" path="res://game/main.gd" id="1_main"]
 
-[sub_resource type="ProceduralSkyMaterial" id="sky_material"]
-
-[sub_resource type="Sky" id="sky"]
-sky_material = SubResource("sky_material")
-
-[sub_resource type="Environment" id="environment"]
-background_mode = 2
-sky = SubResource("sky")
-
-[sub_resource type="StandardMaterial3D" id="ground_material"]
-albedo_color = Color(0.25, 0.5, 0.3, 1)
-
-[sub_resource type="PlaneMesh" id="ground_mesh"]
-material = SubResource("ground_material")
-size = Vector2(40, 40)
-
-[sub_resource type="BoxShape3D" id="ground_shape"]
-size = Vector3(40, 1, 40)
-
-[node name="Main" type="Node3D"]
+[node name="Main" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
 script = ExtResource("1_main")
 
-[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
-environment = SubResource("environment")
+[node name="Background" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.11, 0.14, 0.2, 1)
 
-[node name="Sun" type="DirectionalLight3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 0.5, 0.866025, 0, -0.866025, 0.5, 0, 10, 0)
-shadow_enabled = true
-
-[node name="Ground" type="StaticBody3D" parent="."]
-
-[node name="Mesh" type="MeshInstance3D" parent="Ground"]
-mesh = SubResource("ground_mesh")
-
-[node name="Shape" type="CollisionShape3D" parent="Ground"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.5, 0)
-shape = SubResource("ground_shape")
-
-[node name="Camera" type="Camera3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 0.939693, 0.34202, 0, -0.34202, 0.939693, 0, 4, 10)
-current = true
-
-[node name="Hud" type="CanvasLayer" parent="."]
-
-[node name="MoneyLabel" type="Label" parent="Hud"]
+[node name="MoneyLabel" type="Label" parent="."]
 unique_name_in_owner = true
+layout_mode = 0
 offset_left = 32.0
 offset_top = 24.0
 offset_right = 600.0

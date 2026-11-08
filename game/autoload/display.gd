@@ -1,7 +1,8 @@
 extends Node
 ## The game window: F11 switches between windowed and full screen, and the exported game
 ## reopens with the window as the player left it (WindowSettings, user://settings.json).
-## Only the exported game reads and writes the file: tests and screenshots keep their window.
+## Only the exported desktop game reads and writes the file: tests and screenshots keep their
+## window, and on a phone the game always fills the screen.
 
 const SETTINGS_PATH: String = "user://settings.json"
 
@@ -71,7 +72,7 @@ func _remember_window() -> void:
 
 
 func _persists() -> bool:
-	return OS.has_feature("template")
+	return OS.has_feature("template") and not OS.has_feature("mobile")
 
 
 func _load() -> WindowSettings:
