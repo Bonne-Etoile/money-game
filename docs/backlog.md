@@ -59,12 +59,13 @@ Chaque ticket : objectif, périmètre, critères d'acceptation, dépendances. Un
 - **Dépend de** : G0 (réutilise la grille de G1 si elle existe).
 - **Fait (2026-11-08)** : règles dans `docs/conception-du-jeu.md`, section 2. Plateau de 2 places (une tuile prise attend d'être posée). Trios coupés (une pièce = un symbole). **À tester par Stelio**, en comparaison avec G1 : lequel donne le plus envie de rejouer ? La règle « tuile libre » se comprend-elle sans explication ? Les niveaux sont-ils trop faciles (un robot simple les gagne tous) ?
 
-### G3. Export Android et pubs de test — prêt
+### G3. Export Android et pubs de test — bloqué (réseau)
 
 - **Objectif** : installer le prototype sur le téléphone de Stelio, avec des pubs de test.
 - **Périmètre** : décision 16 de `docs/architecture.md` : SDK Android, JDK, modèles d'export et préréglage Android (APK de test, AAB plus tard) ; plugin AdMob de poingstudios derrière un autoload `Ads` avec une version factice pour les tests ; une pub récompensée de test (« continuer ») dans le prototype retenu.
 - **Critères** : APK installable ; pub de test affichée ; tests verts avec la version factice.
 - **Dépend de** : G0.
+- **Bloqué (2026-11-08)** : le SDK Android et le dépôt Maven de Google sont servis par `dl.google.com`, refusé par le réseau de l'environnement cloud par défaut. Un environnement personnel « money-game » qui l'autorise a été créé : faire G3 dans une session lancée sur cet environnement.
 
 ### G4. …
 
