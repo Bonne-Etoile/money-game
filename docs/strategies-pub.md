@@ -252,9 +252,9 @@ Autres genres possibles, si l'idle ne plaît pas : **puzzle de fusion** (*merge*
 - **Avantages** : le dépôt est déjà prêt (tests, captures, CI, règles), idéal pour un jeu d'action ou à physique.
 - **Limites** : le modèle est réglé pour la 3D sur PC (Forward+, Steam) : il faut passer au rendu Mobile ou Compatibility, ajouter l'export Android (SDK Android, JDK, Gradle) à la session cloud et à la CI ; une interface riche (listes, boutons, animations de chiffres) demande plus de travail qu'en Svelte ; Stelio ne lit pas le GDScript aussi facilement que du Svelte.
 
-### Recommandation
+### Décision
 
-Pour le jeu idle recommandé : **SvelteKit + Capacitor + `@capacitor-community/admob`**, Supabase plus tard. C'est la voie la plus courte vers le Play Store, sur une stack que Stelio connaît et peut relire. Godot reste le meilleur choix si l'on part finalement sur un jeu d'action. Ce choix (moteur et genre) est une décision de Stelio : voir `docs/backlog.md`, décisions D1 et D2. S'il est validé, le dépôt sera réorganisé en conséquence (nouvelle entrée dans `docs/architecture.md`).
+**Godot 4.7**, choisi par Stelio le 8 novembre 2026 (`docs/architecture.md`, décision 16). Le genre reste à décider (`docs/backlog.md`, D2) : le jeu idle recommandé se fait très bien en Godot (interface en nœuds `Control`, logique pure dans `game/core/`, équilibrage en ressources `.tres`).
 
 ## Sources
 

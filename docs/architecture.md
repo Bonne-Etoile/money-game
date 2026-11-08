@@ -90,3 +90,11 @@ Les décisions 1 à 15 viennent du modèle (validées sur *River Cleaner: India*
 - **Production des modèles** : références d'abord (planche de quatre vues générée par le joueur), puis l'outil adapté (outil 3D par IA pour personnages, Blender par script pour accessoires, `SurfaceTool` pour le procédural), jugé sur une capture du jeu (`docs/recettes/assets.md`).
 
 <!-- Décisions propres au jeu : à partir de 16. -->
+
+## 16. Technologie : Godot 4.7 pour Android, pubs AdMob (2026-11-08)
+
+- **Contexte** : jeu mobile financé par la pub, Android d'abord. Deux options étudiées (`docs/strategies-pub.md`, section 9) : SvelteKit + Capacitor, ou Godot.
+- **Choix** (décision de Stelio, 2026-11-08) : **Godot 4.7**, en gardant le modèle du dépôt. Pubs et consentement par le plugin **poingstudios `godot-admob-plugin`** (MIT, version 5.1.0 testée jusqu'à Godot 4.7.2).
+- **Pourquoi** : le dépôt est déjà outillé (tests, captures, CI, règles) ; Godot laisse ouverts tous les genres, y compris l'action.
+- **Conséquences** (tickets à créer) : passer au rendu Mobile ou Compatibility ; ajouter le préréglage d'export Android (AAB, Gradle build, API cible 36, `minSdk` 24) ; installer le SDK Android, un JDK 17 et les modèles d'export Android dans `tools/setup-cloud.sh` et la CI ; entrées tactiles par actions de l'Input Map ; pubs derrière un autoload (comme `Platform` pour Steam) avec une version factice pour le développement et les tests.
+
