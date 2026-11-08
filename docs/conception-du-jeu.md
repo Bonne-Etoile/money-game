@@ -20,6 +20,15 @@ Ce que fait le joueur à la minute, à la session, sur toute la partie.
 - **Fin** : quand aucune des pièces restantes ne rentre ; « Rejouer » relance une partie.
 - Réglages : `game/data/tile_blocks_rules.tres` (taille, symboles, pièces, score), formes dans `game/data/piece_shapes.tres` (25 formes, chacune avec un poids de tirage).
 
+### Prototype 2 « la pyramide fournit les pièces » (G2, 2026-11-08)
+
+- En haut, une pile de tuiles de mahjong (2 ou 3 étages). Chaque tuile montre la **pièce** qu'elle donne. Une tuile se prend quand elle est **libre** (règle du mahjong) : rien posé dessus, et son côté gauche ou droit dégagé. Les tuiles qu'on ne peut pas prendre sont assombries.
+- Toucher une tuile libre la met dans le **plateau** (2 places) ; on fait glisser la pièce sur la grille 8 × 8 du bas, comme dans le prototype 1. Les 2 places permettent de garder une pièce gênante pour plus tard.
+- **Effacement** : lignes et colonnes pleines seulement. La règle du trio est réglable (`match_size`) mais coupée : une pièce porte ici un seul symbole, une pièce de 3 cases s'effacerait toute seule. À revoir selon le test du prototype 1.
+- **Niveau gagné** quand la pile et le plateau sont vides ; **perdu** quand aucune pièce du plateau ne rentre et qu'on ne peut plus rien prendre (plateau plein, ou pile vide). Boutons « Niveau suivant », « Recommencer », « Menu ».
+- **5 niveaux faits à la main** (`game/data/pyramid_rules.tres`) : de 8 à 29 tuiles ; les niveaux 3 à 5 commencent avec des tuiles déjà sur la grille. Chaque niveau est gagné par un robot simple (test `test_every_level_can_be_won`) : aucun n'est impossible. Le dessin d'une pile : un texte par étage, une lettre = le coin d'une tuile et sa forme (`legend`), en demi-tuiles comme au mahjong.
+- Le score suit les mêmes règles que le prototype 1 (pas d'objectif de score pour l'instant).
+
 ## 3. Contrôles
 
 Un seul doigt : glisser-déposer les pièces (action `pointer` ; la souris sur PC). La pièce tirée est dessinée au-dessus du doigt (1,2 case) pour rester visible, et son emplacement apparaît en ombre sur la grille (blanche si elle rentre, rouge sinon). Retour (Échap, bouton « Menu ») : retour au menu.

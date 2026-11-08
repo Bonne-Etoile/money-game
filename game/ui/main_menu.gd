@@ -4,6 +4,7 @@ extends Control
 ## After a crash, it opens on the crash report, to copy and paste to Claude (Diagnostics).
 
 const TILE_BLOCKS_SCENE: String = "res://game/proto_tiles/tile_blocks.tscn"
+const PYRAMID_SCENE: String = "res://game/proto_pyramid/pyramid.tscn"
 
 ## Whether the play buttons open their scene (tests turn it off and check `chosen_scene`).
 @export var opens_game: bool = true
@@ -13,6 +14,7 @@ var chosen_scene: String = ""
 
 @onready var _main: Control = %Main
 @onready var _play: Button = %PlayButton
+@onready var _play_pyramid: Button = %PlayPyramidButton
 @onready var _quit: Button = %QuitButton
 @onready var _crash: Control = %Crash
 @onready var _report_text: TextEdit = %ReportText
@@ -22,6 +24,7 @@ var chosen_scene: String = ""
 
 func _ready() -> void:
 	_play.pressed.connect(play.bind(TILE_BLOCKS_SCENE))
+	_play_pyramid.pressed.connect(play.bind(PYRAMID_SCENE))
 	_quit.pressed.connect(func() -> void: get_tree().quit())
 	_crash_copy.pressed.connect(copy_crash_report)
 	_crash_close.pressed.connect(close_crash_report)

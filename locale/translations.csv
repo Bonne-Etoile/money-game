@@ -1,5 +1,6 @@
 keys,en,fr,_notes
 GAME_TITLE,Block Tiles,Block Tiles,Game name: never translated
+MENU_PLAY_PYRAMID,Play: the tile pyramid,Jouer : la pyramide de tuiles,"Start menu: prototype 2, a pile of tiles gives the pieces"
 MENU_PLAY_TILES,Play: tile blocks,Jouer : blocs de tuiles,"Start menu: prototype 1, pieces of tiles placed on a grid"
 MENU_QUIT,Quit,Quitter,Start menu
 HUD_SCORE,Score: %d,Score : %d,"Score of the game, top right and on the game-over panel; %d is the score"
@@ -12,3 +13,7 @@ CRASH_EXPLANATION,Copy this report and send it to us: it tells us what happened.
 CRASH_COPY,Copy the report,Copier le rapport,Button: copies the crash report to the clipboard
 CRASH_COPIED,Copied!,Copié !,Button text once the report is copied
 CRASH_CLOSE,Close,Fermer,Closes the crash report and shows the start menu
+HUD_LEVEL,Level %d/%d,Niveau %d/%d,"Prototype 2, top bar: the level under way, then the number of levels"
+LEVEL_WON,Pile cleared!,Pile vidée !,Prototype 2: end-of-level panel title when the pile and the tray are empty
+BUTTON_NEXT_LEVEL,Next level,Niveau suivant,Prototype 2: end-of-level panel
+BUTTON_RETRY,Try again,Recommencer,Prototype 2: end-of-level panel: plays the same level again

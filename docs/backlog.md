@@ -51,12 +51,13 @@ Chaque ticket : objectif, périmètre, critères d'acceptation, dépendances. Un
 - **Dépend de** : G0.
 - **Fait (2026-11-08)** : règles dans `docs/conception-du-jeu.md`, section 2. **À tester par Stelio** : est-ce qu'on a envie de rejouer ? La règle du trio se comprend-elle vite ? Trop facile ou trop dur (nombre de symboles, formes) ? Le glisser-déposer au doigt est-il confortable ?
 
-### G2. Prototype piste 2 « la pyramide fournit les pièces » — prêt
+### G2. Prototype piste 2 « la pyramide fournit les pièces » — à tester (branche `claude/project-thread-yrd89m`)
 
 - **Objectif** : savoir si vider une pile de mahjong en posant ses tuiles sur une grille de blocs est plus prenant que la piste 1.
 - **Périmètre** : en haut, une petite pile de tuiles (règle « libre » du mahjong) ; une tuile retirée devient une pièce à poser sur la grille du bas ; effacement par ligne (et par trio si la piste 1 l'a validé) ; niveau gagné quand la pile est vide, perdu quand la pièce ne rentre plus ; 3 à 5 niveaux faits à la main.
 - **Critères** : comme G1.
 - **Dépend de** : G0 (réutilise la grille de G1 si elle existe).
+- **Fait (2026-11-08)** : règles dans `docs/conception-du-jeu.md`, section 2. Plateau de 2 places (une tuile prise attend d'être posée). Trios coupés (une pièce = un symbole). **À tester par Stelio**, en comparaison avec G1 : lequel donne le plus envie de rejouer ? La règle « tuile libre » se comprend-elle sans explication ? Les niveaux sont-ils trop faciles (un robot simple les gagne tous) ?
 
 ### G3. Export Android et pubs de test — prêt
 

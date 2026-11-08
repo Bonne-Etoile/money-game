@@ -32,7 +32,10 @@ func test_each_play_button_opens_its_prototype() -> void:
 	var menu: MainMenu = runner.scene() as MainMenu
 	(runner.find_child("PlayButton") as Button).pressed.emit()
 	assert_str(menu.chosen_scene).is_equal(MainMenu.TILE_BLOCKS_SCENE)
-	assert_bool(ResourceLoader.exists(MainMenu.TILE_BLOCKS_SCENE)).is_true()
+	(runner.find_child("PlayPyramidButton") as Button).pressed.emit()
+	assert_str(menu.chosen_scene).is_equal(MainMenu.PYRAMID_SCENE)
+	for scene: String in [MainMenu.TILE_BLOCKS_SCENE, MainMenu.PYRAMID_SCENE]:
+		assert_bool(ResourceLoader.exists(scene)).is_true()
 
 
 func test_the_menu_opens_on_the_crash_report_after_a_crash() -> void:

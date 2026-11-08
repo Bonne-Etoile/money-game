@@ -7,11 +7,16 @@ signal drag_started(slot: int, pointer: Vector2)
 signal drag_moved(pointer: Vector2)
 signal drag_ended(pointer: Vector2)
 
+## Space around a slot's box, in pixels.
+const SLOT_MARGIN: float = 8.0
+
 var art: TileArt
 ## Side of a cell on the board; pieces in the tray are drawn smaller (TileArt.tray_scale).
 var board_cell: float = 64.0
 ## The slot being dragged, drawn empty (-1: none).
 var hidden_slot: int = -1
+## Whether each slot is drawn as a box, empty or not (prototype 2's small tray).
+var show_slots: bool = false
 var _pieces: Array[Piece] = []
 var _dragging: bool = false
 
@@ -70,6 +75,8 @@ func _draw() -> void:
 		return
 	var cell: float = board_cell * art.tray_scale
 	for slot in _pieces.size():
+		if show_slots:
+			TileDrawing.draw_box(self, slot_rect(slot).grow(-SLOT_MARGIN), art.empty_cell)
 		var piece: Piece = _pieces[slot]
 		if piece == null or slot == hidden_slot:
 			continue
