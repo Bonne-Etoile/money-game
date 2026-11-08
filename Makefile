@@ -56,6 +56,12 @@ screenshots:
 		OUT=$(SCREENSHOT_DIR)/tile_blocks.png
 	$(MAKE) screenshot SCENE=res://test/fixtures/pyramid_fixture.tscn FRAMES=10 LOCALE=fr \
 		OUT=$(SCREENSHOT_DIR)/pyramid.png
+	$(MAKE) screenshot SCENE=res://test/fixtures/tray_grid_fixture.tscn FRAMES=10 LOCALE=fr \
+		OUT=$(SCREENSHOT_DIR)/tray_grid.png
+	$(MAKE) screenshot SCENE=res://test/fixtures/pairs_fixture.tscn FRAMES=10 LOCALE=fr \
+		OUT=$(SCREENSHOT_DIR)/pairs.png
+	$(MAKE) screenshot SCENE=res://test/fixtures/stamp_fixture.tscn FRAMES=10 LOCALE=fr \
+		OUT=$(SCREENSHOT_DIR)/stamp.png
 	for locale in en fr; do \
 		$(MAKE) screenshot SCENE=res://game/ui/main_menu.tscn FRAMES=10 LOCALE=$$locale \
 			OUT=$(SCREENSHOT_DIR)/main_menu_$$locale.png || exit 1; \

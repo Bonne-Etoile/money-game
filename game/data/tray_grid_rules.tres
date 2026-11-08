@@ -1,0 +1,43 @@
+[gd_resource type="Resource" script_class="PyramidRules" format=3]
+
+[ext_resource type="Script" path="res://game/data/pyramid_rules.gd" id="1_rules"]
+[ext_resource type="Resource" path="res://game/data/piece_shapes.tres" id="2_shapes"]
+[ext_resource type="Script" path="res://game/data/score_rules.gd" id="3_score"]
+[ext_resource type="Script" path="res://game/data/pyramid_level.gd" id="4_level"]
+
+[sub_resource type="Resource" id="scoring"]
+script = ExtResource("3_score")
+points_per_cell_placed = 1
+points_per_cell_cleared = 10
+multi_clear_bonus_percent = 50
+combo_bonus_percent = 50
+combo_grace_moves = 2
+
+[sub_resource type="Resource" id="level_1"]
+script = ExtResource("4_level")
+layers = Array[String](["a.a.a.a.\n........\na.a.a.a.", "........\n.a.a.a.a"])
+symbol_seed = 1
+symbols_in_threes = true
+
+[sub_resource type="Resource" id="level_2"]
+script = ExtResource("4_level")
+layers = Array[String](["a.a.a.a.\n........\na.a.a.a.\n........\na.a.a.a.", "........\n.a.a.a..\n........\n.a.a.a.."])
+symbol_seed = 2
+symbols_in_threes = true
+
+[sub_resource type="Resource" id="level_3"]
+script = ExtResource("4_level")
+layers = Array[String](["a.a.a.a.a.\n..........\na.a.a.a.a.\n..........\na.a.a.a.a.", "..........\n.a.a.a.a..\n..........\n.a.a.a.a..", "..........\n..........\n....a....."])
+symbol_seed = 3
+symbols_in_threes = true
+
+[resource]
+script = ExtResource("1_rules")
+grid_size = 5
+tray_size = 1
+symbol_count = 5
+match_size = 3
+legend = Dictionary[String, String]({"a": "dot"})
+shape_set = ExtResource("2_shapes")
+scoring = SubResource("scoring")
+levels = Array[ExtResource("4_level")]([SubResource("level_1"), SubResource("level_2"), SubResource("level_3")])

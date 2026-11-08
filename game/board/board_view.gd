@@ -59,6 +59,19 @@ func has_ghost() -> bool:
 	return _ghost != null
 
 
+func ghost_valid() -> bool:
+	return _ghost_valid
+
+
+## Grid cells under the ghost.
+func ghost_cells() -> Array[Vector2i]:
+	var cells: Array[Vector2i] = []
+	if _ghost != null:
+		for cell in _ghost.cells:
+			cells.append(ghost_origin + cell)
+	return cells
+
+
 ## Shows the cells just cleared fading out.
 func flash(result: MoveResult) -> void:
 	_flash_cells = result.clear.cells.duplicate()

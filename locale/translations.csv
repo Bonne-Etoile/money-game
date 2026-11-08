@@ -1,7 +1,7 @@
 keys,en,fr,_notes
 GAME_TITLE,Block Tiles,Block Tiles,Game name: never translated
-MENU_PLAY_PYRAMID,Play: the tile pyramid,Jouer : la pyramide de tuiles,"Start menu: prototype 2, a pile of tiles gives the pieces"
-MENU_PLAY_TILES,Play: tile blocks,Jouer : blocs de tuiles,"Start menu: prototype 1, pieces of tiles placed on a grid"
+MENU_PLAY_PYRAMID,2. The tile pyramid,2. La pyramide de tuiles,"Start menu: prototype 2, a pile of tiles gives the pieces"
+MENU_PLAY_TILES,1. Tile blocks,1. Blocs de tuiles,"Start menu: prototype 1, pieces of tiles placed on a grid"
 MENU_QUIT,Quit,Quitter,Start menu
 HUD_SCORE,Score: %d,Score : %d,"Score of the game, top right and on the game-over panel; %d is the score"
 HUD_COMBO,Combo ×%d,Combo ×%d,"Moves in a row that cleared something, under the score; %d is their number"
@@ -17,3 +17,6 @@ HUD_LEVEL,Level %d/%d,Niveau %d/%d,"Prototype 2, top bar: the level under way, t
 LEVEL_WON,Pile cleared!,Pile vidée !,Prototype 2: end-of-level panel title when the pile and the tray are empty
 BUTTON_NEXT_LEVEL,Next level,Niveau suivant,Prototype 2: end-of-level panel
 BUTTON_RETRY,Try again,Recommencer,Prototype 2: end-of-level panel: plays the same level again
+MENU_PLAY_TRAY_GRID,3. Tiles on a small grid,3. Tuiles sur petite grille,"Start menu: prototype 3, single tiles from a pile placed on a 5 x 5 grid"
+MENU_PLAY_PAIRS,4. Pairs,4. Paires,"Start menu: prototype 4, like 1 but two identical symbols touching clear"
+MENU_PLAY_STAMP,5. Stamp the pile,5. Tampon sur la pile,"Start menu: prototype 5, a shape stamped on a pile of tiles takes them"
