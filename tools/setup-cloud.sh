@@ -149,4 +149,5 @@ prepare_opt_dir
 install_godot
 install_export_templates
 install_gdtoolkit
+"$REPO_DIR/tools/install-admob-binaries.sh"
 log "done (Godot $GODOT_VERSION, $("$BIN_DIR/gdlint" --version))"

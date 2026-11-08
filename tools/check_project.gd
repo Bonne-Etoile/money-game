@@ -29,6 +29,9 @@ func _initialize() -> void:
 func _collect(dir_path: String, paths: PackedStringArray) -> void:
 	if dir_path.trim_suffix("/") in SKIPPED_DIRS:
 		return
+	# Hidden from Godot, like the Android build template (android/build).
+	if FileAccess.file_exists(dir_path.path_join(".gdignore")):
+		return
 	for sub_dir in DirAccess.get_directories_at(dir_path):
 		_collect(dir_path.path_join(sub_dir), paths)
 	for file in DirAccess.get_files_at(dir_path):

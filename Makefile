@@ -44,10 +44,13 @@ build: import
 # the Gradle build needs dl.google.com. Godot installs the Android build template in android/
 # (not versioned).
 ANDROID_HOME ?= /opt/android-sdk
+# Godot's Gradle build wants JDK 17, whatever JAVA_HOME (21 in the cloud) says.
+ANDROID_JAVA_HOME ?= $(firstword $(wildcard /usr/lib/jvm/java-17-openjdk*) \
+	$(shell dirname "$$(dirname "$$(readlink -f "$$(command -v javac)")")"))
 android: import
 	mkdir -p $(BUILD_DIR)/android
 	ANDROID_HOME="$(ANDROID_HOME)" \
-		JAVA_HOME="$${JAVA_HOME:-$$(dirname "$$(dirname "$$(readlink -f "$$(command -v javac)")")")}" \
+		JAVA_HOME="$(ANDROID_JAVA_HOME)" \
 		$(GODOT) --headless --path . --install-android-build-template \
 		--export-debug "Android" $(BUILD_DIR)/android/$(GAME_NAME).apk
 
