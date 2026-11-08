@@ -52,6 +52,8 @@ screenshot: import
 # Screenshots Claude looks at before a PR (not run in CI). Add every scene worth reviewing.
 SCREENSHOT_DIR := $(BUILD_DIR)/screenshots
 screenshots:
+	$(MAKE) screenshot SCENE=res://test/fixtures/tile_blocks_fixture.tscn FRAMES=10 LOCALE=fr \
+		OUT=$(SCREENSHOT_DIR)/tile_blocks.png
 	for locale in en fr; do \
 		$(MAKE) screenshot SCENE=res://game/ui/main_menu.tscn FRAMES=10 LOCALE=$$locale \
 			OUT=$(SCREENSHOT_DIR)/main_menu_$$locale.png || exit 1; \

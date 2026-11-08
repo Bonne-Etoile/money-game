@@ -1,0 +1,78 @@
+extends GdUnitTestSuite
+## Prototype 1, "tile blocks" (game/core/tile_blocks_game.gd).
+
+const RULES: TileBlocksRules = preload("res://game/data/tile_blocks_rules.tres")
+
+
+func _game() -> TileBlocksGame:
+	return TileBlocksGame.new(RULES, 1)
+
+
+func _single(symbol: int) -> Piece:
+	return Piece.new([Vector2i.ZERO], PackedInt32Array([symbol]))
+
+
+func test_a_new_game_offers_a_full_hand() -> void:
+	var game: TileBlocksGame = _game()
+	assert_int(game.hand.size()).is_equal(RULES.hand_size)
+	assert_int(game.score()).is_equal(0)
+	assert_bool(game.is_over()).is_false()
+
+
+func test_a_placed_piece_leaves_the_hand_and_scores() -> void:
+	var game: TileBlocksGame = _game()
+	game.hand[0] = _single(0)
+	var result: MoveResult = game.place(0, Vector2i(3, 3))
+	assert_object(result).is_not_null()
+	assert_that(result.placed).is_equal([Vector2i(3, 3)] as Array[Vector2i])
+	assert_object(game.hand[0]).is_null()
+	assert_int(game.score()).is_equal(RULES.scoring.points_per_cell_placed)
+	assert_object(game.place(0, Vector2i(4, 4))).is_null()
+
+
+func test_three_identical_symbols_clear() -> void:
+	var game: TileBlocksGame = _game()
+	game.grid.set_symbol(Vector2i(0, 0), 2)
+	game.grid.set_symbol(Vector2i(1, 0), 2)
+	game.hand[1] = _single(2)
+	var result: MoveResult = game.place(1, Vector2i(2, 0))
+	assert_int(result.clear.groups).is_equal(1)
+	assert_that(result.cleared_symbols).is_equal(PackedInt32Array([2, 2, 2]))
+	assert_int(game.grid.filled_count()).is_equal(0)
+	assert_int(result.combo).is_equal(1)
+
+
+func test_a_full_row_clears() -> void:
+	var game: TileBlocksGame = _game()
+	for x in 7:
+		game.grid.set_symbol(Vector2i(x, 5), x % 2)
+	game.hand[0] = _single(3)
+	var result: MoveResult = game.place(0, Vector2i(7, 5))
+	assert_int(result.clear.lines).is_equal(1)
+	assert_int(game.grid.filled_count()).is_equal(0)
+
+
+func test_the_hand_is_refilled_once_empty() -> void:
+	var game: TileBlocksGame = _game()
+	for slot in game.hand.size():
+		game.hand[slot] = _single(slot)
+	game.place(0, Vector2i(0, 0))
+	game.place(1, Vector2i(2, 2))
+	assert_object(game.hand[0]).is_null()
+	game.place(2, Vector2i(4, 4))
+	for piece in game.hand:
+		assert_object(piece).is_not_null()
+
+
+func test_over_when_no_piece_fits() -> void:
+	var game: TileBlocksGame = _game()
+	# A checkerboard of two symbols: no line, no group, one free cell.
+	for y in 8:
+		for x in 8:
+			if Vector2i(x, y) != Vector2i(7, 7):
+				game.grid.set_symbol(Vector2i(x, y), (x + y) % 2)
+	var bar: Piece = Piece.new([Vector2i(0, 0), Vector2i(1, 0)], PackedInt32Array([0, 1]))
+	game.hand.assign([bar, null, null])
+	assert_bool(game.is_over()).is_true()
+	game.hand[1] = _single(2)
+	assert_bool(game.is_over()).is_false()

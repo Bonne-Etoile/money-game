@@ -1,12 +1,15 @@
 class_name MainMenu
 extends Control
-## The start menu: play (continues the latest save, or starts a new one), quit. After a crash,
-## it opens on the crash report, to copy and paste to Claude (Diagnostics).
+## The start menu: one button per prototype to compare (docs/backlog.md, G1 and G2), quit.
+## After a crash, it opens on the crash report, to copy and paste to Claude (Diagnostics).
 
-const GAME_SCENE: String = "res://game/main.tscn"
+const TILE_BLOCKS_SCENE: String = "res://game/proto_tiles/tile_blocks.tscn"
 
-## Whether "Play" opens the game scene (tests turn it off and check GameState instead).
+## Whether the play buttons open their scene (tests turn it off and check `chosen_scene`).
 @export var opens_game: bool = true
+
+## The scene the last play button asked for.
+var chosen_scene: String = ""
 
 @onready var _main: Control = %Main
 @onready var _play: Button = %PlayButton
@@ -18,7 +21,7 @@ const GAME_SCENE: String = "res://game/main.tscn"
 
 
 func _ready() -> void:
-	_play.pressed.connect(play)
+	_play.pressed.connect(play.bind(TILE_BLOCKS_SCENE))
 	_quit.pressed.connect(func() -> void: get_tree().quit())
 	_crash_copy.pressed.connect(copy_crash_report)
 	_crash_close.pressed.connect(close_crash_report)
@@ -43,13 +46,11 @@ func show_page(page: StringName) -> void:
 		_play.grab_focus()
 
 
-## Continues the latest playthrough, or starts a new one.
-func play() -> void:
-	var latest: int = GameState.saves.latest()
-	if latest < 0 or not GameState.load_game(latest):
-		GameState.new_game()
+## Opens a prototype (no save: each game starts afresh).
+func play(scene: String) -> void:
+	chosen_scene = scene
 	if opens_game:
-		get_tree().change_scene_to_file(GAME_SCENE)
+		get_tree().change_scene_to_file(scene)
 
 
 func copy_crash_report() -> void:

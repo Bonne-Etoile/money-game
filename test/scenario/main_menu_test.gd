@@ -1,5 +1,5 @@
 extends GdUnitTestSuite
-## The start menu (game/ui/main_menu.tscn): play, and the crash report after a crash.
+## The start menu (game/ui/main_menu.tscn): the prototypes, and the crash report after a crash.
 
 const MENU_SCENE: String = "res://game/ui/main_menu.tscn"
 const TEST_SAVES: String = "user://test_saves"
@@ -26,17 +26,13 @@ func _menu() -> GdUnitSceneRunner:
 	return runner
 
 
-func test_play_starts_a_new_game_then_continues_it() -> void:
+func test_each_play_button_opens_its_prototype() -> void:
 	var runner: GdUnitSceneRunner = _menu()
 	await runner.simulate_frames(2)
+	var menu: MainMenu = runner.scene() as MainMenu
 	(runner.find_child("PlayButton") as Button).pressed.emit()
-	assert_int(GameState.slot).is_equal(1)
-	GameState.earn(30)
-	GameState.save_game()
-	GameState.reset()
-	(runner.find_child("PlayButton") as Button).pressed.emit()
-	assert_int(GameState.slot).is_equal(1)
-	assert_int(GameState.progress.money).is_equal(30)
+	assert_str(menu.chosen_scene).is_equal(MainMenu.TILE_BLOCKS_SCENE)
+	assert_bool(ResourceLoader.exists(MainMenu.TILE_BLOCKS_SCENE)).is_true()
 
 
 func test_the_menu_opens_on_the_crash_report_after_a_crash() -> void:
