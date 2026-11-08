@@ -6,6 +6,7 @@ MENU_QUIT,Quit,Quitter,Start menu
 HUD_SCORE,Score: %d,Score : %d,"Score of the game, top right and on the game-over panel; %d is the score"
 HUD_COMBO,Combo ×%d,Combo ×%d,"Moves in a row that cleared something, under the score; %d is their number"
 GAME_OVER,No more room!,Plus de place !,Game-over panel title: no piece fits on the grid any more
+BUTTON_CONTINUE_AD,Continue (watch an ad),Continuer (regarder une pub),"Game-over panel: shows a rewarded ad, then clears a cross in the middle of the grid so that the game goes on. Must say that an ad plays (ad network rules)"
 BUTTON_REPLAY,Play again,Rejouer,Game-over panel: starts a new game
 BUTTON_MENU,Menu,Menu,Goes back to the start menu
 CRASH_TITLE,The game closed unexpectedly,Le jeu s’est fermé anormalement,Start menu after a crash

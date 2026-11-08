@@ -18,6 +18,7 @@ Ce que fait le joueur à la minute, à la session, sur toute la partie.
 - Une pièce tirée au hasard ne contient jamais à elle seule 3 symboles identiques qui se touchent (sinon elle s'effacerait gratuitement en la posant).
 - **Score** : 1 point par case posée ; 10 points par case effacée, +50 % par effacement en plus dans le même coup, +50 % par coup du combo (coups d'affilée qui effacent ; le combo survit à 2 coups sans effacement).
 - **Fin** : quand aucune des pièces restantes ne rentre ; « Rejouer » relance une partie.
+- **Continuer après une pub** (G3) : une fois par partie, l'écran de fin propose « Continuer (regarder une pub) ». Une pub récompensée vue jusqu'au bout dégage une croix de 3 lignes et 3 colonnes au centre de la grille (sans points), assez pour que toutes les formes rentrent, et la partie reprend avec les mêmes pièces. Pub fermée avant la fin : rien ne change. Bouton grisé tant qu'aucune pub n'est prête.
 - Réglages : `game/data/tile_blocks_rules.tres` (taille, symboles, pièces, score), formes dans `game/data/piece_shapes.tres` (25 formes, chacune avec un poids de tirage).
 
 ### Prototype 2 « la pyramide fournit les pièces » (G2, 2026-11-08)

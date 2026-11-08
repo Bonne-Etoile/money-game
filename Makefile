@@ -13,7 +13,7 @@ GD_SOURCES := game test tools
 GAME_NAME := block_tiles
 BUILD_DIR := build
 
-.PHONY: lint check test build import screenshot screenshots
+.PHONY: lint check test build android import screenshot screenshots
 
 lint:
 	$(GDLINT) $(GD_SOURCES)
@@ -40,6 +40,17 @@ build: import
 	$(GODOT) --headless --path . --export-release "Windows" $(BUILD_DIR)/windows/$(GAME_NAME).exe
 	tools/smoke_test.sh $(BUILD_DIR)/linux/$(GAME_NAME).x86_64
 
+# Android test APK, signed with the debug key Godot makes. Run tools/setup-android.sh first;
+# the Gradle build needs dl.google.com. Godot installs the Android build template in android/
+# (not versioned).
+ANDROID_HOME ?= /opt/android-sdk
+android: import
+	mkdir -p $(BUILD_DIR)/android
+	ANDROID_HOME="$(ANDROID_HOME)" \
+		JAVA_HOME="$${JAVA_HOME:-$$(dirname "$$(dirname "$$(readlink -f "$$(command -v javac)")")")}" \
+		$(GODOT) --headless --path . --install-android-build-template \
+		--export-debug "Android" $(BUILD_DIR)/android/$(GAME_NAME).apk
+
 # Renders a scene and saves a PNG (tools/screenshot.gd). Needs Xvfb, like the tests.
 #   make screenshot SCENE=res://game/ui/main_menu.tscn OUT=build/screenshots/menu.png
 #   optional: LOCALE=fr FRAMES=10 RESOLUTION=720x1280 (a phone in portrait, the default)
@@ -54,6 +65,8 @@ SCREENSHOT_DIR := $(BUILD_DIR)/screenshots
 screenshots:
 	$(MAKE) screenshot SCENE=res://test/fixtures/tile_blocks_fixture.tscn FRAMES=10 LOCALE=fr \
 		OUT=$(SCREENSHOT_DIR)/tile_blocks.png
+	$(MAKE) screenshot SCENE=res://test/fixtures/tile_blocks_game_over_fixture.tscn FRAMES=10 \
+		LOCALE=fr OUT=$(SCREENSHOT_DIR)/tile_blocks_game_over.png
 	$(MAKE) screenshot SCENE=res://test/fixtures/pyramid_fixture.tscn FRAMES=10 LOCALE=fr \
 		OUT=$(SCREENSHOT_DIR)/pyramid.png
 	for locale in en fr; do \

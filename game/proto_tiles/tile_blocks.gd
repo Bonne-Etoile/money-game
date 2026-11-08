@@ -1,10 +1,12 @@
 class_name TileBlocksScreen
 extends Control
 ## Prototype 1, "tile blocks": the grid, the score, the three pieces to drag onto the grid,
-## and the game-over panel. The rules are in TileBlocksGame (game/core/); this scene shows
-## them and turns the player's drags into moves.
+## and the game-over panel, which offers to go on after a rewarded ad. The rules are in
+## TileBlocksGame (game/core/); this scene shows them and turns the player's drags into moves.
 
 const MENU_SCENE: String = "res://game/ui/main_menu.tscn"
+## What the rewarded ad of the game-over panel is for (Ads.show_rewarded).
+const CONTINUE_PLACEMENT: String = "tile_blocks_continue"
 
 @export var rules: TileBlocksRules
 @export var art: TileArt
@@ -19,6 +21,7 @@ var _drag: PieceDrag = PieceDrag.new()
 @onready var _combo: Label = %ComboLabel
 @onready var _game_over: Control = %GameOver
 @onready var _final_score: Label = %FinalScoreLabel
+@onready var _continue: Button = %ContinueButton
 
 
 func _ready() -> void:
@@ -36,6 +39,9 @@ func _ready() -> void:
 	(%MenuButton as Button).pressed.connect(back_to_menu)
 	(%ReplayButton as Button).pressed.connect(func() -> void: start(_new_seed()))
 	(%GameOverMenuButton as Button).pressed.connect(back_to_menu)
+	_continue.pressed.connect(func() -> void: Ads.show_rewarded(CONTINUE_PLACEMENT))
+	Events.rewarded_ad_ready_changed.connect(_on_rewarded_ad_ready_changed)
+	Events.rewarded_ad_finished.connect(_on_rewarded_ad_finished)
 	_board.resized.connect(refresh)
 	start(_new_seed())
 
@@ -67,6 +73,8 @@ func refresh() -> void:
 	_final_score.text = tr("HUD_SCORE") % game.score()
 	_game_over.visible = game.is_over()
 	_drag.locked = _game_over.visible
+	_continue.visible = game.can_revive()
+	_continue.disabled = not Ads.is_rewarded_ready()
 
 
 func back_to_menu() -> void:
@@ -76,6 +84,16 @@ func back_to_menu() -> void:
 ## The pointer position that drops the piece of `slot` with its corner on `origin` (tests).
 func pointer_for(slot: int, origin: Vector2i) -> Vector2:
 	return _drag.pointer_for(game.hand[slot], origin)
+
+
+func _on_rewarded_ad_ready_changed(_is_ready: bool) -> void:
+	refresh()
+
+
+## The game goes on only when the player watched the ad to the end.
+func _on_rewarded_ad_finished(placement: String, rewarded: bool) -> void:
+	if placement == CONTINUE_PLACEMENT and rewarded and game.revive():
+		refresh()
 
 
 func _new_seed() -> int:

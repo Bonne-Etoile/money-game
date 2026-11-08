@@ -76,3 +76,47 @@ func test_over_when_no_piece_fits() -> void:
 	assert_bool(game.is_over()).is_true()
 	game.hand[1] = _single(2)
 	assert_bool(game.is_over()).is_false()
+
+
+## Fills the whole grid with alternating symbols (no trio, no full line is cleared by this).
+func _fill(game: TileBlocksGame) -> void:
+	for y in game.grid.size:
+		for x in game.grid.size:
+			game.grid.set_symbol(Vector2i(x, y), (x + y) % 2)
+
+
+func test_a_game_still_going_cannot_be_revived() -> void:
+	var game: TileBlocksGame = _game()
+	assert_bool(game.can_revive()).is_false()
+	assert_bool(game.revive()).is_false()
+	assert_int(game.revives_used).is_equal(0)
+
+
+func test_a_revive_clears_a_cross_so_that_every_shape_fits() -> void:
+	var game: TileBlocksGame = _game()
+	_fill(game)
+	assert_bool(game.is_over()).is_true()
+	assert_bool(game.can_revive()).is_true()
+	var score: int = game.score()
+	assert_bool(game.revive()).is_true()
+	var lines: int = RULES.revive_clear_lines
+	var size: int = RULES.grid_size
+	var expected_empty: int = 2 * lines * size - lines * lines
+	assert_int(game.grid.filled_count()).is_equal(size * size - expected_empty)
+	assert_int(game.score()).is_equal(score)
+	for shape in RULES.shape_set.shapes:
+		var symbols: PackedInt32Array = PackedInt32Array()
+		symbols.resize(shape.cells.size())
+		assert_bool(game.grid.fits_anywhere(Piece.new(shape.cells, symbols))).is_true()
+	assert_bool(game.is_over()).is_false()
+
+
+func test_revives_are_limited_per_game() -> void:
+	var game: TileBlocksGame = _game()
+	for _revive in RULES.revives_per_game:
+		_fill(game)
+		assert_bool(game.revive()).is_true()
+	_fill(game)
+	assert_bool(game.is_over()).is_true()
+	assert_bool(game.can_revive()).is_false()
+	assert_bool(game.revive()).is_false()

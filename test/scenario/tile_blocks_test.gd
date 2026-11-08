@@ -1,7 +1,7 @@
 extends GdUnitTestSuite
 ## Prototype 1 on screen (game/proto_tiles/tile_blocks.tscn): pieces are dragged from the tray
 ## onto the grid with the pointer (touch is turned into mouse events), clears score, and the
-## game-over panel offers to play again.
+## game-over panel offers to go on after a rewarded ad (a fake one here), or to play again.
 
 const SCENE: String = "res://game/proto_tiles/tile_blocks.tscn"
 
@@ -67,9 +67,8 @@ func test_a_piece_dropped_on_a_full_cell_goes_back_to_the_tray() -> void:
 	assert_bool((runner.find_child("Board") as BoardView).has_ghost()).is_false()
 
 
-func test_game_over_then_play_again() -> void:
-	var runner: GdUnitSceneRunner = await _screen()
-	var screen: TileBlocksScreen = runner.scene() as TileBlocksScreen
+## Fills the grid but one corner and leaves a piece of two in the hand: the game is over.
+func _lose(screen: TileBlocksScreen) -> void:
 	for y in 8:
 		for x in 8:
 			if Vector2i(x, y) != Vector2i(7, 7):
@@ -77,8 +76,63 @@ func test_game_over_then_play_again() -> void:
 	var bar: Piece = Piece.new([Vector2i(0, 0), Vector2i(1, 0)], PackedInt32Array([0, 1]))
 	screen.game.hand.assign([bar, null, null])
 	screen.refresh()
+
+
+func _fake_ads() -> FakeAdsBackend:
+	var fake: FakeAdsBackend = FakeAdsBackend.new()
+	Ads.use_backend(fake)
+	return fake
+
+
+func test_game_over_then_play_again() -> void:
+	var runner: GdUnitSceneRunner = await _screen()
+	var screen: TileBlocksScreen = runner.scene() as TileBlocksScreen
+	_lose(screen)
 	var panel: Control = runner.find_child("GameOver") as Control
 	assert_bool(panel.visible).is_true()
 	(runner.find_child("ReplayButton") as Button).pressed.emit()
 	assert_bool(panel.visible).is_false()
 	assert_int(screen.game.grid.filled_count()).is_equal(0)
+
+
+func test_a_watched_ad_lets_the_game_go_on_once() -> void:
+	var fake: FakeAdsBackend = _fake_ads()
+	var runner: GdUnitSceneRunner = await _screen()
+	var screen: TileBlocksScreen = runner.scene() as TileBlocksScreen
+	_lose(screen)
+	var panel: Control = runner.find_child("GameOver") as Control
+	var button: Button = runner.find_child("ContinueButton") as Button
+	assert_bool(button.visible).is_true()
+	assert_bool(button.disabled).is_false()
+	button.pressed.emit()
+	assert_int(fake.shown).is_equal(1)
+	assert_bool(panel.visible).is_false()
+	assert_bool(screen.game.is_over()).is_false()
+	_lose(screen)
+	assert_bool(panel.visible).is_true()
+	assert_bool(button.visible).is_false()
+
+
+func test_an_ad_closed_early_gives_nothing() -> void:
+	var fake: FakeAdsBackend = _fake_ads()
+	fake.grants_reward = false
+	var runner: GdUnitSceneRunner = await _screen()
+	var screen: TileBlocksScreen = runner.scene() as TileBlocksScreen
+	_lose(screen)
+	(runner.find_child("ContinueButton") as Button).pressed.emit()
+	assert_int(fake.shown).is_equal(1)
+	assert_bool(screen.game.is_over()).is_true()
+	assert_bool((runner.find_child("GameOver") as Control).visible).is_true()
+	assert_bool(screen.game.can_revive()).is_true()
+
+
+func test_the_continue_button_waits_for_an_ad() -> void:
+	var fake: FakeAdsBackend = _fake_ads()
+	fake.ready = false
+	var runner: GdUnitSceneRunner = await _screen()
+	var screen: TileBlocksScreen = runner.scene() as TileBlocksScreen
+	_lose(screen)
+	var button: Button = runner.find_child("ContinueButton") as Button
+	assert_bool(button.disabled).is_true()
+	fake.ready = true
+	assert_bool(button.disabled).is_false()

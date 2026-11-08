@@ -18,5 +18,7 @@ grid_size = 8
 symbol_count = 5
 hand_size = 3
 match_size = 3
+revives_per_game = 1
+revive_clear_lines = 3
 shape_set = ExtResource("2_shapes")
 scoring = SubResource("scoring")

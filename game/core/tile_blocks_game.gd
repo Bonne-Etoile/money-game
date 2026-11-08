@@ -3,13 +3,15 @@ extends RefCounted
 ## Prototype 1, "tile blocks" (docs/etude-concurrence.md, appendix B, idea 1): pieces of tiles
 ## placed on a grid, without rotation. A full row or column clears, and so do 3 identical
 ## symbols touching each other. New pieces come when the hand is empty; the game is over when
-## no piece of the hand fits anywhere.
+## no piece of the hand fits anywhere, unless the player revives it (after a rewarded ad).
 
 var rules: TileBlocksRules
 var grid: TileGrid
 ## The pieces offered; null where a piece was already placed.
 var hand: Array[Piece] = []
 var scores: ScoreKeeper
+## Revives used in this game (at most `rules.revives_per_game`).
+var revives_used: int = 0
 var _generator: PieceGenerator
 
 
@@ -58,6 +60,29 @@ func is_over() -> bool:
 	for piece in hand:
 		if piece != null and grid.fits_anywhere(piece):
 			return false
+	return true
+
+
+## True when the game is over and a revive is left.
+func can_revive() -> bool:
+	return revives_used < rules.revives_per_game and is_over()
+
+
+## Goes on with a lost game: clears a cross of `rules.revive_clear_lines` rows and columns in
+## the middle of the grid, without points, so that every piece of the hand fits again. False
+## when no revive is allowed.
+func revive() -> bool:
+	if not can_revive():
+		return false
+	revives_used += 1
+	var lines: int = mini(rules.revive_clear_lines, grid.size)
+	var first: int = (grid.size - lines) >> 1
+	var cells: Array[Vector2i] = []
+	for line in range(first, first + lines):
+		for along in grid.size:
+			cells.append(Vector2i(along, line))
+			cells.append(Vector2i(line, along))
+	grid.remove(cells)
 	return true
 
 

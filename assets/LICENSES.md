@@ -10,3 +10,4 @@ Chaque asset externe (modèle, texture, son, police, musique) est listé ici dè
 | Dossier | Source | Version | Licence |
 |---|---|---|---|
 | `addons/gdUnit4` | https://github.com/MikeSchulze/gdUnit4 | 6.2.2 | MIT (`addons/gdUnit4/LICENSE`) ; outil de test, exclu des exports |
+| `addons/admob` | https://github.com/poingstudios/godot-admob-plugin | 5.1.0 (binaires Android `android-template-v4.7.2.zip` de la même version) | MIT (`addons/admob/LICENSE`) ; pubs AdMob, inclus dans l'export Android |
