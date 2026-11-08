@@ -1,0 +1,10 @@
+keys,en,fr,_notes
+GAME_TITLE,My Game,My Game,Game name: never translated
+MENU_PLAY,Play,Jouer,"Start menu: continues the latest save, or starts a new game"
+MENU_QUIT,Quit,Quitter,Start menu
+HUD_MONEY,Money: %d,Argent : %d,"Money of the playthrough, top left; %d is the amount"
+CRASH_TITLE,The game closed unexpectedly,Le jeu s’est fermé anormalement,Start menu after a crash
+CRASH_EXPLANATION,Copy this report and send it to us: it tells us what happened.,Copiez ce rapport et envoyez-le-nous : il nous dit ce qui s’est passé.,Start menu after a crash
+CRASH_COPY,Copy the report,Copier le rapport,Button: copies the crash report to the clipboard
+CRASH_COPIED,Copied!,Copié !,Button text once the report is copied
+CRASH_CLOSE,Close,Fermer,Closes the crash report and shows the start menu

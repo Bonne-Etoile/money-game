@@ -1,0 +1,70 @@
+# Windows build for the player's playtests (docs/architecture.md, decision 10), only on demand:
+# - a branch claude/test-build-* created from the commit to test (Claude, when a batch of
+#   tickets is ready; the cloud session cannot push tags);
+# - the "Run workflow" button of the Actions tab (once this file is on main, GitHub's rule);
+# - every PR towards main.
+# make build also exports Linux, only to launch the game a few seconds (tools/smoke_test.sh):
+# that export is not published.
+name: Build
+
+on:
+  push:
+    branches: ["claude/test-build-*"]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: build-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    # GitHub's own runners (docs/architecture.md, decision 10).
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v7
+
+      # Read by tools/setup-cloud.sh and Godot. The runner context is not available in job-level env.
+      # Everything written outside the checkout (Godot, gdtoolkit, their links, export
+      # templates, Godot's user:// data) goes under the runner's tool cache: needed when
+      # several self-hosted runners share one WSL user, harmless on GitHub's runners
+      # (docs/architecture.md, decision 10).
+      - name: Choose tool directories
+        run: |
+          tools="$RUNNER_TOOL_CACHE/godot-tools"
+          mkdir -p "$tools/bin"
+          {
+            echo "OPT_DIR=$tools"
+            echo "BIN_DIR=$tools/bin"
+            echo "XDG_DATA_HOME=$tools/xdg/data"
+            echo "XDG_CONFIG_HOME=$tools/xdg/config"
+            echo "XDG_CACHE_HOME=$tools/xdg/cache"
+          } >> "$GITHUB_ENV"
+          echo "$tools/bin" >> "$GITHUB_PATH"
+
+      - name: Cache Godot, export templates and gdtoolkit
+        uses: actions/cache@v6
+        with:
+          path: |
+            ${{ env.OPT_DIR }}
+            ${{ env.XDG_DATA_HOME }}/godot/export_templates
+          key: tools-${{ runner.os }}-${{ hashFiles('.godot-version', 'requirements-dev.txt', 'tools/setup-cloud.sh') }}
+
+      - name: Install tooling
+        run: tools/setup-cloud.sh
+
+      - name: Build
+        run: make build
+
+      - name: Upload Windows build
+        uses: actions/upload-artifact@v7
+        with:
+          name: my-game-windows
+          path: build/windows/
+          if-no-files-found: error
+          retention-days: 14

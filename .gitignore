@@ -1,0 +1,14 @@
+# Godot
+.godot/
+*.translation
+
+# Exports and gdUnit4 reports: generated inside the project, hidden from Godot by a
+# committed .gdignore (otherwise Godot imports them and puts them in the exports).
+/build/*
+!/build/.gdignore
+/reports/*
+!/reports/.gdignore
+
+# Python tooling
+/.venv/
+__pycache__/

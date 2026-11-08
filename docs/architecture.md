@@ -1,0 +1,92 @@
+# Décisions d'architecture
+
+Chaque décision donne son contexte, le choix fait, sa raison et ses conséquences. Une décision qui change est mise à jour ici, sans effacer l'historique : on ajoute « Remplacée par … ». Les règles opérationnelles qui en découlent vont dans `CLAUDE.md`.
+
+Les décisions 1 à 15 viennent du modèle (validées sur *River Cleaner: India*). Les décisions propres au jeu commencent à 16.
+
+## 1. Moteur : Godot 4.7.2, version épinglée
+
+- **Choix** : Godot **4.7.2-stable**, version standard (sans .NET). La version est écrite dans `.godot-version`, lu par `tools/setup-cloud.sh` et par la CI.
+- **Pourquoi** : scènes et ressources en texte (relisibles en PR), moteur pilotable en ligne de commande (tests, export, captures, vidéos), licence MIT sans redevance.
+- **Conséquence** : on ne monte de version qu'avec un ticket dédié (guide de migration officiel, tests, captures avant/après).
+
+## 2. Langage : GDScript entièrement typé
+
+- **Choix** : GDScript typé partout ; `untyped_declaration` et `unsafe_*` en **erreurs** (`project.godot`, garde-fou `project_settings_test.gd`). Style officiel vérifié par `gdlint` et `gdformat`.
+- **Pourquoi** : pas de .NET dans la CI ; le typage strict attrape beaucoup de bugs avant de jouer.
+
+## 3. Logique pure séparée des scènes
+
+- **Choix** : les règles du jeu sont des classes `RefCounted` de `game/core/`, sans nœud. Les scènes appellent cette logique et affichent le résultat.
+- **Pourquoi** : la logique se teste en millisecondes, sans lancer le jeu ; l'équilibrage peut être simulé par un script (`tools/`).
+
+## 4. Communication : autoload `Events`, état dans `GameState`
+
+- **Choix** : `Events` porte les signaux globaux ; les scènes ne se connaissent pas. `GameState` tient l'état de la partie (`GameProgress`) et est le seul à le modifier.
+- **Pourquoi** : une scène s'ajoute ou se retire sans toucher aux autres ; un test vérifie un signal sans monter tout le jeu.
+
+## 5. Organisation par fonctionnalité
+
+- **Choix** : `game/autoload/`, `game/core/`, `game/data/`, puis un dossier par fonctionnalité (`game/player/`, `game/ui/`…) ; `assets/`, `locale/`, `test/` (`unit/`, `scenario/`, `fixtures/`), `tools/`, `docs/`.
+- **Pourquoi** : ce qui touche à une fonctionnalité est au même endroit.
+
+## 6. Données en ressources typées
+
+- **Choix** : chaque définition du jeu (objet, amélioration, niveau…) est une ressource `.tres` d'une classe typée de `game/data/`.
+- **Pourquoi** : texte, typé, éditable dans l'éditeur comme dans un fichier ; ajouter un élément ne demande pas de code.
+- **Attention** : une liste exportée en `PackedFloat32Array` peut être vidée à l'export ; utiliser `Array[float]` (pitfalls, GDScript).
+
+## 7. Traductions : anglais en base, CSV
+
+- **Choix** : `locale/translations.csv` (clé, `en`, `fr`, `_notes`), une clé par texte. Aucun texte en dur ; un test vérifie que chaque clé est traduite et que chaque texte de scène est une clé.
+- **Attention** : l'import sans éditeur ne déclare pas les traductions ; la liste est écrite à la main dans `project.godot`.
+
+## 8. Sauvegardes et réglages : JSON versionné
+
+- **Choix** : `SaveGame` (version, migrations), `SaveSlots` (un fichier par emplacement, fichier temporaire puis renommage, `.bak` gardé), réglages à part (`WindowSettings`, `GameSettings`, `AudioSettings`), lus sans confiance (`JsonRead`). Seul le jeu exporté écrit ses réglages.
+- **Pourquoi pas une ressource** : charger une ressource peut exécuter du code ; une sauvegarde partagée deviendrait un vecteur d'attaque.
+
+## 9. Qualité : quatre commandes
+
+| Commande | Contenu |
+|---|---|
+| `make lint` | `gdlint` et `gdformat --check` |
+| `make check` | import, puis chargement de chaque fichier (`tools/check_project.gd`) : l'import seul ne compile pas les scripts |
+| `make test` | gdUnit4 sous Xvfb (il refuse le mode sans affichage) |
+| `make build` | exports Windows et Linux, puis lancement de l'export Linux (`tools/smoke_test.sh`) |
+
+- **Captures** : `tools/screenshot.gd` (Xvfb, jamais `--headless` qui n'a pas de pixels). Claude regarde chaque capture avant de conclure.
+
+## 10. CI : GitHub Actions, runners de GitHub
+
+- **Choix** : `ci.yml` (`lint check test`) sur les PR vers `main` et les pushs sur `dev`/`main` ; `build.yml` à la demande (branche `claude/test-build-*`, bouton, PR vers `main`). Outils installés par le même `tools/setup-cloud.sh`, mis en cache, tout écrit hors du dépôt sous `$RUNNER_TOOL_CACHE`.
+- **Pas de job sur les PR vers `dev`** : trop lent avec un jeu 3D en rendu logiciel ; Claude lance les quatre commandes dans sa session.
+- **Runner auto-hébergé** : essayé sur River Cleaner (WSL), abandonné ; voir `docs/pitfalls/ci-et-session-cloud.md` avant d'y revenir.
+
+## 11. Session cloud de Claude
+
+- **Choix** : `.claude/hooks/session-start.sh` lance `tools/setup-cloud.sh` (Godot et modèles d'export depuis les releases GitHub, Xvfb, `mesa-vulkan-drivers`, gdtoolkit) puis importe le projet. Idempotent.
+- **Rendu** : Forward+ tourne en rendu logiciel (lavapipe) : lent, mais juste pour les captures et les tests. Les temps de rendu n'y valent rien : ils se mesurent sur la machine du joueur.
+
+## 12. Entrées : actions de l'Input Map, touches physiques
+
+- **Choix** : tout passe par des actions ; les touches sont définies par leur position physique (`physical_keycode`).
+- **Pourquoi** : ZQSD et WASD sans réglage, réassignation et manette possibles plus tard, entrées simulables dans les tests.
+
+## 13. Branches et travail autonome
+
+- **Choix** : `main` (versions publiées, mergée par l'humain) ← `dev` (intégration) ← une branche par ticket `claude/<ticket>-<sujet>`. Tickets dans `docs/backlog.md`, pièges dans `docs/pitfalls/`, règles dans `CLAUDE.md`. Les essais non intégrés vont sur une branche `claude/essais-<sujet>`.
+- **Ce qui reste humain** : sensations, son, fluidité sur une vraie machine, testés par lots sur un build de test.
+
+## 14. Rapports de crash et mesures copiées par le joueur
+
+- **Choix** : l'autoload `Diagnostics` (le premier) ajoute un `Logger` (`SessionLog`) qui écrit tout dans `user://logs/session.log`, vidé à chaque ligne, terminé par une ligne de fin à la sortie normale. Au lancement suivant, un journal sans cette ligne est un crash : le menu propose de copier le rapport (`CrashReport`). `always_track_call_stacks` garde la pile GDScript dans le jeu exporté.
+- **Pourquoi** : en *release*, le journal de Godot n'est vidé qu'à la fermeture et la plupart des erreurs de script ne sont pas signalées ; après un crash, il était vide.
+- **Même principe** pour tout ce qui se mesure sur la machine du joueur : un bouton qui copie un rapport texte (performance, journal de partie), listé dans `docs/avant-la-sortie.md` pour être retiré.
+
+## 15. Assets : formats ouverts, licences tracées
+
+- **Choix** : `.glb`, PNG, OGG. Chaque asset externe et chaque usage d'IA dans `assets/LICENSES.md` dès son entrée (source unique pour les crédits et la déclaration Steamworks). Pas de Git LFS au départ.
+- **Production des modèles** : références d'abord (planche de quatre vues générée par le joueur), puis l'outil adapté (outil 3D par IA pour personnages, Blender par script pour accessoires, `SurfaceTool` pour le procédural), jugé sur une capture du jeu (`docs/recettes/assets.md`).
+
+<!-- Décisions propres au jeu : à partir de 16. -->

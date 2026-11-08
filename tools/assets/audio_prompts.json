@@ -1,0 +1,33 @@
+{
+  "_help": "Prompts for tools/assets/generate_audio.py. sfx: prompt, seconds (0.5 to 30), loop (ambiences), influence (0 to 1, default 0.5). music: prompt, seconds. Examples taken from River Cleaner: India (05/11/2026), replace them with the game's own. Method: docs/recettes/sons-et-musique.md.",
+  "sfx": {
+    "pickup": {
+      "prompt": "Quick grab of a light plastic bottle, short soft plastic crinkle, close-up, dry studio, no reverb, no music",
+      "seconds": 0.5
+    },
+    "throw": {
+      "prompt": "Fast short whoosh of an object thrown through the air, single swish, dry, no music",
+      "seconds": 0.5
+    },
+    "ui_click": {
+      "prompt": "Loud crisp single mouse click, sharp wooden tock, button press, clearly audible, instant attack",
+      "seconds": 0.5,
+      "influence": 0.8
+    },
+    "walk_grass": {
+      "prompt": "Field recording of a person walking slowly on a grassy meadow, about six natural footsteps on soft grass and earth, sandals, realistic foley, outdoor, no music, no voices",
+      "seconds": 5.0
+    },
+    "ambience_river": {
+      "prompt": "Calm river ambience, gentle flowing water and soft lapping on the bank, outdoor, continuous, no voices, no music",
+      "seconds": 30.0,
+      "loop": true
+    }
+  },
+  "music": {
+    "chai_beats": {
+      "prompt": "Indian lo-fi hip hop instrumental, 85 BPM, dusty boom bap drums with vinyl crackle, mellow Rhodes piano chords, a chopped sitar sample loop, deep warm bass, laid-back and cosy, study beats vibe, no vocals",
+      "seconds": 120
+    }
+  }
+}

@@ -1,0 +1,75 @@
+# Quality checks on PRs to main and on pushes to dev/main (docs/architecture.md, decision 10):
+# lint, check and test, with the tooling installed by tools/setup-cloud.sh. PRs to dev run no
+# job (too slow with a 3D game); Claude runs the same checks in its session before
+# merging them. Screenshots are taken and
+# looked at locally by Claude (make screenshots), not in CI. The game itself is
+# exported only when the player needs to play it: see build.yml.
+name: CI
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [dev, main]
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  quality:
+    # GitHub's own runners (docs/architecture.md, decision 10).
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v7
+
+      # Read by tools/setup-cloud.sh and Godot. The runner context is not available in job-level env.
+      # Everything written outside the checkout (Godot, gdtoolkit, their links, export
+      # templates, Godot's user:// data) goes under the runner's tool cache: needed when
+      # several self-hosted runners share one WSL user, harmless on GitHub's runners
+      # (docs/architecture.md, decision 10).
+      - name: Choose tool directories
+        run: |
+          tools="$RUNNER_TOOL_CACHE/godot-tools"
+          mkdir -p "$tools/bin"
+          {
+            echo "OPT_DIR=$tools"
+            echo "BIN_DIR=$tools/bin"
+            echo "XDG_DATA_HOME=$tools/xdg/data"
+            echo "XDG_CONFIG_HOME=$tools/xdg/config"
+            echo "XDG_CACHE_HOME=$tools/xdg/cache"
+          } >> "$GITHUB_ENV"
+          echo "$tools/bin" >> "$GITHUB_PATH"
+
+      - name: Cache Godot, export templates and gdtoolkit
+        uses: actions/cache@v6
+        with:
+          path: |
+            ${{ env.OPT_DIR }}
+            ${{ env.XDG_DATA_HOME }}/godot/export_templates
+          key: tools-${{ runner.os }}-${{ hashFiles('.godot-version', 'requirements-dev.txt', 'tools/setup-cloud.sh') }}
+
+      - name: Install tooling
+        run: tools/setup-cloud.sh
+
+      - name: Lint
+        run: make lint
+
+      - name: Check
+        run: make check
+
+      - name: Test
+        run: make test
+
+      - name: Upload test reports
+        if: failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: test-reports
+          path: reports/
+          if-no-files-found: ignore
+          retention-days: 7
