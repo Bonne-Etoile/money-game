@@ -132,3 +132,40 @@ Lues le 8 novembre 2026 ; dates de publication entre parenthèses.
 - PocketGamer.biz, tendances du puzzle en 2026 (août 2026, Azur Games) : https://www.pocketgamer.biz/puzzle-games-rise-as-mobile-genres-compete-for-attention-in-2026/
 - iXBT, les flèches en juin 2026 (juillet 2026, d'après MobileGamer.biz / AppMagic) : https://ixbt.games/en/news/2026/07/12/strely-zaxvatyvaiut-rynok-analitiki-nazvali-samye-populiarnye-mobilnye-igry-iiunia.html
 - AppMagic, *Casual Games Report H1 2026* : https://appmagic.rocks/research/casual-report-H12026
+
+## Annexe A. Les deux genres en détail (2026-11-08)
+
+### Puzzle de blocs : les variantes populaires
+
+| Variante | Exemples | Règles | Ce qui plaît |
+|---|---|---|---|
+| **Chute** (l'original) | Tetris | des pièces de 4 cases tombent ; on les tourne et on les place ; une ligne complète disparaît ; perdu quand la pile atteint le haut | réflexes, tension croissante |
+| **Placement libre** | 1010!, **Block Blast** | grille 8 × 8 (ou 10 × 10) ; 3 pièces proposées, sans rotation ; on les glisse où l'on veut ; lignes **et** colonnes complètes disparaissent ; combos si plusieurs à la fois ; perdu quand aucune pièce ne rentre | aucune pression de temps, réflexion calme, « encore une partie » |
+| **Façon sudoku** | Woodoku, Blockudoku | comme le placement libre sur 9 × 9, mais les carrés 3 × 3 pleins disparaissent aussi | plus de façons d'effacer, style bois apaisant |
+| **Aventure à objectifs** | mode Aventure de Block Blast | mêmes règles, mais un niveau a un but (ramasser des gemmes, révéler une image) | progression, sentiment d'avancer |
+| **Hexagonal** | Hex FRVR, Hexa Puzzle | grille en nid d'abeille, lignes dans 3 directions | nouveauté visuelle |
+| **Silhouette** | Block Puzzle Jigsaw, tangrams | remplir exactement une forme donnée avec les pièces | puzzle « à solution » |
+| **Glisser vers la sortie** (autre famille) | Color Block Jam, Block Jam 3D | des blocs de couleur à faire glisser vers la porte de leur couleur, sur un plateau encombré | casse-tête à niveaux (financé par les achats) |
+
+### Mahjong et tuiles : les variantes populaires
+
+| Variante | Exemples | Règles | Ce qui plaît |
+|---|---|---|---|
+| **Mahjong solitaire classique** | Mahjong Titans, Microsoft Mahjong | 144 tuiles empilées en pyramide (la « tortue ») ; on retire des **paires identiques libres** (rien dessus, et un côté gauche ou droit dégagé) ; gagné quand la pile est vide | calme, observation, culture |
+| **Paires simplifiées** | **Vita Mahjong** | même principe, grandes tuiles très lisibles, moins de symboles, niveaux courts, indices et mélanges | accessible aux seniors, parties de 2 minutes |
+| **Triple** (*triple match*) | Tile Explorer, Zen Match, Triple Tile, Tile Club | on tape une tuile libre, elle descend dans un **bac de 7 places** ; 3 identiques dans le bac disparaissent ; bac plein = perdu | rythme rapide, tension du bac qui se remplit |
+| **Relier** (*Onet*, « Pikachu ») | Onet Connect, Mahjong Connect | relier deux tuiles identiques par un chemin d'au plus 2 virages | regard, vitesse |
+| **Objets 3D** | Match 3D, Triple Match 3D | même idée que le triple, avec des objets 3D en vrac | visuel, toucher |
+
+Dans les deux genres, les pubs récompensées se placent naturellement sur les **aides** : mélanger, annuler, une place de plus, un indice, continuer après un échec.
+
+## Annexe B. Allier blocs et tuiles : quatre pistes (2026-11-08)
+
+Question de Stelio : peut-on combiner les deux genres ? Oui. La contrainte : la règle doit se comprendre en 3 secondes sur une vidéo, sinon l'hybride perd ce qui fait le succès des deux genres.
+
+1. **Blocs de tuiles** (*recommandée*). Le plateau et les pièces de Block Blast, mais chaque case d'une pièce porte un **symbole de tuile** (bambou, caractère, fleur…). Deux façons d'effacer : une **ligne pleine** (comme Block Blast), ou **3 symboles identiques qui se touchent** (comme le triple). Chaque pose devient une vraie décision (compléter une ligne ou viser un trio ?) et les combos en chaîne sont spectaculaires en vidéo. Pubs : changer les pièces proposées, annuler la dernière pose, « tuile joker » qui compte pour n'importe quel symbole, continuer.
+2. **La pyramide fournit les pièces**. En haut de l'écran, une pile de mahjong ; en bas, la grille de blocs. On retire les tuiles libres de la pile, et chaque tuile retirée devient une pièce à placer en bas. Le but d'un niveau : **vider la pile** sans bloquer la grille. Ça donne au mode infini de Block Blast ce qui lui manque : un objectif et une fin.
+3. **Le bac devient une grille**. Un jeu de triple dont le bac de 7 places est remplacé par une petite grille 5 × 5 : on y pose les tuiles prises dans la pile ; 3 identiques côte à côte disparaissent, une ligne pleine aussi ; grille pleine = perdu. Plus de place à la stratégie que le bac du triple.
+4. **Paires sur la grille**. Block Blast où deux tuiles identiques posées côte à côte disparaissent en paire (règle du mahjong), en plus des lignes. Plus simple que la piste 1, mais trop d'effacements faciles risquent de rendre la partie infinie : à régler en prototype.
+
+La piste 1 est la plus simple à expliquer et à développer (un seul écran, les règles de Block Blast plus une) ; la piste 2 est la plus originale. Un prototype de chacune se fait en quelques jours en Godot ; on garde celle qui donne le plus envie de rejouer.
