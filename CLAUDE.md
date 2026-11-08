@@ -13,6 +13,8 @@
 - `docs/pitfalls/` : pièges connus (symptôme, cause, bonne pratique), un fichier par thème, écrits pour servir à n'importe quel jeu ; `methode.md` pour la façon de travailler. Les relire avant de travailler sur un thème ; y ajouter une entrée dès qu'une erreur fait perdre du temps ou risque de revenir.
 - `docs/recettes/` : comment faire les choses courantes (ajouter un texte, un réglage, une migration de sauvegarde, un test de scénario, une capture…).
 - `docs/ressources.md` : documentation, outils et banques d'assets.
+- `docs/deploiement-android.md` : publication sur Google Play (compte, test fermé, build AAB, questionnaires, consentement).
+- `docs/strategies-pub.md` : monétisation par la pub (formats, règles AdMob et Google Play à ne jamais franchir, leviers pour faire regarder des pubs, genre et technologie recommandés).
 
 ## Stack
 

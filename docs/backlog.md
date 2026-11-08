@@ -17,11 +17,15 @@ Chaque ticket : objectif, périmètre, critères d'acceptation, dépendances. Un
 
 ## Décisions à prendre
 
-- **D1. …** → bloque …
+- **D1. Technologie du jeu** (2026-11-08) : SvelteKit + Capacitor + `@capacitor-community/admob` (recommandé pour un jeu idle) ou Godot 4.7 avec le plugin AdMob de poingstudios (le modèle actuel). Analyse : `docs/strategies-pub.md`, section 9. → bloque tout le développement.
+- **D2. Genre du jeu** (2026-11-08) : jeu idle de gestion (recommandé), puzzle de fusion ou réflexion à niveaux. Analyse : `docs/strategies-pub.md`, section 8. → bloque la conception (`docs/conception-du-jeu.md`).
+- **D3. Public cible** (2026-11-08) : 13 ans et plus recommandé, pour éviter le programme Familles qui interdit la plupart des leviers pub (`docs/deploiement-android.md`, section 6).
 
 ## Actions attendues du joueur
 
-- **A1. …**
+- **A1. Créer le compte développeur Google Play personnel** (25 $, pièce d'identité, téléphone Android) et le compte AdMob : `docs/deploiement-android.md`, sections 1 et 2.
+- **A2. Réunir 15 à 20 testeurs** (téléphone Android, adresse Gmail) pour le test fermé obligatoire de 14 jours : `docs/deploiement-android.md`, section 7. À lancer tôt : c'est l'étape la plus longue.
+- **A3. Choisir un nom de domaine** pour la politique de confidentialité et `app-ads.txt` : `docs/deploiement-android.md`, section 3.
 
 ## Socle technique (fourni par le modèle)
 
