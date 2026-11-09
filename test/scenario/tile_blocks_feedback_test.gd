@@ -150,3 +150,43 @@ func test_no_hint_before_the_wait_is_over() -> void:
 	screen.refresh()
 	await runner.simulate_frames(5, 100)
 	assert_bool((runner.find_child("Board") as BoardView).has_hint()).is_false()
+
+
+func test_the_comeback_gift_continues_for_free_once() -> void:
+	GameState.day_override = 500
+	GameState.progress.stats.start_session(490)
+	GameState.progress.stats.start_session(500)
+	var fake: FakeAdsBackend = FakeAdsBackend.new()
+	Ads.use_backend(fake)
+	var runner: GdUnitSceneRunner = await _screen()
+	var screen: TileBlocksScreen = runner.scene() as TileBlocksScreen
+	_lose(screen)
+	var button: Button = runner.find_child("ContinueButton") as Button
+	assert_str(button.text).is_equal("BUTTON_CONTINUE_FREE")
+	button.pressed.emit()
+	assert_int(fake.shown).is_equal(0)
+	assert_bool(screen.game.is_over()).is_false()
+	assert_bool(GameState.has_comeback_gift(screen.rules.comeback_days)).is_false()
+	# The next game, the continue costs an ad again.
+	screen.start(2)
+	_lose(screen)
+	assert_str(button.text).is_equal("BUTTON_CONTINUE_AD")
+
+
+func test_the_daily_challenge_deals_the_same_pieces_and_keeps_the_best_of_the_day() -> void:
+	GameState.day_override = 700
+	var runner: GdUnitSceneRunner = scene_runner("res://game/proto_tiles/daily.tscn")
+	await runner.simulate_frames(2)
+	var screen: TileBlocksScreen = runner.scene() as TileBlocksScreen
+	var expected: TileBlocksGame = TileBlocksGame.new(screen.rules, DailyChallenge.seed_for(700))
+	for slot in expected.hand.size():
+		assert_that(screen.game.hand[slot].cells).is_equal(expected.hand[slot].cells)
+	assert_str((runner.find_child("LevelLabel") as Label).text).is_equal(tr("HUD_DAILY"))
+	screen.game.hand[0] = _single(1)
+	screen.refresh()
+	await _drag(runner, 0, Vector2i(0, 0))
+	screen.game.scores.score = 250
+	(runner.find_child("ReplayButton") as Button).pressed.emit()
+	assert_int(GameState.progress.stats.daily_best_on(700)).is_equal(250)
+	assert_int(GameState.progress.stats.daily_streak_on(700)).is_equal(1)
+	assert_int(screen.chase.record).is_equal(250)

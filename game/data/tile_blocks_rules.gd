@@ -37,6 +37,9 @@ extends Resource
 ## Seconds without a move after which a placement that clears something shows as a hint on the
 ## grid (G15), when there is one; 0 turns hints off.
 @export var hint_after_seconds: float = 10.0
+## Days away after which the first continue of the day is free (the comeback gift, G14); 0
+## turns it off.
+@export var comeback_days: int = 3
 @export var shape_set: PieceShapeSet
 ## Adaptive difficulty; none: every piece is drawn by pure chance.
 @export var difficulty: DifficultyRules

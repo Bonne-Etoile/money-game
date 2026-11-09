@@ -33,3 +33,10 @@ PRAISE_2,Great!,Super !,Word of praise after a better clear (stronger than PRA
 PRAISE_3,Awesome!,Génial !,Word of praise after a great clear (stronger than PRAISE_2)
 PRAISE_4,Incredible!,Incroyable !,"Word of praise after the best clears, the strongest"
 PRAISE_EMPTY_GRID,Grid cleared! +%d,Grille vide ! +%d,Rising over the grid when a move empties the whole grid; %d is the bonus points
+BUTTON_CONTINUE_FREE,Continue (free gift),Continuer (offert),"Game-over panel: the first continue of the day is free after a few days away (no ad); clears a cross in the middle of the grid"
+HUD_DAILY,Daily challenge,Défi du jour,"Top bar during the daily challenge: the same pieces for everyone today"
+HUD_DAILY_STREAK,Daily challenges in a row: %d,Défis du jour d’affilée : %d,"Daily challenge game-over panel: %d is the days in a row the player played the challenge"
+MENU_DAILY,Daily challenge,Défi du jour,"Start menu: one game a day with the same pieces for everyone"
+MENU_DAILY_STREAK,Daily challenge (%d days in a row),Défi du jour (%d jours d’affilée),"Start menu: the daily challenge button, with the days in a row it was played; %d is that number"
+HUD_DAILY_BEST,Today's best: %d,Meilleur du jour : %d,"Daily challenge, under the top bar: the best score of today's challenge; %d is the score"
+DAILY_MISSING,You were %d points short of today's best,Il vous manquait %d points pour battre votre meilleur score du jour,"Daily challenge game-over panel: %d is the points missing to beat today's best"

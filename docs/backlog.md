@@ -148,12 +148,13 @@ Chaque ticket : objectif, périmètre, critères d'acceptation, dépendances. Un
 - **Dépend de** : G1.
 - **Fait (2026-11-09)** : mots d'encouragement, éclats, tremblement, son qui monte avec le combo, « Grille vide ! +300 », vibration (option du menu, permission Android `VIBRATE`), feu d'artifice et fanfare au record. Sons faits par le code (pas de clé ElevenLabs dans la session) : à remplacer (`docs/avant-la-sortie.md`). **À tester par Stelio** : est-ce satisfaisant ? Trop chargé ? Les sons sont-ils supportables ? La vibration ?
 
-### G14. Reprise offerte au retour — prêt
+### G14. Reprise offerte au retour — à tester (PR à venir)
 
 - **Objectif** : faire revenir le joueur qui décroche (étude, 8.2.5).
 - **Périmètre** : si le joueur revient après plusieurs jours sans jouer (seuil réglable), la première reprise de la journée est gratuite, avec un bouton qui le dit (« Continuer (offert) »). Date de dernière session dans `PlayerStats` (migration de sauvegarde si besoin).
 - **Critères** : tests unitaires (dates simulées, pas d'horloge réelle) ; test de scénario.
 - **Dépend de** : G9.
+- **Fait (2026-11-09)** : 3 jours d'absence → première reprise du jour gratuite, « Continuer (offert) », sans pub ; jours dans `PlayerStats` (sauvegarde version 3, migration testée). **À tester par Stelio** : difficile à tester sans attendre 3 jours ; le test de scénario le simule.
 
 ### G15. Aide à l'hésitation — à tester (PR à venir)
 
@@ -163,12 +164,13 @@ Chaque ticket : objectif, périmètre, critères d'acceptation, dépendances. Un
 - **Dépend de** : G1.
 - **Fait (2026-11-09)** : `MoveHint` (`game/core/`), tuiles pâles après 10 s sans geste. **À tester par Stelio** : l'aide arrive-t-elle trop tôt ou trop tard ? Gâche-t-elle le défi ?
 
-### G16. Défi du jour — prêt
+### G16. Défi du jour — à tester (PR à venir)
 
 - **Objectif** : un rendez-vous quotidien que Block Blast n'a pas (étude, 8.1.8).
 - **Périmètre** : une partie par jour avec la même graine pour tous (`RandomNumberGenerator` à graine tirée de la date) ; meilleur score du jour et série de jours joués gardés dans la sauvegarde ; bouton dans le menu. Classement entre joueurs plus tard (demande un serveur).
 - **Critères** : tests unitaires (même date → mêmes pièces) ; test de scénario ; captures.
 - **Dépend de** : G1.
+- **Fait (2026-11-09)** : `DailyChallenge` (graine de la date), scène `game/proto_tiles/daily.tscn`, meilleur score du jour et série dans la sauvegarde, bouton du menu. **À tester par Stelio** : donne-t-il envie de revenir chaque jour ?
 
 ### G17. Mode à niveaux à objectifs — prêt
 

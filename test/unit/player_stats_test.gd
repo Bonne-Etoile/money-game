@@ -34,7 +34,7 @@ func test_ads_offers_and_bonuses_are_counted_per_placement() -> void:
 
 func test_statistics_read_back_the_same_and_without_trust() -> void:
 	var stats: PlayerStats = PlayerStats.new()
-	stats.start_session()
+	stats.start_session(100)
 	stats.finish_game(120, 9)
 	stats.record_ad("continue", true)
 	var json: String = JSON.stringify(stats.to_dict())

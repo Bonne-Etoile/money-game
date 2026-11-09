@@ -2,8 +2,10 @@ class_name PlayerStats
 extends RefCounted
 ## What the player does, kept across sessions (in GameProgress, so in the save): sessions,
 ## games and scores (the adaptive difficulty reads them), rewarded ads offered, watched or
-## closed early per placement, and bonuses used. Read without trust from JSON (JsonRead).
-## Only GameState changes it.
+## closed early per placement, and bonuses used; the days played (the comeback gift, G14) and
+## the daily challenge (G16). Days are numbered from the Unix epoch (DailyChallenge.day_of),
+## always given by the caller: no clock here. Read without trust from JSON (JsonRead). Only
+## GameState changes it.
 
 ## Scores kept for the average of the recent games.
 const RECENT_GAMES: int = 10
@@ -25,10 +27,57 @@ var ads_watched: Dictionary[String, int] = {}
 var ads_skipped: Dictionary[String, int] = {}
 ## Bonuses used, per kind (TileBlocksGame.BONUS_*).
 var bonuses_used: Dictionary[String, int] = {}
+## The day of the last session (0: never played).
+var last_session_day: int = 0
+## Days the player stayed away before the first session of `last_session_day` (0: played the
+## day before, or a new player).
+var away_days: int = 0
+## The day the comeback gift was used (one per day).
+var gift_used_day: int = 0
+## The day of the last daily challenge played, its best score that day, and the days in a row
+## the challenge was played up to it.
+var daily_day: int = 0
+var daily_best: int = 0
+var daily_streak: int = 0
 
 
-func start_session() -> void:
+## A session starts on `today`: the first one of a day notes how long the player stayed away.
+func start_session(today: int) -> void:
 	sessions += 1
+	if today != last_session_day:
+		away_days = today - last_session_day if last_session_day > 0 else 0
+		last_session_day = today
+
+
+## Whether the comeback gift (a free continue, G14) is there on `today`: the player came back
+## after at least `days` away, and has not used it today.
+func has_comeback_gift(today: int, days: int) -> bool:
+	return days > 0 and today == last_session_day and away_days >= days and gift_used_day != today
+
+
+func use_comeback_gift(today: int) -> void:
+	gift_used_day = today
+
+
+## A daily challenge game ended on `day` with `score`: the best of the day, and the streak of
+## days in a row.
+func finish_daily(day: int, score: int) -> void:
+	if day != daily_day:
+		daily_streak = daily_streak + 1 if daily_day > 0 and day == daily_day + 1 else 1
+		daily_day = day
+		daily_best = 0
+	daily_best = maxi(daily_best, score)
+
+
+## The best daily challenge score of `day` (0 when not played that day).
+func daily_best_on(day: int) -> int:
+	return daily_best if day == daily_day else 0
+
+
+## The days in a row of daily challenges that still counts on `today` (played today or
+## yesterday), else 0.
+func daily_streak_on(today: int) -> int:
+	return daily_streak if daily_day > 0 and today - daily_day <= 1 else 0
 
 
 ## A game ended with `score` after `moves` moves (ignored without a move).
@@ -89,6 +138,12 @@ func to_dict() -> Dictionary:
 		"ads_watched": ads_watched.duplicate(),
 		"ads_skipped": ads_skipped.duplicate(),
 		"bonuses_used": bonuses_used.duplicate(),
+		"last_session_day": last_session_day,
+		"away_days": away_days,
+		"gift_used_day": gift_used_day,
+		"daily_day": daily_day,
+		"daily_best": daily_best,
+		"daily_streak": daily_streak,
 	}
 
 
@@ -107,6 +162,12 @@ static func from_dict(data: Dictionary) -> PlayerStats:
 	stats.ads_watched = _counts(JsonRead.dictionary(data, "ads_watched"))
 	stats.ads_skipped = _counts(JsonRead.dictionary(data, "ads_skipped"))
 	stats.bonuses_used = _counts(JsonRead.dictionary(data, "bonuses_used"))
+	stats.last_session_day = maxi(JsonRead.integer(data, "last_session_day"), 0)
+	stats.away_days = maxi(JsonRead.integer(data, "away_days"), 0)
+	stats.gift_used_day = maxi(JsonRead.integer(data, "gift_used_day"), 0)
+	stats.daily_day = maxi(JsonRead.integer(data, "daily_day"), 0)
+	stats.daily_best = maxi(JsonRead.integer(data, "daily_best"), 0)
+	stats.daily_streak = maxi(JsonRead.integer(data, "daily_streak"), 0)
 	return stats
 
 

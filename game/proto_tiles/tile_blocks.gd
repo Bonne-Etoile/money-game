@@ -23,6 +23,9 @@ const RECORD_POP_SECONDS: float = 0.25
 @export var rules: TileBlocksRules
 @export var art: TileArt
 @export var juice: JuiceRules
+## The daily challenge (G16): the same pieces for everyone today (a seed from the date), a
+## difficulty that does not depend on the player's past games, and today's best as the record.
+@export var daily: bool = false
 
 var game: TileBlocksGame
 ## The race against the record of the game under way.
@@ -76,9 +79,9 @@ func _ready() -> void:
 	_effects.rules = juice
 	add_child(_drag)
 	(%MenuButton as Button).pressed.connect(back_to_menu)
-	(%ReplayButton as Button).pressed.connect(func() -> void: start(_new_seed()))
+	(%ReplayButton as Button).pressed.connect(func() -> void: start(_first_seed()))
 	(%GameOverMenuButton as Button).pressed.connect(back_to_menu)
-	_continue.pressed.connect(func() -> void: Ads.show_rewarded(CONTINUE_PLACEMENT))
+	_continue.pressed.connect(continue_game)
 	_new_hand.pressed.connect(use_new_hand)
 	_over_new_hand.pressed.connect(use_new_hand)
 	_mirror.pressed.connect(toggle_mirror)
@@ -87,7 +90,7 @@ func _ready() -> void:
 	_tray.tapped.connect(_on_piece_tapped)
 	_tray.drag_started.connect(func(_slot: int, _pointer: Vector2) -> void: _reset_idle())
 	_board.resized.connect(refresh)
-	start(_new_seed())
+	start(_first_seed())
 
 
 func _process(delta: float) -> void:
@@ -120,8 +123,9 @@ func _unhandled_input(event: InputEvent) -> void:
 ## counts as played.
 func start(random_seed: int) -> void:
 	_finish_game()
-	game = TileBlocksGame.new(_game_rules(), random_seed, GameState.progress.stats)
-	chase = RecordChase.new(GameState.progress.stats.best_score)
+	var stats: PlayerStats = GameState.progress.stats
+	game = TileBlocksGame.new(_game_rules(), random_seed, null if daily else stats)
+	chase = RecordChase.new(stats.daily_best_on(GameState.today()) if daily else stats.best_score)
 	_shown_score = 0
 	_reset_idle()
 	_board.grid = game.grid
@@ -140,7 +144,7 @@ func refresh() -> void:
 	_tray.set_pieces(game.hand)
 	_board.queue_redraw()
 	_score.text = tr("HUD_SCORE") % game.score()
-	_level.text = tr("HUD_DIFFICULTY") % game.level()
+	_level.text = tr("HUD_DAILY") if daily else tr("HUD_DIFFICULTY") % game.level()
 	_combo.text = tr("HUD_COMBO") % game.scores.combo
 	_combo.visible = game.scores.combo >= 2
 	_show_record()
@@ -159,8 +163,15 @@ func refresh() -> void:
 	_game_over.visible = over
 	_drag.locked = over
 	_continue.visible = game.can_revive()
-	_continue.disabled = not Ads.is_rewarded_ready()
-	_mark_ad(_continue, true)
+	var gift: bool = has_comeback_gift()
+	_continue.text = "BUTTON_CONTINUE_FREE" if gift else "BUTTON_CONTINUE_AD"
+	_continue.disabled = not gift and not Ads.is_rewarded_ready()
+	_mark_ad(_continue, not gift)
+	if daily:
+		_best_score.text = (
+			tr("HUD_DAILY_STREAK")
+			% maxi(GameState.progress.stats.daily_streak_on(GameState.today()), 1)
+		)
 	_show_bonus(_over_new_hand, TileBlocksGame.BONUS_NEW_HAND, "BONUS_NEW_HAND")
 	_over_new_hand.visible = (
 		game.charges(TileBlocksGame.BONUS_NEW_HAND) > 0 or _can_buy(TileBlocksGame.BONUS_NEW_HAND)
@@ -176,7 +187,7 @@ func _show_record() -> void:
 	if chase.is_beaten(score):
 		_record.text = tr("NEW_RECORD")
 	else:
-		_record.text = tr("HUD_BEST") % chase.record
+		_record.text = tr("HUD_DAILY_BEST" if daily else "HUD_BEST") % chase.record
 	_record_progress.visible = chase.has_record()
 	_record_progress.value = 100 if chase.is_beaten(score) else chase.percent(score)
 	if chase.beaten_between(_shown_score, score):
@@ -187,7 +198,7 @@ func _show_record() -> void:
 	if chase.is_beaten(score):
 		_record_gap.text = tr("NEW_RECORD")
 	else:
-		_record_gap.text = tr("RECORD_MISSING") % chase.missing(score)
+		_record_gap.text = tr("DAILY_MISSING" if daily else "RECORD_MISSING") % chase.missing(score)
 	_record_gap.visible = chase.has_record()
 
 
@@ -206,6 +217,21 @@ func _game_rules() -> TileBlocksRules:
 	var chosen: TileBlocksRules = rules.duplicate()
 	chosen.refill_each_slot = refill_each_slot
 	return chosen
+
+
+## Whether the next continue is free: the comeback gift (G14), once a day after days away.
+func has_comeback_gift() -> bool:
+	return GameState.has_comeback_gift(rules.comeback_days)
+
+
+## The continue button: free with the comeback gift, otherwise after a rewarded ad.
+func continue_game() -> void:
+	if has_comeback_gift():
+		if game.revive():
+			GameState.use_comeback_gift()
+			refresh()
+	elif Ads.is_rewarded_ready():
+		Ads.show_rewarded(CONTINUE_PLACEMENT)
 
 
 func back_to_menu() -> void:
@@ -341,7 +367,7 @@ static func _mark_ad(button: Button, costs_ad: bool) -> void:
 func _note_offers(over: bool) -> void:
 	var ad_ready: bool = Ads.is_rewarded_ready()
 	if over and not _was_over and ad_ready:
-		if game.can_revive():
+		if game.can_revive() and not has_comeback_gift():
 			GameState.record_offer(CONTINUE_PLACEMENT)
 		if (
 			game.charges(TileBlocksGame.BONUS_NEW_HAND) <= 0
@@ -404,8 +430,15 @@ func _on_rewarded_ad_finished(placement: String, rewarded: bool) -> void:
 ## The game under way counts as played (when a piece was placed).
 func _finish_game() -> void:
 	if game != null and game.moves > 0:
+		if daily:
+			GameState.record_daily(game.score())
 		GameState.record_game(game.score(), game.moves)
 	game = null
+
+
+## The seed of a new game: today's challenge, or a fresh one.
+func _first_seed() -> int:
+	return DailyChallenge.seed_for(GameState.today()) if daily else _new_seed()
 
 
 func _new_seed() -> int:
