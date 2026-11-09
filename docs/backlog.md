@@ -99,6 +99,66 @@ Chaque ticket : objectif, périmètre, critères d'acceptation, dépendances. Un
 - **Ses mots** : « 1 - je voudrais pour commencer exactement les mêmes pièces que pour Tetris original. 2 - j'aimerais pouvoir tourner les pièces. 3 - quand il m'est proposé 3 pièces et que j'en prends une, je voudrais qu'une nouvelle prenne sa place une fois que je l'ai posée. »
 - **Fait** : prototypes 1 et 4 avec les 7 tétrominos (sans le nom, le visuel ni la musique de Tetris), rotation par un toucher (prototypes 1, 2, 4, 5 ; formes du prototype 5 aussi réduites aux 7 de base), remplacement immédiat de la pièce posée (prototypes 1 et 4). Règles dans `docs/conception-du-jeu.md`.
 
+## Suite de l'étude Block Blast (2026-11-09)
+
+**Demande de Stelio (2026-11-09)** : les 8 tickets proposés dans `docs/etude-block-blast.md` (section 8.4), « toutes ». Ils s'appliquent au prototype 1 (« blocs de tuiles », le seul qui a la pub « Continuer » et la difficulté de G9) en attendant le choix du prototype ; à reporter sur celui qui sera retenu. Rappel : **aucune pub forcée** (décision D4) ; tout le revenu vient des récompensées.
+
+### G10. Record au centre — prêt
+
+- **Objectif** : faire du record le moteur de la partie et le moment fort de « Continuer » (étude, 8.1.1 et 8.2.1).
+- **Périmètre** : record affiché en permanence ; barre « vers le record » qui se remplit pendant la partie ; animation et son quand il est battu ; sur l'écran de fin, l'offre « Continuer » dit ce qu'il manquait (« Il te manquait 120 points ») ou salue le record battu.
+- **Critères** : logique (écart au record, record battu) dans `game/core/` avec tests ; test de scénario ; captures regardées.
+- **Dépend de** : G9 (record et `PlayerStats`, PR #5).
+
+### G11. Difficulté dans les deux sens et garantie de jouabilité — prêt
+
+- **Objectif** : garder le joueur moyen, et que toute défaite vienne d'un choix du joueur (étude, 8.1.2 et 8.1.3).
+- **Périmètre** : après 2 parties d'affilée sous la moyenne, ou tant que le score est loin du record, tirer la pièce qui a **le plus** de place ; petites pièces pour les toutes premières parties ; le générateur ne propose jamais un lot impossible (aucune pièce ne rentre dans aucun sens) tant que la grille n'est pas pleine au-delà d'un seuil réglable. Le générateur ne lit jamais l'état des pubs. Réglages dans `game/data/difficulty_rules.tres`.
+- **Critères** : tests unitaires (série d'échecs → niveau qui baisse ; jamais de lot impossible sur des grilles de test) ; description de PR : quoi tester (sensation de difficulté).
+- **Dépend de** : G9.
+
+### G12. Build de test « 3 pièces renouvelées ensemble » — prêt
+
+- **Objectif** : savoir si attendre d'avoir posé les 3 pièces (comme Block Blast) répond au « trop facile » mieux que le remplacement immédiat de G8 (étude, 8.1.5).
+- **Périmètre** : un choix dans le menu ou un réglage (`refill_each_slot` existe déjà) pour comparer les deux sur le même APK.
+- **Critères** : test de scénario des deux modes ; APK de test par le workflow ; **à tester par Stelio**.
+- **Dépend de** : G8.
+
+### G13. Retours d'effacement — prêt
+
+- **Objectif** : rendre chaque effacement satisfaisant et visible dans une vidéo de 5 secondes (étude, 8.1.4).
+- **Périmètre** : mots d'encouragement qui montent avec le combo, explosion des cases, son qui monte à chaque coup du combo, effet qui grossit avec le nombre d'effacements, « grille vide ! » avec gros bonus, vibration courte (réglage dans les options), feu d'artifice au record. Sons par `docs/recettes/sons-et-musique.md` ; textes traduits.
+- **Critères** : captures regardées ; vidéo ou build de test ; **à tester par Stelio** (Claude ne juge ni les sensations ni le son).
+- **Dépend de** : G1.
+
+### G14. Reprise offerte au retour — prêt
+
+- **Objectif** : faire revenir le joueur qui décroche (étude, 8.2.5).
+- **Périmètre** : si le joueur revient après plusieurs jours sans jouer (seuil réglable), la première reprise de la journée est gratuite, avec un bouton qui le dit (« Continuer (offert) »). Date de dernière session dans `PlayerStats` (migration de sauvegarde si besoin).
+- **Critères** : tests unitaires (dates simulées, pas d'horloge réelle) ; test de scénario.
+- **Dépend de** : G9.
+
+### G15. Aide à l'hésitation — prêt
+
+- **Objectif** : aider le joueur bloqué sans casser le défi (étude, 8.1.6).
+- **Périmètre** : après une dizaine de secondes sans coup (réglable), montrer en ombre un placement qui efface une ligne ou un trio, s'il y en a un. Plus tard, éventuellement, un bonus « Indice » contre pub récompensée.
+- **Critères** : recherche du placement dans `game/core/` avec tests ; test de scénario en avançant image par image.
+- **Dépend de** : G1.
+
+### G16. Défi du jour — prêt
+
+- **Objectif** : un rendez-vous quotidien que Block Blast n'a pas (étude, 8.1.8).
+- **Périmètre** : une partie par jour avec la même graine pour tous (`RandomNumberGenerator` à graine tirée de la date) ; meilleur score du jour et série de jours joués gardés dans la sauvegarde ; bouton dans le menu. Classement entre joueurs plus tard (demande un serveur).
+- **Critères** : tests unitaires (même date → mêmes pièces) ; test de scénario ; captures.
+- **Dépend de** : G1.
+
+### G17. Mode à objectifs avec image révélée — décision requise
+
+- **Objectif** : donner un but et une progression au-delà du mode infini (étude, 8.1.7).
+- **Périmètre** : niveaux courts (effacer N trios, libérer des tuiles « gemmes », grille de départ avec obstacles) ; une image de tuiles de mahjong révélée niveau après niveau ; bouton Partager à la fin ; un mode expert débloqué en battant son record.
+- **Critères** : niveaux gagnables par un robot dans les tests ; captures.
+- **Dépend de** : le choix du prototype par Stelio (G1 à G7), puis G10 et G11.
+
 ### G4. …
 
 - **Objectif** :
