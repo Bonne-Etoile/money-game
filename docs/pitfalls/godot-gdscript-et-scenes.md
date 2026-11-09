@@ -81,3 +81,9 @@ Format : **symptôme**, **cause**, **bonne pratique** (voir `README.md`).
 
 - **Symptôme** : un `global uniform` non déclaré empêche le shader de compiler ; `RenderingServer.global_shader_parameter_get()` renvoie `null` dans le jeu et les tests (« should never be used outside the editor »).
 - **Bonne pratique** : déclarer l'uniform dans `[shader_globals]` de `project.godot` ; le régler avec `global_shader_parameter_set()` ; dans les tests, vérifier l'état qui le pilote (ex. `River.dirt`), pas l'uniform lui-même, et regarder les captures.
+
+## Une scène héritée qui change de script laisse des nœuds orphelins
+
+- **Symptôme** : gdUnit4 signale des nœuds orphelins (« possible orphan nodes ») à chaque test d'une scène héritée dont la racine a un autre script (`game/levels/level.tscn`).
+- **Cause** : Godot crée d'abord la racine avec le script de la scène de base, qui exécute ses initialisations de variables (`var _drag: PieceDrag = PieceDrag.new()`), puis remplace le script : le nœud créé par le premier script n'est jamais ajouté à l'arbre ni libéré.
+- **Bonne pratique** : dans un script qui peut être remplacé par un script enfant, ne pas créer de nœud dans l'initialisation d'une variable membre ; le créer dans `_ready()`.

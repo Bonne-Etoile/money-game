@@ -65,6 +65,9 @@ Jeu mobile Android (portrait, iOS mis de côté), gratuit et financé par la pub
 
 - **Difficulté et bonus** (prototype 1) : `DifficultyDirector` et `PlayerStats` dans `game/core/`, réglages dans `game/data/difficulty_rules.tres` et `tile_blocks_rules.tres`. Un bonus de plus : une constante `BONUS_*` et sa méthode dans `TileBlocksGame`, un bouton et un emplacement de pub dans `game/proto_tiles/tile_blocks.gd`, ses textes `BONUS_<NOM>` et `BONUS_<NOM>_AD` (qui dit qu'une pub va passer).
 
+- **Modes de jeu** : infini (`game/proto_tiles/tile_blocks.tscn`, script `TileBlocksScreen`), défi du jour (`daily.tscn`, même scène avec `daily = true`, graine `DailyChallenge`) et niveaux (`game/levels/`, `LevelScreen` hérite de `TileBlocksScreen` ; logique `LevelGame` et `LevelBoard`). Un niveau de plus : une ligne dans `tools/generate_levels.py`, puis `python3 -I tools/generate_levels.py` et `make test` (le robot doit le gagner avec 3 ou 4 pièces d'avance).
+- **Record, retours d'effacement, aide** : `RecordChase`, `ClearPraise`, `MoveHint` dans `game/core/` ; effets dans `game/board/clear_effects.gd`, sons faits par le code dans `game/audio/` ; réglages dans `game/data/juice_rules.tres`.
+
 > **À compléter** au fil du jeu : une puce par système (joueur, interface, son, sauvegarde…) qui dit où il vit et comment l'étendre. C'est ce qui permet à une nouvelle session de reprendre sans relire tout le code.
 
 ## Vérifier les API de Godot

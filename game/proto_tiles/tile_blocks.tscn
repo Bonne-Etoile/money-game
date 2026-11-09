@@ -240,7 +240,8 @@ grow_vertical = 2
 layout_mode = 2
 theme_override_constants/separation = 24
 
-[node name="Title" type="Label" parent="GameOver/Center/Page"]
+[node name="GameOverTitle" type="Label" parent="GameOver/Center/Page"]
+unique_name_in_owner = true
 layout_mode = 2
 theme_override_font_sizes/font_size = 56
 text = "GAME_OVER"
@@ -267,6 +268,22 @@ theme_override_colors/font_color = Color(1, 0.85, 0.3, 1)
 theme_override_font_sizes/font_size = 30
 horizontal_alignment = 1
 autowrap_mode = 3
+
+[node name="NextLevelButton" type="Button" parent="GameOver/Center/Page"]
+unique_name_in_owner = true
+visible = false
+custom_minimum_size = Vector2(400, 88)
+layout_mode = 2
+theme_override_font_sizes/font_size = 36
+text = "BUTTON_NEXT_LEVEL"
+
+[node name="ExtraPiecesButton" type="Button" parent="GameOver/Center/Page"]
+unique_name_in_owner = true
+visible = false
+custom_minimum_size = Vector2(400, 88)
+layout_mode = 2
+theme_override_font_sizes/font_size = 36
+text = "BUTTON_EXTRA_PIECES_AD"
 
 [node name="ContinueButton" type="Button" parent="GameOver/Center/Page"]
 unique_name_in_owner = true

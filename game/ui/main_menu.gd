@@ -1,11 +1,12 @@
 class_name MainMenu
 extends Control
-## The start menu: play, the daily challenge, the options worth a button (how the pieces come
-## back, vibration), quit.
+## The start menu: play (endless), the levels, the daily challenge, the options worth a button
+## (how the pieces come back, vibration), quit.
 ## After a crash, it opens on the crash report, to copy and paste to Claude (Diagnostics).
 
 const TILE_BLOCKS_SCENE: String = "res://game/proto_tiles/tile_blocks.tscn"
 const DAILY_SCENE: String = "res://game/proto_tiles/daily.tscn"
+const LEVELS_SCENE: String = "res://game/levels/level_map.tscn"
 
 ## Whether the play buttons open their scene (tests turn it off and check `chosen_scene`).
 @export var opens_game: bool = true
@@ -15,6 +16,7 @@ var chosen_scene: String = ""
 
 @onready var _main: Control = %Main
 @onready var _play: Button = %PlayButton
+@onready var _levels: Button = %LevelsButton
 @onready var _daily: Button = %DailyButton
 @onready var _refill: Button = %RefillButton
 @onready var _vibration: Button = %VibrationButton
@@ -27,6 +29,7 @@ var chosen_scene: String = ""
 
 func _ready() -> void:
 	_play.pressed.connect(play.bind(TILE_BLOCKS_SCENE))
+	_levels.pressed.connect(play.bind(LEVELS_SCENE))
 	_daily.pressed.connect(play.bind(DAILY_SCENE))
 	_refill.pressed.connect(toggle_refill)
 	_vibration.pressed.connect(toggle_vibration)

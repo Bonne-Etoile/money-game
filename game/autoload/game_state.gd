@@ -66,6 +66,13 @@ func use_comeback_gift() -> void:
 	save_game()
 
 
+## Level `index` of the level mode was won (G17).
+func record_level_won(index: int) -> void:
+	progress.stats.win_level(index)
+	Diagnostics.note("level %d won" % (index + 1))
+	save_game()
+
+
 ## A daily challenge game ended with `score` (G16).
 func record_daily(score: int) -> void:
 	progress.stats.finish_daily(today(), score)

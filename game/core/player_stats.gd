@@ -39,6 +39,8 @@ var gift_used_day: int = 0
 var daily_day: int = 0
 var daily_best: int = 0
 var daily_streak: int = 0
+## Levels of the level mode won (G17): level N is open once the N - 1 before it are won.
+var levels_won: int = 0
 
 
 ## A session starts on `today`: the first one of a day notes how long the player stayed away.
@@ -67,6 +69,11 @@ func finish_daily(day: int, score: int) -> void:
 		daily_day = day
 		daily_best = 0
 	daily_best = maxi(daily_best, score)
+
+
+## Level `index` (from 0) was won: the next one opens.
+func win_level(index: int) -> void:
+	levels_won = maxi(levels_won, index + 1)
 
 
 ## The best daily challenge score of `day` (0 when not played that day).
@@ -144,6 +151,7 @@ func to_dict() -> Dictionary:
 		"daily_day": daily_day,
 		"daily_best": daily_best,
 		"daily_streak": daily_streak,
+		"levels_won": levels_won,
 	}
 
 
@@ -168,6 +176,7 @@ static func from_dict(data: Dictionary) -> PlayerStats:
 	stats.daily_day = maxi(JsonRead.integer(data, "daily_day"), 0)
 	stats.daily_best = maxi(JsonRead.integer(data, "daily_best"), 0)
 	stats.daily_streak = maxi(JsonRead.integer(data, "daily_streak"), 0)
+	stats.levels_won = maxi(JsonRead.integer(data, "levels_won"), 0)
 	return stats
 
 

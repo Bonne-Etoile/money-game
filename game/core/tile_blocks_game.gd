@@ -31,6 +31,8 @@ var difficulty: DifficultyDirector = null
 var bonus_charges: Dictionary[String, int] = {}
 ## Uses of each bonus earned with a rewarded ad in this game.
 var bonus_ads_used: Dictionary[String, int] = {}
+## The level's tiles that need more than a clear (gold, ice; level mode, G17); null: none.
+var layer: LevelBoard = null
 var _generator: PieceGenerator
 
 
@@ -72,7 +74,10 @@ func place(slot: int, origin: Vector2i) -> MoveResult:
 	result.clear = grid.find_clears(rules.match_size)
 	for cell in result.clear.cells:
 		result.cleared_symbols.append(grid.symbol_at(cell))
-	grid.remove(result.clear.cells)
+	if layer == null:
+		grid.remove(result.clear.cells)
+	else:
+		grid.remove(layer.apply_clear(result.clear.cells))
 	result.points = scores.score_move(piece.cells.size(), result.clear)
 	if not result.clear.is_empty() and grid.filled_count() == 0:
 		result.empty_grid = true
