@@ -132,7 +132,7 @@ Chaque ticket : objectif, périmètre, critères d'acceptation, dépendances. Un
 - **Dépend de** : G9.
 - **Fait (2026-11-09)** : niveaux sous 0 (pièce avec le plus de place parmi 2 ou 3), 2 premières parties et partie après 2 parties sous la moyenne au niveau −1, garantie de jouabilité jusqu'à 70 % de grille remplie (`docs/conception-du-jeu.md`). « Petites pièces » des premières parties : obtenues par « le plus de place » plutôt que par une liste de formes. **À tester par Stelio** : les premières parties sont-elles trop faciles ? Après deux mauvaises parties, sent-on l'aide ? Y a-t-il encore des défaites « injustes » ?
 
-### G12. Build de test « 3 pièces renouvelées ensemble » — à tester (PR à venir)
+### G12. Build de test « 3 pièces renouvelées ensemble » — à tester (PR #9, fusionnée)
 
 - **Objectif** : savoir si attendre d'avoir posé les 3 pièces (comme Block Blast) répond au « trop facile » mieux que le remplacement immédiat de G8 (étude, 8.1.5).
 - **Périmètre** : un choix dans le menu ou un réglage (`refill_each_slot` existe déjà) pour comparer les deux sur le même APK.
@@ -140,7 +140,7 @@ Chaque ticket : objectif, périmètre, critères d'acceptation, dépendances. Un
 - **Dépend de** : G8.
 - **Fait (2026-11-09)** : option du menu « Pièces : une à la fois / trois à la fois » (gardée dans les options du joueur). **À tester par Stelio** : laquelle donne le plus envie de rejouer ? Laquelle est assez difficile ?
 
-### G13. Retours d'effacement — à tester (PR à venir)
+### G13. Retours d'effacement — à tester (PR #9, fusionnée)
 
 - **Objectif** : rendre chaque effacement satisfaisant et visible dans une vidéo de 5 secondes (étude, 8.1.4).
 - **Périmètre** : mots d'encouragement qui montent avec le combo, explosion des cases, son qui monte à chaque coup du combo, effet qui grossit avec le nombre d'effacements, « grille vide ! » avec gros bonus, vibration courte (réglage dans les options), feu d'artifice au record. Sons par `docs/recettes/sons-et-musique.md` ; textes traduits.
@@ -156,7 +156,7 @@ Chaque ticket : objectif, périmètre, critères d'acceptation, dépendances. Un
 - **Dépend de** : G9.
 - **Fait (2026-11-09)** : 3 jours d'absence → première reprise du jour gratuite, « Continuer (offert) », sans pub ; jours dans `PlayerStats` (sauvegarde version 3, migration testée). **À tester par Stelio** : difficile à tester sans attendre 3 jours ; le test de scénario le simule.
 
-### G15. Aide à l'hésitation — à tester (PR à venir)
+### G15. Aide à l'hésitation — à tester (PR #9, fusionnée)
 
 - **Objectif** : aider le joueur bloqué sans casser le défi (étude, 8.1.6).
 - **Périmètre** : après une dizaine de secondes sans coup (réglable), montrer en ombre un placement qui efface une ligne ou un trio, s'il y en a un. Plus tard, éventuellement, un bonus « Indice » contre pub récompensée.
