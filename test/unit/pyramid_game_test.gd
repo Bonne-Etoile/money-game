@@ -2,6 +2,7 @@ extends GdUnitTestSuite
 ## Prototype 2, "the pyramid gives the pieces" (game/core/pyramid_game.gd), and its levels.
 
 const RULES: PyramidRules = preload("res://game/data/pyramid_rules.tres")
+const TRAY_GRID: PyramidRules = preload("res://game/data/tray_grid_rules.tres")
 
 
 func _level(layers: Array[String]) -> PyramidLevel:
@@ -102,15 +103,33 @@ func test_a_starting_grid_is_filled_from_the_level() -> void:
 	assert_bool(game.grid.is_empty_cell(Vector2i(1, 1))).is_false()
 
 
-## Each level can be won: a greedy robot (best clear now, else the highest-left spot, never
-## using the second slot of the tray) wins them all. A human has more options.
+## Each level can be won: a greedy robot (best clear now, else identical neighbours, else the
+## highest-left spot, never using a second slot of the tray) wins them all. A human has more
+## options. Checked for prototype 2 and prototype 3 (G5, the same game on a 5 x 5 grid).
 func test_every_level_can_be_won() -> void:
-	for index in RULES.levels.size():
-		var game: PyramidGame = PyramidGame.new(RULES, RULES.levels[index])
-		for _move in 100:
-			if game.is_won() or game.is_lost() or not _play_greedy(game):
-				break
-		assert_bool(game.is_won()).override_failure_message("level %d" % (index + 1)).is_true()
+	for rules: PyramidRules in [RULES, TRAY_GRID]:
+		for index in rules.levels.size():
+			var game: PyramidGame = PyramidGame.new(rules, rules.levels[index])
+			for _move in 100:
+				if game.is_won() or game.is_lost() or not _play_greedy(game):
+					break
+			(
+				assert_bool(game.is_won())
+				. override_failure_message("%s level %d" % [rules.resource_path, index + 1])
+				. is_true()
+			)
+
+
+func test_symbols_in_threes_come_three_by_three() -> void:
+	for level in TRAY_GRID.levels:
+		assert_bool(level.symbols_in_threes).is_true()
+		var counts: Dictionary[int, int] = {}
+		for tile in LevelLayout.tiles_of(level, TRAY_GRID):
+			assert_int(tile.piece.cells.size()).is_equal(1)
+			var symbol: int = tile.piece.symbols[0]
+			counts[symbol] = counts.get(symbol, 0) + 1
+		for symbol: int in counts:
+			assert_int(counts[symbol] % 3).is_equal(0)
 
 
 func _play_greedy(game: PyramidGame) -> bool:
@@ -121,7 +140,9 @@ func _play_greedy(game: PyramidGame) -> bool:
 		var piece: Piece = game.stack.tiles[tile].piece
 		for y in game.grid.size:
 			for x in game.grid.size:
-				var value: int = _value(game.grid, piece, Vector2i(x, y))
+				var value: int = GridRobot.value(
+					game.grid, piece, Vector2i(x, y), game.rules.match_size
+				)
 				if value > best:
 					best = value
 					best_tile = tile
@@ -130,16 +151,3 @@ func _play_greedy(game: PyramidGame) -> bool:
 		return false
 	game.take(best_tile)
 	return game.place(game.tray.find(game.stack.tiles[best_tile].piece), best_origin) != null
-
-
-## Cells cleared by placing `piece` at `origin` first, then how high and left it is; -1 when
-## it does not fit.
-func _value(grid: TileGrid, piece: Piece, origin: Vector2i) -> int:
-	if not grid.can_place(piece, origin):
-		return -1
-	var copy: TileGrid = TileGrid.new(grid.size)
-	for y in grid.size:
-		for x in grid.size:
-			copy.set_symbol(Vector2i(x, y), grid.symbol_at(Vector2i(x, y)))
-	copy.place(piece, origin)
-	return copy.find_clears(0).cells.size() * 100 + (grid.size - origin.y) * grid.size - origin.x

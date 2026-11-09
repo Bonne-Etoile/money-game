@@ -105,8 +105,34 @@ install_android_templates() {
 	rm -rf "$tmp"
 }
 
+# The headless export reads the SDK and JDK paths from the editor settings only (not from
+# ANDROID_HOME): write them there, creating a minimal settings file when Godot has none yet.
+configure_editor_settings() {
+	local dir="${XDG_CONFIG_HOME:-$HOME/.config}/godot"
+	local file="$dir/editor_settings-${GODOT_VERSION_DOTTED%.*.*}.tres" # e.g. 4.7
+	local java_home
+	java_home="$(ls -d /usr/lib/jvm/java-17-openjdk* | head -n 1)"
+	mkdir -p "$dir"
+	if [ ! -f "$file" ]; then
+		printf '[gd_resource type="EditorSettings" format=3]\n\n[resource]\n' > "$file"
+	fi
+	set_editor_setting "$file" "export/android/android_sdk_path" "$ANDROID_HOME"
+	set_editor_setting "$file" "export/android/java_sdk_path" "$java_home"
+	log "editor settings: Android SDK $ANDROID_HOME, JDK $java_home"
+}
+
+set_editor_setting() { # file key value
+	if grep -q "^$2 = " "$1"; then
+		sed -i "s|^$2 = .*|$2 = \"$3\"|" "$1"
+	else
+		echo "$2 = \"$3\"" >> "$1"
+	fi
+}
+
 check_network
 install_jdk
 install_sdk
 install_android_templates
-log "done (ANDROID_HOME=$ANDROID_HOME, JAVA_HOME=$(dirname "$(dirname "$(readlink -f "$(command -v javac)")")"))"
+"$REPO_DIR/tools/install-admob-binaries.sh"
+configure_editor_settings
+log "done (ANDROID_HOME=$ANDROID_HOME, JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64)"

@@ -72,6 +72,11 @@ func _draw_tile(rect: Rect2, piece: Piece, tint: Color) -> void:
 	TileDrawing.draw_box(self, rect, art.tile_side * tint)
 	var face: Rect2 = Rect2(rect.position, rect.size - Vector2(0.0, side))
 	TileDrawing.draw_box(self, face, art.tile_face * tint)
+	if piece.cells.size() == 1:
+		var color: Color = art.symbol_colors[piece.symbols[0] % art.symbol_colors.size()]
+		var margin: float = face.size.x * TileDrawing.SYMBOL_MARGIN
+		TileDrawing.draw_symbol(self, face.grow(-margin), piece.symbols[0], color * tint)
+		return
 	var extent: Vector2i = piece.extent()
 	var cell: float = face.size.x * PIECE_SPAN / maxf(maxi(extent.x, extent.y), 2.0)
 	var corner: Vector2 = face.get_center() - Vector2(extent) * cell / 2.0

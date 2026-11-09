@@ -1,0 +1,64 @@
+# Android test APK for the player's phone (docs/architecture.md, decision 18), only on demand:
+# - a branch claude/test-build-* created from the commit to test (as for build.yml);
+# - the "Run workflow" button of the Actions tab (once this file is on main, GitHub's rule).
+# make android: debug APK signed with the debug key Godot makes, Google's test ad IDs.
+# Download: Actions tab > the run > Artifacts > block-tiles-android (a zip with the APK).
+name: Android
+
+on:
+  push:
+    branches: ["claude/test-build-*"]
+  workflow_dispatch:
+
+concurrency:
+  group: android-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  android:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v7
+
+      # Same tool directories as build.yml (the editor settings that tools/setup-android.sh
+      # writes go under XDG_CONFIG_HOME). The runner's own Android SDK (ANDROID_HOME) is used.
+      - name: Choose tool directories
+        run: |
+          tools="$RUNNER_TOOL_CACHE/godot-tools"
+          mkdir -p "$tools/bin"
+          {
+            echo "OPT_DIR=$tools"
+            echo "BIN_DIR=$tools/bin"
+            echo "XDG_DATA_HOME=$tools/xdg/data"
+            echo "XDG_CONFIG_HOME=$tools/xdg/config"
+            echo "XDG_CACHE_HOME=$tools/xdg/cache"
+          } >> "$GITHUB_ENV"
+          echo "$tools/bin" >> "$GITHUB_PATH"
+
+      - name: Cache Godot and export templates
+        uses: actions/cache@v6
+        with:
+          path: |
+            ${{ env.OPT_DIR }}
+            ${{ env.XDG_DATA_HOME }}/godot/export_templates
+          key: android-${{ runner.os }}-${{ hashFiles('.godot-version', 'requirements-dev.txt', 'tools/setup-cloud.sh', 'tools/setup-android.sh') }}
+
+      - name: Install tooling
+        run: |
+          tools/setup-cloud.sh
+          tools/setup-android.sh
+
+      - name: Build the APK
+        run: make android
+
+      - name: Upload the APK
+        uses: actions/upload-artifact@v7
+        with:
+          name: block-tiles-android
+          path: build/android/*.apk
+          if-no-files-found: error
+          retention-days: 14

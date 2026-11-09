@@ -12,6 +12,7 @@ static func tiles_of(level: PyramidLevel, rules: PyramidRules) -> Array[StackTil
 	var rng: RandomNumberGenerator = RandomNumberGenerator.new()
 	rng.seed = level.symbol_seed
 	var tiles: Array[StackTile] = []
+	var shapes: Array[PieceShape] = []
 	for layer in level.layers.size():
 		var rows: PackedStringArray = level.layers[layer].split("\n", false)
 		for y in rows.size():
@@ -21,11 +22,31 @@ static func tiles_of(level: PyramidLevel, rules: PyramidRules) -> Array[StackTil
 				var shape: PieceShape = rules.shape_set.find(shape_key)
 				if shape == null:
 					continue
-				var symbol: int = rng.randi_range(0, rules.symbol_count - 1)
-				tiles.append(
-					StackTile.new(Vector2i(x, y), layer, Piece.uniform(shape.cells, symbol))
-				)
+				shapes.append(shape)
+				tiles.append(StackTile.new(Vector2i(x, y), layer, null))
+	var symbols: PackedInt32Array = _symbols(tiles.size(), level, rules, rng)
+	for index in tiles.size():
+		tiles[index].piece = Piece.uniform(shapes[index].cells, symbols[index])
 	return tiles
+
+
+## One symbol per tile: drawn freely, or each symbol three times, shuffled.
+static func _symbols(
+	count: int, level: PyramidLevel, rules: PyramidRules, rng: RandomNumberGenerator
+) -> PackedInt32Array:
+	var symbols: PackedInt32Array = []
+	for index in count:
+		if level.symbols_in_threes:
+			symbols.append(int(index / 3.0) % rules.symbol_count)
+		else:
+			symbols.append(rng.randi_range(0, rules.symbol_count - 1))
+	if level.symbols_in_threes:
+		for index in range(count - 1, 0, -1):
+			var other: int = rng.randi_range(0, index)
+			var kept: int = symbols[index]
+			symbols[index] = symbols[other]
+			symbols[other] = kept
+	return symbols
 
 
 ## Puts the level's starting tiles on the grid (symbols drawn after those of the pile).

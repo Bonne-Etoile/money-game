@@ -44,10 +44,13 @@ build: import
 # the Gradle build needs dl.google.com. Godot installs the Android build template in android/
 # (not versioned).
 ANDROID_HOME ?= /opt/android-sdk
+# Godot's Gradle build wants JDK 17, whatever JAVA_HOME (21 in the cloud) says.
+ANDROID_JAVA_HOME ?= $(firstword $(wildcard /usr/lib/jvm/java-17-openjdk*) \
+	$(shell dirname "$$(dirname "$$(readlink -f "$$(command -v javac)")")"))
 android: import
 	mkdir -p $(BUILD_DIR)/android
 	ANDROID_HOME="$(ANDROID_HOME)" \
-		JAVA_HOME="$${JAVA_HOME:-$$(dirname "$$(dirname "$$(readlink -f "$$(command -v javac)")")")}" \
+		JAVA_HOME="$(ANDROID_JAVA_HOME)" \
 		$(GODOT) --headless --path . --install-android-build-template \
 		--export-debug "Android" $(BUILD_DIR)/android/$(GAME_NAME).apk
 
@@ -69,6 +72,12 @@ screenshots:
 		LOCALE=fr OUT=$(SCREENSHOT_DIR)/tile_blocks_game_over.png
 	$(MAKE) screenshot SCENE=res://test/fixtures/pyramid_fixture.tscn FRAMES=10 LOCALE=fr \
 		OUT=$(SCREENSHOT_DIR)/pyramid.png
+	$(MAKE) screenshot SCENE=res://test/fixtures/tray_grid_fixture.tscn FRAMES=10 LOCALE=fr \
+		OUT=$(SCREENSHOT_DIR)/tray_grid.png
+	$(MAKE) screenshot SCENE=res://test/fixtures/pairs_fixture.tscn FRAMES=10 LOCALE=fr \
+		OUT=$(SCREENSHOT_DIR)/pairs.png
+	$(MAKE) screenshot SCENE=res://test/fixtures/stamp_fixture.tscn FRAMES=10 LOCALE=fr \
+		OUT=$(SCREENSHOT_DIR)/stamp.png
 	for locale in en fr; do \
 		$(MAKE) screenshot SCENE=res://game/ui/main_menu.tscn FRAMES=10 LOCALE=$$locale \
 			OUT=$(SCREENSHOT_DIR)/main_menu_$$locale.png || exit 1; \

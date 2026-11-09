@@ -12,7 +12,8 @@
 # Android build template, installed by Godot (make android)
 /android/
 
-# AdMob plugin: iOS binaries and downloads (the Android binaries are versioned)
+# AdMob plugin: binaries (installed by tools/install-admob-binaries.sh) and downloads
+/addons/admob/android/bin/
 /addons/admob/ios/bin/
 /addons/admob/downloads/
 

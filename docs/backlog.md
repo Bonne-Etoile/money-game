@@ -59,14 +59,39 @@ Chaque ticket : objectif, périmètre, critères d'acceptation, dépendances. Un
 - **Dépend de** : G0 (réutilise la grille de G1 si elle existe).
 - **Fait (2026-11-08)** : règles dans `docs/conception-du-jeu.md`, section 2. Plateau de 2 places (une tuile prise attend d'être posée). Trios coupés (une pièce = un symbole). **À tester par Stelio**, en comparaison avec G1 : lequel donne le plus envie de rejouer ? La règle « tuile libre » se comprend-elle sans explication ? Les niveaux sont-ils trop faciles (un robot simple les gagne tous) ?
 
-### G3. Export Android et pubs de test — en partie fait, reste le build (réseau)
+### G3. Export Android et pubs de test — fait, pub à vérifier sur le téléphone de Stelio
 
 - **Objectif** : installer le prototype sur le téléphone de Stelio, avec des pubs de test.
 - **Périmètre** : décision 16 de `docs/architecture.md` : SDK Android, JDK, modèles d'export et préréglage Android (APK de test, AAB plus tard) ; plugin AdMob de poingstudios derrière un autoload `Ads` avec une version factice pour les tests ; une pub récompensée de test (« continuer ») dans le prototype retenu.
 - **Critères** : APK installable ; pub de test affichée ; tests verts avec la version factice.
 - **Dépend de** : G0.
 - **Fait (2026-11-08)**, sans accès à `dl.google.com` : autoload `Ads`, `FakeAdsBackend` et `AdMobAdsBackend` (décision 18) ; plugin AdMob 5.1.0 dans `addons/admob` ; pub récompensée « Continuer (regarder une pub) » sur l'écran de fin de G1 (une fois par partie, dégage une croix de 3 lignes et 3 colonnes au centre : toutes les formes rentrent), testée avec la version factice ; préréglage d'export « Android », `tools/setup-android.sh`, `make android`. Le prototype n'étant pas encore choisi, la pub est dans G1 seulement (G1 est sans fin, c'est là que « continuer » a le plus de sens).
-- **Reste à faire**, dans une session sur l'environnement « money-game » : `tools/setup-android.sh` ; activer le greffon d'éditeur AdMob (`editor_plugins` de `project.godot`) ; `make android` et corriger ce qui casse (jamais exporté jusqu'ici) ; vérifier la pub de test sur un émulateur ou le téléphone ; mettre l'APK dans les fichiers du projet pour Stelio.
+- **Fait (2026-11-08, suite)** : greffon AdMob activé ; binaires du plugin installés par `tools/install-admob-binaries.sh` (accord de Stelio) ; `make android` produit un APK de test (debug, arm64 et armv7, 174 Mo) dont le manifeste contient l'identifiant d'application AdMob de test et le plugin. Corrigé en route : chemins du SDK et du JDK 17 dans les réglages de l'éditeur, compression ETC2/ASTC, `make check` qui lisait `android/build` (voir `docs/pitfalls/godot-ligne-de-commande-et-export.md`). APK déposé dans les fichiers du projet (`builds/g3-android/`), et produit aussi par le workflow GitHub `android.yml` (2026-11-09 : l'app Claude sur mobile ne télécharge pas un fichier de 174 Mo).
+- **À tester par Stelio** (pas d'émulateur possible dans la session : pas de KVM) : installer l'APK ; dans G1, perdre une partie, toucher « Continuer (regarder une pub) » : une pub récompensée marquée « Test Ad » doit passer, puis la croix centrale se libère. Si le bouton reste grisé : pas de réseau, ou la pub de test ne charge pas (me le dire).
+
+### G5. Prototype piste 3 « le bac devient une grille » — à tester (branche `claude/project-thread-yrd89m`)
+
+- **Demande de Stelio (2026-11-08)** : « peux-tu créer les 2 autres jeux proposés dans la phase d'étude ? »
+- **Objectif** : comparer la piste 3 (`docs/etude-concurrence.md`, annexe B) aux autres.
+- **Périmètre** : la pile de mahjong de G2, mais chaque tuile est une seule tuile à symbole ; on la pose sur une petite grille 5 × 5 ; 3 symboles identiques qui se touchent ou une ligne pleine s'effacent ; grille pleine = perdu, pile vide = gagné ; 3 niveaux faits à la main.
+- **Critères** : comme G1.
+- **Dépend de** : G2 (réutilise la pile et son écran).
+
+### G6. Prototype piste 4 « paires sur la grille » — à tester (branche `claude/project-thread-yrd89m`)
+
+- **Demande de Stelio (2026-11-08)** : idem G5.
+- **Objectif** : savoir si les paires (règle du mahjong) rendent la partie trop facile ou plus agréable que les trios.
+- **Périmètre** : le prototype G1 avec 2 symboles identiques qui se touchent au lieu de 3, et un symbole de plus pour compenser.
+- **Critères** : comme G1.
+- **Dépend de** : G1.
+
+### G7. Prototype « tampon sur la pile » (idée de Stelio) — à tester (branche `claude/project-thread-yrd89m`)
+
+- **Idée de Stelio (2026-11-08)**, ses mots : « on a des formes de Tetris qui arrivent les unes après les autres, puis on déplace ces formes sur une pile style mahjong, puis on prend les tuiles que recouvre le bloc, puis on obtient un bloc avec des tuiles. On place ensuite ces blocs tuilés sur une grille façon block blast. »
+- **Périmètre** : une pile de tuiles en colonnes (6 × 6, plusieurs étages) ; une forme de Tetris vide arrive (et on voit les suivantes) ; on la pose sur la pile, là où chaque case recouvre une tuile ; elle prend la tuile du dessus de chaque case et devient une pièce tuilée ; on la pose sur la grille 8 × 8 où lignes et trios s'effacent. Pile vide = gagné ; pièce qui ne rentre plus = perdu. 3 niveaux.
+- **Critères** : comme G1.
+- **Dépend de** : G1, G2.
+- **Fait (2026-11-08)** : G5, G6 et G7 sont dans le menu (boutons 3, 4 et 5), règles dans `docs/conception-du-jeu.md`, section 2. **À tester par Stelio** avec G1 et G2 : lequel donne le plus envie de rejouer ?
 
 ### G4. …
 

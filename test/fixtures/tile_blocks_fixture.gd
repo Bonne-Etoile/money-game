@@ -1,15 +1,17 @@
 extends Node
-## Screenshot of prototype 1 in the middle of a game (make screenshots): a few moves played by
-## a simple robot, then a piece being dragged over the grid.
+## Screenshot of prototype 1 (or 4) in the middle of a game (make screenshots): a few moves
+## played by a simple robot, then a piece being dragged over the grid.
 
-const SCENE: PackedScene = preload("res://game/proto_tiles/tile_blocks.tscn")
 const SEED: int = 3
 const MOVES: int = 9
 const DRAG_OFFSET: Vector2 = Vector2(30, -25)
 
+## The prototype to show: tile blocks, or its pairs variant.
+@export var scene: PackedScene = preload("res://game/proto_tiles/tile_blocks.tscn")
+
 
 func _ready() -> void:
-	var screen: TileBlocksScreen = SCENE.instantiate()
+	var screen: TileBlocksScreen = scene.instantiate()
 	add_child(screen)
 	screen.start(SEED)
 	for _move in MOVES:

@@ -96,3 +96,27 @@ Format : **symptôme**, **cause**, **bonne pratique** (voir `README.md`).
 - **Symptôme** : après un crash du jeu exporté chez Stelio, `user://logs/godot.log` ne contient que l'en-tête ; rien sur le crash.
 - **Cause** : en *release*, Godot ne vide son journal sur le disque qu'à la fermeture ou sur une erreur (`application/run/flush_stdout_on_print` est faux hors *debug*) ; et le modèle *release* ne signale pas la plupart des erreurs de GDScript à l'exécution (un index hors limites ne produit rien, un appel sur un objet libéré peut planter le jeu).
 - **Bonne pratique** : lire le journal de session du jeu (`user://logs/session.log`, ou `crashed_session.log` après un crash, décision 33 de l'architecture), qui est vidé à chaque ligne. Sous Windows, `user://` est `%APPDATA%\Godot\app_userdata\River Cleaner- India\` (le « : » du nom devient « - »). Pour reproduire une erreur de script, lancer un export *debug*, qui les signale.
+
+## L'export Android sans affichage ne trouve pas le SDK
+
+- **Symptôme** : « Invalid Android SDK path in Editor Settings. Missing 'platform-tools' directory! » alors que `ANDROID_HOME` est bon ; puis, une fois le SDK trouvé, « ETC2/ASTC texture compression is required for Android export ».
+- **Cause** : l'export lit les chemins du SDK et du JDK dans les réglages de l'éditeur (`~/.config/godot/editor_settings-4.7.tres`), pas dans les variables d'environnement, et ce fichier existe déjà après le premier import avec des valeurs par défaut (`/root/Android/Sdk`, le JDK de `JAVA_HOME`). La compression ETC2/ASTC est un réglage du projet, désactivé par le modèle de dépôt (PC).
+- **Bonne pratique** : `tools/setup-android.sh` écrit `export/android/android_sdk_path` et `java_sdk_path` dans les réglages de l'éditeur ; `project.godot` active `rendering/textures/vram_compression/import_etc2_astc`. Le JDK doit être le 17 : dans la session cloud, `JAVA_HOME` désigne le 21, d'où `ANDROID_JAVA_HOME` dans le `Makefile` (2026-11-08).
+
+## `make check` échoue sur des scripts de `android/build`
+
+- **Symptôme** : après `make android`, `make check` signale des dizaines d'erreurs dans `res://android/build/src/instrumented/assets/test/…` (scripts non typés de Godot).
+- **Cause** : le modèle de build Android installé par Godot contient ses propres scripts de test ; il est caché à Godot par `android/build/.gdignore`, mais `tools/check_project.gd` parcourait les dossiers sans regarder ce fichier.
+- **Bonne pratique** : un outil qui parcourt le projet saute tout dossier qui contient un `.gdignore` (2026-11-08).
+
+## Gradle échoue sur « 429 Too Many Requests » de Maven Central
+
+- **Symptôme** : le premier `make android` échoue en téléchargeant des dépendances de `repo.maven.apache.org` (code 429).
+- **Cause** : limite de débit de Maven Central sur l'adresse de sortie partagée de la session.
+- **Bonne pratique** : relancer `make android` (Gradle garde ce qui est déjà téléchargé) ; c'est passé au deuxième essai (2026-11-08).
+
+## Le plugin AdMob télécharge ses binaires sans rien dire
+
+- **Symptôme** : le premier lancement de Godot sans affichage avec le greffon AdMob activé télécharge des archives depuis GitHub ; le contrôle de sécurité de la session cloud peut refuser la commande.
+- **Cause** : `addons/admob/admob.gd` appelle `BinaryInstaller.install_missing_binaries_sync()` en mode sans affichage quand `addons/admob/{android,ios}/bin/package.gd` manque.
+- **Bonne pratique** : `tools/install-admob-binaries.sh` (appelé par `tools/setup-cloud.sh` et `tools/setup-android.sh`) télécharge lui-même les deux archives de la release du plugin (Android 0,4 Mo, iOS 3 Mo inutilisé, accord de Stelio du 2026-11-08) et écrit `package.gd` : le greffon ne télécharge plus rien.
