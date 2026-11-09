@@ -9,3 +9,5 @@ var clear: GridClear = GridClear.new()
 var cleared_symbols: PackedInt32Array = []
 var points: int = 0
 var combo: int = 0
+## Whether the move left the grid empty (and earned ScoreRules.empty_grid_bonus).
+var empty_grid: bool = false

@@ -15,6 +15,13 @@ func _init(grid_size: int = 8) -> void:
 	_cells.fill(EMPTY)
 
 
+## A copy of this grid (to try a move without changing it).
+func copy() -> TileGrid:
+	var other: TileGrid = TileGrid.new(size)
+	other._cells = _cells.duplicate()
+	return other
+
+
 func has_cell(cell: Vector2i) -> bool:
 	return cell.x >= 0 and cell.y >= 0 and cell.x < size and cell.y < size
 

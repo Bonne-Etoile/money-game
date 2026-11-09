@@ -9,9 +9,17 @@ var art: TileArt
 var ghost_origin: Vector2i = Vector2i.ZERO
 var _ghost: Piece
 var _ghost_valid: bool = false
+## A placement shown to a player who hesitates (G15), drawn as faint tiles.
+var _hint: Piece
+var _hint_origin: Vector2i = Vector2i.ZERO
 var _flash_cells: Array[Vector2i] = []
 var _flash_symbols: PackedInt32Array = []
 var _flash_left: float = 0.0
+## Shake of the drawing (a strong clear), in pixels; the cells do not move for the rules.
+var _shake: float = 0.0
+var _shake_left: float = 0.0
+var _shake_seconds: float = 0.0
+var _shake_rng: RandomNumberGenerator = RandomNumberGenerator.new()
 
 
 func _ready() -> void:
@@ -55,6 +63,22 @@ func clear_ghost() -> void:
 	queue_redraw()
 
 
+func set_hint(piece: Piece, origin: Vector2i) -> void:
+	_hint = piece
+	_hint_origin = origin
+	queue_redraw()
+
+
+func clear_hint() -> void:
+	if _hint != null:
+		_hint = null
+		queue_redraw()
+
+
+func has_hint() -> bool:
+	return _hint != null
+
+
 func has_ghost() -> bool:
 	return _ghost != null
 
@@ -72,6 +96,20 @@ func ghost_cells() -> Array[Vector2i]:
 	return cells
 
 
+## Shakes the drawing `pixels` wide, fading out over `seconds`.
+func shake(pixels: float, seconds: float) -> void:
+	if pixels <= 0.0 or seconds <= 0.0:
+		return
+	_shake = pixels
+	_shake_left = seconds
+	_shake_seconds = seconds
+	set_process(true)
+
+
+func is_shaking() -> bool:
+	return _shake_left > 0.0
+
+
 ## Shows the cells just cleared fading out.
 func flash(result: MoveResult) -> void:
 	_flash_cells = result.clear.cells.duplicate()
@@ -83,9 +121,10 @@ func flash(result: MoveResult) -> void:
 
 func _process(delta: float) -> void:
 	_flash_left -= delta
+	_shake_left = maxf(_shake_left - delta, 0.0)
 	if _flash_left <= 0.0:
 		_flash_cells.clear()
-		set_process(false)
+	set_process(not _flash_cells.is_empty() or _shake_left > 0.0)
 	queue_redraw()
 
 
@@ -93,6 +132,11 @@ func _draw() -> void:
 	if grid == null or art == null:
 		return
 	var side: float = cell_size()
+	if _shake_left > 0.0:
+		var strength: float = _shake * _shake_left / _shake_seconds
+		draw_set_transform(
+			Vector2(_shake_rng.randf_range(-1, 1), _shake_rng.randf_range(-1, 1)) * strength
+		)
 	draw_rect(Rect2(Vector2.ZERO, Vector2.ONE * side * grid.size), art.grid_background)
 	for y in grid.size:
 		for x in grid.size:
@@ -102,6 +146,7 @@ func _draw() -> void:
 				TileDrawing.draw_box(self, cell_rect(cell), art.empty_cell)
 			else:
 				TileDrawing.draw_tile(self, cell_rect(cell), symbol, art)
+	_draw_hint()
 	_draw_flash()
 	_draw_ghost()
 
@@ -116,6 +161,14 @@ func _draw_flash() -> void:
 		TileDrawing.draw_tile(
 			self, rect.grow(rect.size.x * 0.1 * (1.0 - fade)), _flash_symbols[index], art, tint
 		)
+
+
+func _draw_hint() -> void:
+	if _hint == null:
+		return
+	for index in _hint.cells.size():
+		var rect: Rect2 = cell_rect(_hint_origin + _hint.cells[index])
+		TileDrawing.draw_tile(self, rect, _hint.symbols[index], art, art.hint_tint)
 
 
 func _draw_ghost() -> void:

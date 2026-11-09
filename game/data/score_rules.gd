@@ -11,3 +11,5 @@ extends Resource
 @export var combo_bonus_percent: int = 50
 ## Moves without a clear that the combo survives (0: the first one ends it).
 @export var combo_grace_moves: int = 2
+## Points for a move that leaves the grid empty ("grid cleared!").
+@export var empty_grid_bonus: int = 300

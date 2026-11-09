@@ -11,6 +11,8 @@ extends Resource
 @export var ghost_valid: Color = Color(1, 1, 1, 0.35)
 @export var ghost_invalid: Color = Color(1, 0.3, 0.3, 0.35)
 @export var flash: Color = Color(1, 0.95, 0.6)
+## Tint of the tiles of a hint (a placement shown to a player who hesitates).
+@export var hint_tint: Color = Color(1, 1, 1, 0.4)
 ## An empty shape, before it takes its tiles (prototype "stamp").
 @export var shape_color: Color = Color(0.35, 0.72, 0.95)
 ## Symbol colours, one per symbol (a symbol is also a shape: colour is never the only cue).

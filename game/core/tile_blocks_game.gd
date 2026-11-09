@@ -74,6 +74,10 @@ func place(slot: int, origin: Vector2i) -> MoveResult:
 		result.cleared_symbols.append(grid.symbol_at(cell))
 	grid.remove(result.clear.cells)
 	result.points = scores.score_move(piece.cells.size(), result.clear)
+	if not result.clear.is_empty() and grid.filled_count() == 0:
+		result.empty_grid = true
+		scores.add(rules.scoring.empty_grid_bonus)
+		result.points += rules.scoring.empty_grid_bonus
 	result.combo = scores.combo
 	moves += 1
 	if rules.refill_each_slot:

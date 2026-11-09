@@ -22,17 +22,22 @@ const RECORD_POP_SECONDS: float = 0.25
 
 @export var rules: TileBlocksRules
 @export var art: TileArt
+@export var juice: JuiceRules
 
 var game: TileBlocksGame
 ## The race against the record of the game under way.
 var chase: RecordChase = RecordChase.new(0)
 ## Whether the next tap on a piece flips it (the mirror bonus) instead of turning it.
 var mirroring: bool = false
+## Seconds since the player last did something (for the hint, G15).
+var idle_seconds: float = 0.0
 var _drag: PieceDrag = PieceDrag.new()
 ## What the last refresh showed, to notice when it changes (offers are counted once).
 var _was_over: bool = false
 var _was_in_trouble: bool = false
 var _call_tween: Tween = null
+## Whether the hint was looked for since the player last did something.
+var _hint_looked_for: bool = false
 ## The score the last refresh showed, to notice the moment the record is beaten.
 var _shown_score: int = 0
 
@@ -53,6 +58,8 @@ var _shown_score: int = 0
 @onready var _best_score: Label = %BestScoreLabel
 @onready var _continue: Button = %ContinueButton
 @onready var _over_new_hand: Button = %GameOverNewHandButton
+@onready var _effects: ClearEffects = %Effects
+@onready var _sounds: GameSounds = %Sounds
 
 
 func _ready() -> void:
@@ -65,7 +72,8 @@ func _ready() -> void:
 	_drag.piece_in = func(slot: int) -> Piece: return game.hand[slot]
 	_drag.can_place = func(slot: int, origin: Vector2i) -> bool: return game.can_place(slot, origin)
 	_drag.place = func(slot: int, origin: Vector2i) -> MoveResult: return game.place(slot, origin)
-	_drag.placed.connect(func(_result: MoveResult) -> void: refresh())
+	_drag.placed.connect(_on_placed)
+	_effects.rules = juice
 	add_child(_drag)
 	(%MenuButton as Button).pressed.connect(back_to_menu)
 	(%ReplayButton as Button).pressed.connect(func() -> void: start(_new_seed()))
@@ -77,8 +85,29 @@ func _ready() -> void:
 	Events.rewarded_ad_ready_changed.connect(_on_rewarded_ad_ready_changed)
 	Events.rewarded_ad_finished.connect(_on_rewarded_ad_finished)
 	_tray.tapped.connect(_on_piece_tapped)
+	_tray.drag_started.connect(func(_slot: int, _pointer: Vector2) -> void: _reset_idle())
 	_board.resized.connect(refresh)
 	start(_new_seed())
+
+
+func _process(delta: float) -> void:
+	if game == null or rules.hint_after_seconds <= 0.0 or _hint_looked_for:
+		return
+	if _game_over.visible or _drag.is_dragging():
+		return
+	idle_seconds += delta
+	if idle_seconds >= rules.hint_after_seconds:
+		_hint_looked_for = true
+		var hint: MoveHint = MoveHint.find(game)
+		if hint != null:
+			_board.set_hint(hint.piece, hint.origin)
+
+
+## The player did something: the hint goes, and the wait for the next one starts again.
+func _reset_idle() -> void:
+	idle_seconds = 0.0
+	_hint_looked_for = false
+	_board.clear_hint()
 
 
 func _unhandled_input(event: InputEvent) -> void:
@@ -91,9 +120,10 @@ func _unhandled_input(event: InputEvent) -> void:
 ## counts as played.
 func start(random_seed: int) -> void:
 	_finish_game()
-	game = TileBlocksGame.new(rules, random_seed, GameState.progress.stats)
+	game = TileBlocksGame.new(_game_rules(), random_seed, GameState.progress.stats)
 	chase = RecordChase.new(GameState.progress.stats.best_score)
 	_shown_score = 0
+	_reset_idle()
 	_board.grid = game.grid
 	_drag.cancel()
 	mirroring = false
@@ -151,6 +181,8 @@ func _show_record() -> void:
 	_record_progress.value = 100 if chase.is_beaten(score) else chase.percent(score)
 	if chase.beaten_between(_shown_score, score):
 		_pop_record()
+		_effects.fireworks(art.symbol_colors)
+		_sounds.play_record()
 	_shown_score = score
 	if chase.is_beaten(score):
 		_record_gap.text = tr("NEW_RECORD")
@@ -164,6 +196,16 @@ func _pop_record() -> void:
 	var pop: Tween = create_tween()
 	pop.tween_property(_record, "scale", Vector2.ONE * RECORD_POP_SCALE, RECORD_POP_SECONDS)
 	pop.tween_property(_record, "scale", Vector2.ONE, RECORD_POP_SECONDS)
+
+
+## The rules of a new game: the scene's, with the player's choice of how pieces come back.
+func _game_rules() -> TileBlocksRules:
+	var refill_each_slot: bool = not Options.settings.refill_together
+	if rules.refill_each_slot == refill_each_slot:
+		return rules
+	var chosen: TileBlocksRules = rules.duplicate()
+	chosen.refill_each_slot = refill_each_slot
+	return chosen
 
 
 func back_to_menu() -> void:
@@ -202,7 +244,55 @@ func rotate_piece(slot: int) -> void:
 		refresh()
 
 
+## The feedback of a move (G13), stronger as the move is: sound rising with the combo,
+## fragments, a shake, a word of praise, a short vibration; then the screen shows the new state.
+func _on_placed(result: MoveResult) -> void:
+	_reset_idle()
+	_sounds.play_place()
+	var strength: int = ClearPraise.strength(result, juice.empty_grid_strength)
+	if strength > 0:
+		var pitch: float = 1.0 + (result.combo - 1) * juice.combo_pitch_step
+		_sounds.play_clear(minf(pitch, juice.max_pitch))
+		_burst(result)
+		_board.shake(
+			minf(strength * juice.shake_pixels_per_clear, juice.shake_max_pixels),
+			juice.shake_seconds
+		)
+		_praise(result, strength)
+		if Options.settings.vibration:
+			Input.vibrate_handheld(
+				mini(juice.vibration_ms_per_clear * strength, juice.vibration_max_ms)
+			)
+	if result.empty_grid:
+		_sounds.play_empty_grid()
+	refresh()
+
+
+func _burst(result: MoveResult) -> void:
+	var centers: Array[Vector2] = []
+	var colors: Array[Color] = []
+	for index in result.clear.cells.size():
+		centers.append(_board.cell_center(result.clear.cells[index]))
+		var symbol: int = result.cleared_symbols[index]
+		colors.append(art.symbol_colors[symbol % art.symbol_colors.size()])
+	_effects.burst(centers, colors, juice.fragments_per_cell, juice.fragment_speed)
+
+
+func _praise(result: MoveResult, strength: int) -> void:
+	var text: String = ""
+	if result.empty_grid:
+		text = tr("PRAISE_EMPTY_GRID") % rules.scoring.empty_grid_bonus
+	else:
+		var word: int = ClearPraise.word(strength, juice.praise_thresholds)
+		if word > 0:
+			text = tr("PRAISE_%d" % word)
+	if not text.is_empty():
+		var center: Vector2 = _board.global_position + _board.size / 2.0
+		_effects.praise(text, center, CALL_COLOR)
+
+
 func _on_piece_tapped(slot: int) -> void:
+	_reset_idle()
 	if not mirroring:
 		rotate_piece(slot)
 	elif game.mirror(slot):
@@ -213,6 +303,7 @@ func _on_piece_tapped(slot: int) -> void:
 
 func _apply_new_hand() -> void:
 	if game.new_hand():
+		_reset_idle()
 		_drag.cancel()
 		GameState.record_bonus(TileBlocksGame.BONUS_NEW_HAND)
 		refresh()

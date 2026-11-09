@@ -34,6 +34,9 @@ extends Resource
 ## Pieces of the hand that still fit, at most, for the player to be "in trouble": the bonus
 ## buttons call for attention (the moment an ad is worth the most to the player).
 @export var trouble_fitting_pieces: int = 1
+## Seconds without a move after which a placement that clears something shows as a hint on the
+## grid (G15), when there is one; 0 turns hints off.
+@export var hint_after_seconds: float = 10.0
 @export var shape_set: PieceShapeSet
 ## Adaptive difficulty; none: every piece is drawn by pure chance.
 @export var difficulty: DifficultyRules

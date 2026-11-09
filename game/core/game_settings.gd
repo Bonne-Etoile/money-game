@@ -1,7 +1,8 @@
 class_name GameSettings
 extends RefCounted
 ## The player's options besides the volumes (AudioSettings) and the window (WindowSettings):
-## mouse sensitivity, vertical axis, field of view, vertical sync, language. Saved by the
+## mouse sensitivity, vertical axis, field of view, vertical sync, language, how the pieces
+## come back (test build of G12) and vibration. Saved by the
 ## exported game in user://options.json. Versioned JSON, never a Godot resource.
 
 const VERSION: int = 1
@@ -17,6 +18,11 @@ var invert_y: bool = false
 var field_of_view: float = 80.0
 var vsync: bool = true
 var language: String = ""
+## Whether three new pieces come only once the three are placed (like Block Blast), instead
+## of a new piece in each slot at once (G12: the player compares both on the same build).
+var refill_together: bool = false
+## Short vibrations on clears (phones only).
+var vibration: bool = true
 
 
 func set_mouse_sensitivity(value: float) -> void:
@@ -48,6 +54,8 @@ func to_dict() -> Dictionary:
 		"field_of_view": field_of_view,
 		"vsync": vsync,
 		"language": language,
+		"refill_together": refill_together,
+		"vibration": vibration,
 	}
 
 
@@ -61,6 +69,8 @@ static func from_dict(data: Dictionary) -> GameSettings:
 	settings.invert_y = data.get("invert_y") == true
 	settings.vsync = data.get("vsync") != false
 	settings.set_language(JsonRead.text(data, "language"))
+	settings.refill_together = data.get("refill_together") == true
+	settings.vibration = data.get("vibration") != false
 	return settings
 
 
