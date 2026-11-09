@@ -85,6 +85,10 @@ Jeu mobile Android (portrait, iOS mis de côté), gratuit et financé par la pub
 - Assets générés par IA autorisés ; à déclarer dans le questionnaire de contenu de Steamworks (tenir la liste à jour).
 - Pas de Git LFS au départ : pas de fichiers lourds (vidéos, sources de travail) dans le dépôt.
 
+## Pubs
+
+- **Aucune pub forcée pour le moment** (décision de Stelio, 2026-11-09) : seulement des pubs récompensées que le joueur choisit. Pas d'interstitiel ni de bannière tant qu'il ne revient pas sur ce choix.
+
 ## Publication
 
 - **Rien n'est publié sans l'accord explicite du joueur-producteur**, à chaque publication (vidéos, textes, page Steam).

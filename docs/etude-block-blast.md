@@ -17,7 +17,7 @@ Les guides de joueurs et blogs « astuces » se contredisent (barème, fenêtre 
 3. **Le jeu est un assemblage de ≈ 700 petites règles** (« traits ») téléchargées depuis le serveur après l'installation. Chaque joueur en reçoit une sélection (254 pour l'installation étudiée) : deux joueurs côte à côte ne jouent pas au même jeu (décompilé).
 4. **La difficulté s'adapte dans les deux sens** : pièces faciles après des échecs ou pour les joueurs peu engagés, pièces dures pour qui joue vite près de son record (décompilé).
 5. **Le jeu sait fabriquer une défaite.** Un générateur cherche 3 pièces dont 2 rentrent mais qu'aucun ordre ne permet de poser toutes. Plusieurs règles le déclenchent, presque toutes **juste après le record battu** ; l'une attend qu'une pub récompensée **3,5 fois plus chère** que la précédente soit chargée (décompilé). C'est exactement ce que nous ne ferons pas (section 8.3).
-6. **Pubs peu nombreuses mais pilotées par la valeur du joueur** : bannière, interstitiel court entre deux parties, une récompensée « Continuer ». Un modèle sur le téléphone estime ce que vaut chaque joueur en pub ; le jeu choisit les formats en conséquence (décompilé).
+6. **Pubs peu nombreuses mais pilotées par la valeur du joueur** (nous : aucune pub forcée, décision du 2026-11-09) : bannière, interstitiel court entre deux parties, une récompensée « Continuer ». Un modèle sur le téléphone estime ce que vaut chaque joueur en pub ; le jeu choisit les formats en conséquence (décompilé).
 7. **Ce que les joueurs reprochent** : pub même quand on refuse de continuer, pubs longues, pas d'achat « sans pubs », pas d'aspect social, et depuis octobre 2026 le soupçon d'être « truqué ». C'est notre ouverture : un jeu honnête, qui le dit.
 
 ## 2. Fiche d'identité (complément)
@@ -160,11 +160,11 @@ Classées par priorité. G9 renvoie à la PR #5 (difficulté adaptative, bonus, 
 
 1. **« Continuer » au moment où il compte** : déjà en place (G3), une fois par partie. Le mettre en avant quand la partie était proche du record ou l'a battu (« Il te manquait 120 points »). Pas de bouton sans pub prête (déjà notre règle).
 2. **Bonus contre pub au moment de la difficulté** (G9 le fait : boutons qui brillent quand une seule pièce rentre). Ajouter les bonus proposés (marteau, bombe, annuler, joker) un par un, chacun jugé sur le taux de pubs vues **et** la durée des parties.
-3. **Ne jamais imposer de pub quand le joueur refuse « Continuer »** : plainte n°1. Un interstitiel éventuel vient **après** l'écran de fin, jamais à la fin du compte à rebours.
-4. **Protéger les nouveaux joueurs** : ni interstitiel ni bannière pendant les premières parties, voire le premier jour (Block Blast le fait pour la bannière). Nos plafonds de `docs/strategies-pub.md` (section 5) vont dans ce sens.
+3. **Aucune pub forcée** (décision de Stelio, 2026-11-09) : ni interstitiel ni bannière pour le moment, seulement des pubs récompensées choisies. Ça règle d'office la plainte n°1 contre Block Blast (la pub imposée quand on refuse « Continuer ») et ça devient un argument : « aucune pub forcée » sur la page du Play Store. Tout le revenu repose alors sur les récompensées : d'où l'importance des points 1, 2 et 5.
+4. **Si un jour on ajoute des pubs forcées**, protéger d'abord les nouveaux joueurs (rien pendant les premières parties, voire le premier jour, comme Block Blast pour la bannière) et suivre les plafonds de `docs/strategies-pub.md` (section 5).
 5. **Une reprise offerte à qui décroche** : par exemple, pour un joueur qui revient après plusieurs jours d'absence, la première reprise du jour est gratuite. Simple à faire sans modèle (date de dernière session dans `PlayerStats`).
 6. **Pas de pub hors ligne** : il n'y en aura de toute façon pas (rien à charger) ; le jeu doit rester entièrement jouable hors ligne, boutons de pub masqués.
-7. **Achat « Sans pubs » en version 1.1** : réclamé par les joueurs de Block Blast, qui ne l'ont pas.
+7. **Achat « Sans pubs »** : sans pub forcée, il n'a plus d'objet pour l'instant ; à revoir si des interstitiels arrivent.
 8. **Mesurer comme eux** : chaque réglage jugé sur la rétention J1/J7, le temps de jeu et la relance d'une partie, pas seulement sur le revenu du jour. Le suivi de G9 est la base ; il faudra l'envoyer à un outil d'analyse et rendre les seuils **réglables à distance** (Firebase Remote Config ou Supabase) pour tester deux groupes de joueurs.
 
 ### 8.3 À ne pas faire
@@ -176,7 +176,6 @@ Classées par priorité. G9 renvoie à la PR #5 (difficulté adaptative, bonus, 
 | Punir le joueur rapide près de son record | Punit le bon joueur au moment où il s'amuse le plus. On peut monter la difficulté avec la maîtrise, pas viser le record pour le faire tomber. |
 | Règles de jeu téléchargées en code (JavaScript chiffré) après l'installation | Google Play interdit à une application de télécharger du code exécutable hors de Play ; c'est aussi ce qui a permis la fuite. Nous ne téléchargerons que des **réglages** (JSON lu sans confiance), jamais du code. |
 | Pub imposée après un refus de « Continuer » | Plainte n°1 ; casse la confiance dans les pubs choisies, celles qui rapportent le plus. |
-| Interstitiel pendant une partie | Interdit par AdMob (interstitiel inattendu). |
 | Pubs d'acquisition qui montrent un autre jeu | Pratique trompeuse ; mauvaise rétention. Une accroche spectaculaire est permise si le jeu montré est le vrai. |
 | Reprendre le nom, le logo, les couleurs ou l'interface de Block Blast | Identité protégée ; on reprend des mécaniques de genre (grille, 3 pièces, lignes), pas l'apparence. |
 
@@ -188,7 +187,7 @@ Classées par priorité. G9 renvoie à la PR #5 (difficulté adaptative, bonus, 
 2. **Difficulté dans les deux sens et garantie de jouabilité** (8.1.2, 8.1.3) — petit, suite de G9.
 3. **Build de test « 3 pièces renouvelées ensemble »** (8.1.5) — très petit (réglage).
 4. **Retours d'effacement** (8.1.4) — moyen, à juger par Stelio.
-5. **Protection des nouveaux joueurs et reprise offerte au retour** (8.2.4, 8.2.5) — petit.
+5. **Reprise offerte au retour** (8.2.5) — petit.
 6. **Aide à l'hésitation** (8.1.6) — petit.
 7. **Défi du jour** (8.1.8) — moyen.
 8. **Mode à objectifs avec image révélée et partage** (8.1.7) — gros, après le choix du prototype.
