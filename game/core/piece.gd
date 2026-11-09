@@ -31,6 +31,16 @@ func rotated() -> Piece:
 	return Piece.new(turned, symbols)
 
 
+## The piece flipped left to right (a mirror image), its corner back at the top left: the
+## only way to turn an S into a Z, or a J into an L (a bonus).
+func mirrored() -> Piece:
+	var width: int = extent().x
+	var flipped: Array[Vector2i] = []
+	for cell in cells:
+		flipped.append(Vector2i(width - 1 - cell.x, cell.y))
+	return Piece.new(flipped, symbols)
+
+
 ## Width and height in cells.
 func extent() -> Vector2i:
 	var corner: Vector2i = Vector2i.ZERO

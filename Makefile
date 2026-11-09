@@ -70,6 +70,8 @@ screenshots:
 		OUT=$(SCREENSHOT_DIR)/tile_blocks.png
 	$(MAKE) screenshot SCENE=res://test/fixtures/tile_blocks_game_over_fixture.tscn FRAMES=10 \
 		LOCALE=fr OUT=$(SCREENSHOT_DIR)/tile_blocks_game_over.png
+	$(MAKE) screenshot SCENE=res://test/fixtures/tile_blocks_trouble_fixture.tscn FRAMES=10 \
+		LOCALE=fr OUT=$(SCREENSHOT_DIR)/tile_blocks_trouble.png
 	$(MAKE) screenshot SCENE=res://test/fixtures/pyramid_fixture.tscn FRAMES=10 LOCALE=fr \
 		OUT=$(SCREENSHOT_DIR)/pyramid.png
 	$(MAKE) screenshot SCENE=res://test/fixtures/tray_grid_fixture.tscn FRAMES=10 LOCALE=fr \

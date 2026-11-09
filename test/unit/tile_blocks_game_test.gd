@@ -179,3 +179,99 @@ func test_a_piece_that_fits_only_turned_does_not_end_the_game() -> void:
 	rules.can_rotate = false
 	game.rules = rules
 	assert_bool(game.is_over()).is_true()
+
+
+func test_bonuses_have_free_uses_then_one_more_per_ad() -> void:
+	var game: TileBlocksGame = _game()
+	var bonus: String = TileBlocksGame.BONUS_NEW_HAND
+	assert_int(game.charges(bonus)).is_equal(RULES.bonus_free_uses)
+	for _use in RULES.bonus_free_uses:
+		assert_bool(game.new_hand()).is_true()
+	assert_bool(game.new_hand()).is_false()
+	for _ad in RULES.bonus_ad_uses:
+		assert_bool(game.earn(bonus)).is_true()
+		assert_bool(game.new_hand()).is_true()
+	# An ad more earns nothing in this game: the button stops offering one.
+	assert_bool(game.can_earn(bonus)).is_false()
+	assert_bool(game.earn(bonus)).is_false()
+	assert_int(game.charges(bonus)).is_equal(0)
+
+
+func test_new_pieces_replace_the_whole_hand() -> void:
+	var game: TileBlocksGame = _game()
+	_fill(game)
+	# One free row: only a flat bar of 4 (turned or not) can still go in.
+	for x in 8:
+		game.grid.set_symbol(Vector2i(x, 0), TileGrid.EMPTY)
+	var before: Array[Piece] = game.hand.duplicate()
+	assert_bool(game.new_hand()).is_true()
+	for slot in game.hand.size():
+		assert_object(game.hand[slot]).is_not_null()
+		assert_object(game.hand[slot]).is_not_same(before[slot])
+
+
+func test_the_mirror_flips_one_piece_and_takes_a_use() -> void:
+	var game: TileBlocksGame = _game()
+	var piece: Piece = game.hand[1]
+	assert_bool(game.mirror(1)).is_true()
+	assert_that(game.hand[1].cells).is_equal(piece.mirrored().cells)
+	assert_int(game.charges(TileBlocksGame.BONUS_MIRROR)).is_equal(RULES.bonus_free_uses - 1)
+	assert_bool(game.mirror(1)).is_false()
+
+
+func test_trouble_when_hardly_any_piece_fits() -> void:
+	var game: TileBlocksGame = _game()
+	assert_bool(game.is_in_trouble()).is_false()
+	_fill(game)
+	game.grid.set_symbol(Vector2i(7, 7), TileGrid.EMPTY)
+	game.hand.assign(
+		[
+			_single(0),
+			Piece.new(
+				[Vector2i(0, 0), Vector2i(1, 0)] as Array[Vector2i], PackedInt32Array([0, 1])
+			),
+			null
+		]
+	)
+	assert_int(game.pieces_that_fit()).is_equal(1)
+	assert_bool(game.is_in_trouble()).is_true()
+	game.hand[0] = null
+	# Over is not "in trouble": the game-over panel takes over.
+	assert_bool(game.is_over()).is_true()
+	assert_bool(game.is_in_trouble()).is_false()
+
+
+func test_moves_are_counted() -> void:
+	var game: TileBlocksGame = _game()
+	game.hand[0] = _single(0)
+	game.place(0, Vector2i(0, 0))
+	game.hand[0] = _single(1)
+	game.place(0, Vector2i(5, 5))
+	assert_int(game.moves).is_equal(2)
+
+
+func test_a_skilled_player_gets_pieces_with_less_room() -> void:
+	# The same grid, half full, and many new pieces: at the highest level, the pieces given
+	# have less room on average than pieces drawn by pure chance.
+	var skilled: PlayerStats = PlayerStats.new()
+	for _game_played in 10:
+		skilled.finish_game(100000, 50)
+	var easy_room: int = _room_of_new_pieces(TileBlocksGame.new(RULES, 7))
+	var hard: TileBlocksGame = TileBlocksGame.new(RULES, 7, skilled)
+	hard.scores.score = 100000
+	assert_int(hard.level()).is_equal(hard.difficulty.max_level())
+	assert_int(_room_of_new_pieces(hard)).is_less(easy_room)
+
+
+func _room_of_new_pieces(game: TileBlocksGame) -> int:
+	for y in 4:
+		for x in 8:
+			if (x + y) % 3 != 0:
+				game.grid.set_symbol(Vector2i(x, y), (x * 7 + y) % 5)
+	var total: int = 0
+	for _draw in 60:
+		game.hand[0] = _single(0)
+		game.place(0, Vector2i(0, 7))
+		game.grid.set_symbol(Vector2i(0, 7), TileGrid.EMPTY)
+		total += PieceGenerator.room(game.grid, game.hand[0], true)
+	return total

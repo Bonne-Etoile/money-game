@@ -22,3 +22,11 @@ MENU_PLAY_TRAY_GRID,3. Tiles on a small grid,3. Tuiles sur petite grille,"Start 
 MENU_PLAY_PAIRS,4. Pairs,4. Paires,"Start menu: prototype 4, like 1 but two identical symbols touching clear"
 MENU_PLAY_STAMP,5. Stamp the pile,5. Tampon sur la pile,"Start menu: prototype 5, a shape stamped on a pile of tiles takes them"
 HINT_ROTATE,Tap a piece to turn it,Touchez une pièce pour la tourner,"Under the pieces to place: a tap turns a piece a quarter turn, a drag places it"
+HUD_DIFFICULTY,Difficulty %d,Difficulté %d,"Prototypes 1 and 4, top bar (test display): the adaptive difficulty level, 0 = pieces by pure chance; %d is the level"
+HUD_BEST,Best: %d,Record : %d,Game-over panel: the best score of all games; %d is the score
+BONUS_NEW_HAND,New pieces (%d),Nouvelles pièces (%d),Bonus button under the pieces: replaces the three pieces; %d is the free uses left
+BONUS_NEW_HAND_AD,New pieces (ad),Nouvelles pièces (pub),"Bonus button once the free uses are spent: shows a rewarded ad, then replaces the three pieces. Must say that an ad plays (ad network rules)"
+BONUS_MIRROR,Mirror (%d),Miroir (%d),Bonus button under the pieces: the next tapped piece is flipped left to right; %d is the free uses left
+BONUS_MIRROR_AD,Mirror (ad),Miroir (pub),"Bonus button once the free uses are spent: shows a rewarded ad, then the next tapped piece is flipped. Must say that an ad plays (ad network rules)"
+BONUS_CANCEL,Cancel,Annuler,Mirror bonus button while waiting for a piece to flip: cancels without using the bonus
+HINT_MIRROR,Tap a piece to flip it,Touchez une pièce pour la retourner,"Under the pieces, after the mirror bonus: the next tap flips a piece left to right"

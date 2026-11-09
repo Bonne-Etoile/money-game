@@ -46,6 +46,15 @@ layout_mode = 2
 theme_override_font_sizes/font_size = 28
 text = "BUTTON_MENU"
 
+[node name="LevelLabel" type="Label" parent="TopBar"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_colors/font_color = Color(1, 1, 1, 0.6)
+theme_override_font_sizes/font_size = 28
+horizontal_alignment = 1
+vertical_alignment = 1
+
 [node name="ScoreLabel" type="Label" parent="TopBar"]
 unique_name_in_owner = true
 layout_mode = 2
@@ -92,13 +101,14 @@ anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
 offset_left = -340.0
-offset_top = 220.0
+offset_top = 210.0
 offset_right = 340.0
-offset_bottom = 500.0
+offset_bottom = 460.0
 grow_horizontal = 2
 script = ExtResource("5_tray")
 
-[node name="RotateHint" type="Label" parent="."]
+[node name="HintLabel" type="Label" parent="."]
+unique_name_in_owner = true
 layout_mode = 1
 anchors_preset = 5
 anchor_left = 0.5
@@ -106,14 +116,40 @@ anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
 offset_left = -340.0
-offset_top = 500.0
+offset_top = 460.0
 offset_right = 340.0
-offset_bottom = 548.0
+offset_bottom = 500.0
 grow_horizontal = 2
 theme_override_colors/font_color = Color(1, 1, 1, 0.6)
 theme_override_font_sizes/font_size = 26
 text = "HINT_ROTATE"
 horizontal_alignment = 1
+
+[node name="BonusBar" type="HBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -340.0
+offset_top = 512.0
+offset_right = 340.0
+offset_bottom = 600.0
+grow_horizontal = 2
+theme_override_constants/separation = 20
+
+[node name="NewHandButton" type="Button" parent="BonusBar"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 28
+
+[node name="MirrorButton" type="Button" parent="BonusBar"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 28
 
 [node name="DragLayer" type="Control" parent="."]
 unique_name_in_owner = true
@@ -161,12 +197,25 @@ layout_mode = 2
 theme_override_font_sizes/font_size = 40
 horizontal_alignment = 1
 
+[node name="BestScoreLabel" type="Label" parent="GameOver/Center/Page"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.85, 0.3, 1)
+theme_override_font_sizes/font_size = 32
+horizontal_alignment = 1
+
 [node name="ContinueButton" type="Button" parent="GameOver/Center/Page"]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(400, 88)
 layout_mode = 2
 theme_override_font_sizes/font_size = 36
 text = "BUTTON_CONTINUE_AD"
+
+[node name="GameOverNewHandButton" type="Button" parent="GameOver/Center/Page"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(400, 88)
+layout_mode = 2
+theme_override_font_sizes/font_size = 36
 
 [node name="ReplayButton" type="Button" parent="GameOver/Center/Page"]
 unique_name_in_owner = true

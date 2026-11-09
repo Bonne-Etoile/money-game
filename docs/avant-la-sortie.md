@@ -6,7 +6,11 @@ Tout ce qui est fait « au mieux » pour avancer et doit être repris, vérifié
 
 - [ ] Nom du jeu : « Block Tiles » est un titre de travail (G0, `tools/new-game.sh`) ; choisir le vrai nom (recherche de marque, Google Play) et relancer `tools/new-game.sh` depuis l'ancien nom.
 
+- [ ] Réglages de la difficulté adaptative et des bonus (G9 : 200 points par niveau, 1 à 4 pièces tirées, 1 utilisation gratuite et 3 par pub) : chiffres de départ, à régler avec les tests de Stelio puis les chiffres des joueurs.
+
 ## Boutons et outils de développement à retirer
+
+- [ ] Affichage « Difficulté N » en haut de l'écran (G9) : pour que Stelio voie la difficulté s'adapter pendant ses tests ; à retirer (ou à garder caché) avant la sortie.
 
 - [ ] Pubs de test (G3) : `game/data/ad_settings.tres` et le réglage `admob/general/android/app_id` (laissé à sa valeur par défaut) utilisent les identifiants de test de Google. Les remplacer par ceux du compte AdMob de Stelio, et vérifier `docs/strategies-pub.md` (bouton qui dit qu'une pub va passer, aucune pub surprise).
 - [ ] APK signé avec la clé de débogage de Godot (`make android`) : créer la clé d'envoi Google Play (hors du dépôt, mot de passe en variable d'environnement), passer le préréglage Android en AAB (`gradle_build/export_format=1`) et exporter en release.
