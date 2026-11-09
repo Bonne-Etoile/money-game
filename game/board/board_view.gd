@@ -5,6 +5,8 @@ extends Control
 
 var grid: TileGrid
 var art: TileArt
+## Gold and ice of a level (G17), drawn over their tiles; null in the endless game.
+var layer: LevelBoard = null
 ## The origin the dragged piece would take, valid only while `_ghost` is set.
 var ghost_origin: Vector2i = Vector2i.ZERO
 var _ghost: Piece
@@ -146,6 +148,7 @@ func _draw() -> void:
 				TileDrawing.draw_box(self, cell_rect(cell), art.empty_cell)
 			else:
 				TileDrawing.draw_tile(self, cell_rect(cell), symbol, art)
+				_draw_layer(cell)
 	_draw_hint()
 	_draw_flash()
 	_draw_ghost()
@@ -161,6 +164,17 @@ func _draw_flash() -> void:
 		TileDrawing.draw_tile(
 			self, rect.grow(rect.size.x * 0.1 * (1.0 - fade)), _flash_symbols[index], art, tint
 		)
+
+
+## Gold tiles get a golden frame; tiles under ice a pale blue sheet.
+func _draw_layer(cell: Vector2i) -> void:
+	if layer == null:
+		return
+	var rect: Rect2 = cell_rect(cell)
+	if layer.is_gold(cell):
+		draw_rect(rect.grow(-rect.size.x * 0.04), art.gold_color, false, rect.size.x * 0.08)
+	if layer.has_ice(cell):
+		TileDrawing.draw_box(self, rect, art.ice_color)
 
 
 func _draw_hint() -> void:

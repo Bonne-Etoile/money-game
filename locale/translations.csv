@@ -40,3 +40,22 @@ MENU_DAILY,Daily challenge,Défi du jour,"Start menu: one game a day with the sa
 MENU_DAILY_STREAK,Daily challenge (%d days in a row),Défi du jour (%d jours d’affilée),"Start menu: the daily challenge button, with the days in a row it was played; %d is that number"
 HUD_DAILY_BEST,Today's best: %d,Meilleur du jour : %d,"Daily challenge, under the top bar: the best score of today's challenge; %d is the score"
 DAILY_MISSING,You were %d points short of today's best,Il vous manquait %d points pour battre votre meilleur score du jour,"Daily challenge game-over panel: %d is the points missing to beat today's best"
+MENU_LEVELS,Levels,Niveaux,"Start menu: the level mode, hand-made levels with a goal and a limited number of pieces"
+LEVELS_TITLE,Levels,Niveaux,Title of the level map
+LEVELS_PICTURE_HINT,Each level won colours a tile of the big mahjong tile.,Chaque niveau réussi colore une tuile de la grande tuile de mahjong.,"Level map, under the big tile made of one small tile per level"
+LEVEL_BUTTON,%d,%d,"Level map: a level's button; %d is its number"
+HUD_LEVEL_PIECES,Level %d · %d pieces,Niveau %d · %d pièces,"Level mode, top bar: the level's number, then the pieces the player may still place"
+GOAL_SCORE,Score %d points,Marquer %d points,"Level goal, under the top bar; %d is the points to reach"
+GOAL_TRIOS,Clear %d groups of %s,Effacer %d groupes de %s,"Level goal: clear groups of 3 or more identical symbols; %d is how many, %s the symbol name (SYMBOL_*)"
+GOAL_GOLD,Free the gold tiles,Libérer les tuiles dorées,"Level goal: clear every gold-framed tile, by a line or a group"
+GOAL_PROGRESS,(%d/%d),(%d/%d),"After the level goal: how far it is reached, then the target"
+SYMBOL_CIRCLES,circles,ronds,"Symbol name in a level goal (red circles)"
+SYMBOL_SQUARES,squares,carrés,"Symbol name in a level goal (green squares)"
+SYMBOL_TRIANGLES,triangles,triangles,"Symbol name in a level goal (blue triangles)"
+SYMBOL_DIAMONDS,diamonds,losanges,"Symbol name in a level goal (purple diamonds)"
+SYMBOL_STARS,stars,étoiles,"Symbol name in a level goal (yellow stars)"
+LEVEL_WON,Level complete!,Niveau réussi !,Level mode: end panel title when the goal is reached
+LEVEL_NO_PIECES,Out of pieces!,Plus de pièces !,Level mode: end panel title when the pieces ran out before the goal
+BUTTON_NEXT_LEVEL,Next level,Niveau suivant,Level mode end panel: plays the next level
+BUTTON_RETRY,Try again,Recommencer,Level mode end panel: plays the same level again from the start
+BUTTON_EXTRA_PIECES_AD,+%d pieces (watch an ad),+%d pièces (regarder une pub),"Level mode end panel when the pieces ran out: shows a rewarded ad, then gives %d more pieces. Must say that an ad plays (ad network rules)"

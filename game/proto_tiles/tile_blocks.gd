@@ -34,7 +34,9 @@ var chase: RecordChase = RecordChase.new(0)
 var mirroring: bool = false
 ## Seconds since the player last did something (for the hint, G15).
 var idle_seconds: float = 0.0
-var _drag: PieceDrag = PieceDrag.new()
+## Made in _ready, not here: the level scene swaps this script for LevelScreen, and a node
+## made by the first script would be left orphaned.
+var _drag: PieceDrag
 ## What the last refresh showed, to notice when it changes (offers are counted once).
 var _was_over: bool = false
 var _was_in_trouble: bool = false
@@ -61,11 +63,15 @@ var _shown_score: int = 0
 @onready var _best_score: Label = %BestScoreLabel
 @onready var _continue: Button = %ContinueButton
 @onready var _over_new_hand: Button = %GameOverNewHandButton
+@onready var _end_title: Label = %GameOverTitle
+@onready var _next_level: Button = %NextLevelButton
+@onready var _extra_pieces: Button = %ExtraPiecesButton
 @onready var _effects: ClearEffects = %Effects
 @onready var _sounds: GameSounds = %Sounds
 
 
 func _ready() -> void:
+	_drag = PieceDrag.new()
 	_background.color = art.background
 	_board.art = art
 	_tray.art = art
@@ -74,7 +80,7 @@ func _ready() -> void:
 	_drag.connect_views(_board, _tray, %DragLayer as DragLayer)
 	_drag.piece_in = func(slot: int) -> Piece: return game.hand[slot]
 	_drag.can_place = func(slot: int, origin: Vector2i) -> bool: return game.can_place(slot, origin)
-	_drag.place = func(slot: int, origin: Vector2i) -> MoveResult: return game.place(slot, origin)
+	_drag.place = func(slot: int, origin: Vector2i) -> MoveResult: return _place_piece(slot, origin)
 	_drag.placed.connect(_on_placed)
 	_effects.rules = juice
 	add_child(_drag)
@@ -123,8 +129,8 @@ func _unhandled_input(event: InputEvent) -> void:
 ## counts as played.
 func start(random_seed: int) -> void:
 	_finish_game()
+	game = _make_game(random_seed)
 	var stats: PlayerStats = GameState.progress.stats
-	game = TileBlocksGame.new(_game_rules(), random_seed, null if daily else stats)
 	chase = RecordChase.new(stats.daily_best_on(GameState.today()) if daily else stats.best_score)
 	_shown_score = 0
 	_reset_idle()
@@ -144,14 +150,14 @@ func refresh() -> void:
 	_tray.set_pieces(game.hand)
 	_board.queue_redraw()
 	_score.text = tr("HUD_SCORE") % game.score()
-	_level.text = tr("HUD_DAILY") if daily else tr("HUD_DIFFICULTY") % game.level()
+	_level.text = _top_text()
 	_combo.text = tr("HUD_COMBO") % game.scores.combo
 	_combo.visible = game.scores.combo >= 2
 	_show_record()
-	var over: bool = game.is_over()
+	var over: bool = _is_finished()
 	if over:
 		mirroring = false
-		GameState.note_score(game.score())
+		_on_finished()
 	_hint.text = "HINT_MIRROR" if mirroring else "HINT_ROTATE"
 	_show_bonus(_new_hand, TileBlocksGame.BONUS_NEW_HAND, "BONUS_NEW_HAND")
 	_show_bonus(_mirror, TileBlocksGame.BONUS_MIRROR, "BONUS_MIRROR")
@@ -176,8 +182,42 @@ func refresh() -> void:
 	_over_new_hand.visible = (
 		game.charges(TileBlocksGame.BONUS_NEW_HAND) > 0 or _can_buy(TileBlocksGame.BONUS_NEW_HAND)
 	)
+	_show_end_panel()
 	_note_offers(over)
 	_call_for_bonuses(game.is_in_trouble())
+
+
+## A new game for `random_seed` (the level screen makes a level instead).
+func _make_game(random_seed: int) -> TileBlocksGame:
+	var stats: PlayerStats = GameState.progress.stats
+	return TileBlocksGame.new(_game_rules(), random_seed, null if daily else stats)
+
+
+## Places a piece of the hand (the level screen counts its pieces).
+func _place_piece(slot: int, origin: Vector2i) -> MoveResult:
+	return game.place(slot, origin)
+
+
+## Whether the game is over: the game-over panel shows (a level: won or lost).
+func _is_finished() -> bool:
+	return game.is_over()
+
+
+## The game just ended, or the panel shows again: the best score is kept.
+func _on_finished() -> void:
+	GameState.note_score(game.score())
+
+
+## The text in the middle of the top bar.
+func _top_text() -> String:
+	return tr("HUD_DAILY") if daily else tr("HUD_DIFFICULTY") % game.level()
+
+
+## The end panel's title and level buttons (the level screen shows them).
+func _show_end_panel() -> void:
+	_end_title.text = "GAME_OVER"
+	_next_level.visible = false
+	_extra_pieces.visible = false
 
 
 ## The record, always on screen, with a bar that fills up towards it; when it is beaten, the

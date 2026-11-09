@@ -1,0 +1,100 @@
+[gd_resource type="Resource" script_class="LevelSet" format=3]
+
+[ext_resource type="Script" path="res://game/data/level_set.gd" id="1_set"]
+[ext_resource type="Script" path="res://game/data/level_definition.gd" id="2_level"]
+
+[sub_resource type="Resource" id="level_1"]
+script = ExtResource("2_level")
+rows = Array[String](["........", "........", "........", "........", "........", "........", "........", "........"])
+goal = 0
+goal_count = 300
+goal_symbol = 0
+pieces = 10
+random_seed = 11
+
+[sub_resource type="Resource" id="level_2"]
+script = ExtResource("2_level")
+rows = Array[String](["........", "........", "........", "..4..4..", "........", "........", "4......4", "........"])
+goal = 1
+goal_count = 3
+goal_symbol = 4
+pieces = 14
+random_seed = 12
+
+[sub_resource type="Resource" id="level_3"]
+script = ExtResource("2_level")
+rows = Array[String]([".......b", "........", "........", "...a....", "........", "d.......", "......c.", "1.0.2.3."])
+goal = 2
+goal_count = 0
+goal_symbol = 0
+pieces = 9
+random_seed = 13
+
+[sub_resource type="Resource" id="level_4"]
+script = ExtResource("2_level")
+rows = Array[String](["........", "........", "........", "........", "........", "0101.0..", "1010.101", "0101.010"])
+goal = 0
+goal_count = 600
+goal_symbol = 0
+pieces = 10
+random_seed = 14
+
+[sub_resource type="Resource" id="level_5"]
+script = ExtResource("2_level")
+rows = Array[String](["........", "........", "0......0", "........", "........", "...00...", "........", "2.3.1.3."])
+goal = 1
+goal_count = 4
+goal_symbol = 0
+pieces = 16
+random_seed = 15
+
+[sub_resource type="Resource" id="level_6"]
+script = ExtResource("2_level")
+rows = Array[String](["........", "b.....d.", "........", "........", "....e...", "..c.....", "........", ".1.2.a.3"])
+goal = 2
+goal_count = 0
+goal_symbol = 0
+pieces = 10
+random_seed = 16
+
+[sub_resource type="Resource" id="level_7"]
+script = ExtResource("2_level")
+rows = Array[String](["........", "........", "........", "........", "...##...", "........", "........", "#......#"])
+goal = 0
+goal_count = 600
+goal_symbol = 0
+pieces = 12
+random_seed = 17
+
+[sub_resource type="Resource" id="level_8"]
+script = ExtResource("2_level")
+rows = Array[String](["a......e", "........", "..#.....", "........", ".....d..", "........", "#.......", "..b...#."])
+goal = 2
+goal_count = 0
+goal_symbol = 0
+pieces = 11
+random_seed = 18
+
+[sub_resource type="Resource" id="level_9"]
+script = ExtResource("2_level")
+rows = Array[String](["........", "........", "........", "..AB....", "........", "....CA..", "........", "1......1"])
+goal = 1
+goal_count = 5
+goal_symbol = 1
+pieces = 16
+random_seed = 19
+
+[sub_resource type="Resource" id="level_10"]
+script = ExtResource("2_level")
+rows = Array[String](["e......d", "........", "...#....", "..a.....", "........", "....c...", "..AB....", "#...D..b"])
+goal = 2
+goal_count = 0
+goal_symbol = 0
+pieces = 11
+random_seed = 21
+
+[resource]
+script = ExtResource("1_set")
+levels = Array[ExtResource("2_level")]([SubResource("level_1"), SubResource("level_2"), SubResource("level_3"), SubResource("level_4"), SubResource("level_5"), SubResource("level_6"), SubResource("level_7"), SubResource("level_8"), SubResource("level_9"), SubResource("level_10")])
+extra_pieces = 5
+extra_pieces_ads = 2

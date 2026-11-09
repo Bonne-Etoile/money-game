@@ -172,13 +172,21 @@ Chaque ticket : objectif, périmètre, critères d'acceptation, dépendances. Un
 - **Dépend de** : G1.
 - **Fait (2026-11-09)** : `DailyChallenge` (graine de la date), scène `game/proto_tiles/daily.tscn`, meilleur score du jour et série dans la sauvegarde, bouton du menu. **À tester par Stelio** : donne-t-il envie de revenir chaque jour ?
 
-### G17. Mode à niveaux à objectifs — prêt
+### G17. Mode à niveaux à objectifs — à tester (PR à venir)
 
 - **Décision de Stelio (2026-11-09)** : « Ok pour C » : un seul jeu (G1) avec deux modes, infini et à niveaux, plutôt qu'un second prototype.
 - **Objectif** : donner un but, une fin et une progression au-delà du mode infini (étude, 8.1.7).
 - **Périmètre** : les règles de G1 (grille 8 × 8, pièces de Tetris tournables, lignes et trios). Un niveau = une grille de départ dessinée à la main, un objectif affiché (« Effacer 5 trios d'étoiles », « Libérer les 3 tuiles dorées », « Atteindre 800 points ») et un nombre de pièces limité ; perdu quand il n'y a plus de pièces. Éléments de niveau : **tuiles dorées** (libérées par une ligne ou un trio), **pierres** (seulement par une ligne), **glace** (deux effacements) ; un élément nouveau tous les 10 niveaux environ. Carte des niveaux ; chaque niveau gagné colore une partie d'une grande tuile de mahjong, à partager une fois finie. Pub récompensée **« +5 pièces »** quand il en manque (aucune pub forcée, D4) ; bonus de G9 utilisables. Mode expert débloqué en battant son record (plus tard). Niveaux en `.tres`.
 - **Critères** : chaque niveau gagné par un robot dans les tests ; test de scénario (gagner, perdre, « +5 pièces ») ; captures regardées ; **à tester par Stelio** (difficulté des niveaux).
 - **Dépend de** : G10, G11. À redécouper si trop gros (moteur de niveaux et objectifs ; éléments ; carte et image).
+- **Fait (2026-11-09)** : moteur de niveaux (`LevelGame`, `LevelBoard`), 3 objectifs (score, groupes d'un symbole, tuiles dorées), tuiles dorées, pierres, glace, 10 niveaux gagnés par un robot, carte avec la grande tuile qui se colore, « +5 pièces (pub) », bonus de G9, niveaux réussis dans la sauvegarde (version 4). Décision 20 de `docs/architecture.md`. **Reste (G17b)** : partager la grande tuile finie, mode expert débloqué en battant son record, plus de niveaux. **À tester par Stelio** : difficulté des niveaux (trop faciles, trop durs ?), objectifs clairs ? les pierres et la glace se comprennent-elles sans explication ?
+
+### G17b. Suite du mode à niveaux — prêt
+
+- **Objectif** : finir le périmètre de G17.
+- **Périmètre** : partager l'image de la grande tuile une fois finie ; mode expert débloqué en battant son record ; 10 à 20 niveaux de plus, un élément nouveau tous les 10 niveaux environ.
+- **Critères** : comme G17.
+- **Dépend de** : G17 et le test de Stelio.
 
 ### G4. …
 

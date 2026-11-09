@@ -13,8 +13,12 @@ extends Resource
 @export var flash: Color = Color(1, 0.95, 0.6)
 ## Tint of the tiles of a hint (a placement shown to a player who hesitates).
 @export var hint_tint: Color = Color(1, 1, 1, 0.4)
-## An empty shape, before it takes its tiles (prototype "stamp").
-@export var shape_color: Color = Color(0.35, 0.72, 0.95)
+## Stones of the level mode (G17): face and side.
+@export var stone_face: Color = Color(0.5, 0.52, 0.56)
+@export var stone_side: Color = Color(0.32, 0.33, 0.37)
+## Frame of a gold tile, and the sheet over a tile under ice (level mode).
+@export var gold_color: Color = Color(1.0, 0.8, 0.2)
+@export var ice_color: Color = Color(0.7, 0.9, 1.0, 0.55)
 ## Symbol colours, one per symbol (a symbol is also a shape: colour is never the only cue).
 @export var symbol_colors: Array[Color] = []
 ## Gap between cells, as a fraction of a cell.

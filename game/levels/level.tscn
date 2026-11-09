@@ -1,0 +1,9 @@
+[gd_scene format=3]
+
+[ext_resource type="PackedScene" path="res://game/proto_tiles/tile_blocks.tscn" id="1_screen"]
+[ext_resource type="Script" path="res://game/levels/level_screen.gd" id="2_script"]
+[ext_resource type="Resource" path="res://game/data/levels.tres" id="3_levels"]
+
+[node name="Level" instance=ExtResource("1_screen")]
+script = ExtResource("2_script")
+levels = ExtResource("3_levels")

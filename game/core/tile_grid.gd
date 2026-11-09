@@ -4,6 +4,9 @@ extends RefCounted
 ## Pure logic (no node); the board scene only draws it.
 
 const EMPTY: int = -1
+## A stone (level mode, G17): fills its cell, belongs to no group of symbols, and goes only
+## with a full row or column.
+const STONE: int = -2
 
 var size: int = 0
 var _cells: PackedInt32Array = []
@@ -109,6 +112,7 @@ func find_clears(match_size: int) -> GridClear:
 			_mark(group, grouped)
 			if group.size() >= match_size:
 				clear.groups += 1
+				clear.group_symbols.append(symbol_of[cell])
 				_mark(group, marked)
 	clear.cells.assign(marked.keys())
 	return clear
@@ -139,6 +143,6 @@ func _symbol_map() -> Dictionary[Vector2i, int]:
 	for y in size:
 		for x in size:
 			var symbol: int = symbol_at(Vector2i(x, y))
-			if symbol != EMPTY:
+			if symbol >= 0:
 				symbol_of[Vector2i(x, y)] = symbol
 	return symbol_of

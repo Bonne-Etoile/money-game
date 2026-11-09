@@ -7,6 +7,8 @@ var cells: Array[Vector2i] = []
 var lines: int = 0
 ## Groups of identical symbols touching each other.
 var groups: int = 0
+## The symbol of each group, in the order they were found.
+var group_symbols: PackedInt32Array = []
 
 
 func is_empty() -> bool:
