@@ -6,6 +6,10 @@ extends GdUnitTestSuite
 const SCENE: String = "res://game/proto_tiles/tile_blocks.tscn"
 
 
+func before_test() -> void:
+	GameState.reset()
+
+
 func _screen() -> GdUnitSceneRunner:
 	var runner: GdUnitSceneRunner = scene_runner(SCENE)
 	(runner.scene() as TileBlocksScreen).start(1)
@@ -68,12 +72,16 @@ func test_a_piece_dropped_on_a_full_cell_goes_back_to_the_tray() -> void:
 	assert_bool((runner.find_child("Board") as BoardView).has_ghost()).is_false()
 
 
-## Fills the grid but one corner and leaves a piece of two in the hand: the game is over.
-func _lose(screen: TileBlocksScreen) -> void:
+func _fill_but_corner(screen: TileBlocksScreen) -> void:
 	for y in 8:
 		for x in 8:
 			if Vector2i(x, y) != Vector2i(7, 7):
 				screen.game.grid.set_symbol(Vector2i(x, y), (x + y) % 2)
+
+
+## Fills the grid but one corner and leaves a piece of two in the hand: the game is over.
+func _lose(screen: TileBlocksScreen) -> void:
+	_fill_but_corner(screen)
 	var bar: Piece = Piece.new([Vector2i(0, 0), Vector2i(1, 0)], PackedInt32Array([0, 1]))
 	screen.game.hand.assign([bar, null, null])
 	screen.refresh()
@@ -151,3 +159,112 @@ func test_tapping_a_piece_turns_it() -> void:
 	await Pointer.tap(runner, tray.slot_center(2))
 	assert_that(screen.game.hand[2].extent()).is_equal(Vector2i(1, 2))
 	assert_int(screen.game.grid.filled_count()).is_equal(0)
+
+
+func test_new_pieces_are_free_once_then_cost_a_watched_ad() -> void:
+	var fake: FakeAdsBackend = _fake_ads()
+	var runner: GdUnitSceneRunner = await _screen()
+	var screen: TileBlocksScreen = runner.scene() as TileBlocksScreen
+	var button: Button = runner.find_child("NewHandButton") as Button
+	var first: Piece = screen.game.hand[0]
+	button.pressed.emit()
+	assert_object(screen.game.hand[0]).is_not_same(first)
+	assert_int(fake.shown).is_equal(0)
+	assert_str(button.text).is_equal(tr("BONUS_NEW_HAND_AD"))
+	var second: Piece = screen.game.hand[0]
+	button.pressed.emit()
+	assert_int(fake.shown).is_equal(1)
+	assert_object(screen.game.hand[0]).is_not_same(second)
+	var stats: PlayerStats = GameState.progress.stats
+	assert_int(stats.bonuses_used[TileBlocksGame.BONUS_NEW_HAND]).is_equal(2)
+	assert_int(stats.ads_watched[TileBlocksScreen.NEW_HAND_PLACEMENT]).is_equal(1)
+
+
+func test_an_ad_closed_early_gives_no_bonus() -> void:
+	var fake: FakeAdsBackend = _fake_ads()
+	fake.grants_reward = false
+	var runner: GdUnitSceneRunner = await _screen()
+	var screen: TileBlocksScreen = runner.scene() as TileBlocksScreen
+	screen.game.bonus_charges[TileBlocksGame.BONUS_NEW_HAND] = 0
+	screen.refresh()
+	var piece: Piece = screen.game.hand[0]
+	(runner.find_child("NewHandButton") as Button).pressed.emit()
+	assert_int(fake.shown).is_equal(1)
+	assert_object(screen.game.hand[0]).is_same(piece)
+
+
+func test_the_mirror_flips_the_next_tapped_piece() -> void:
+	_fake_ads()
+	var runner: GdUnitSceneRunner = await _screen()
+	var screen: TileBlocksScreen = runner.scene() as TileBlocksScreen
+	var s_shape: Piece = Piece.new(
+		[Vector2i(1, 0), Vector2i(2, 0), Vector2i(0, 1), Vector2i(1, 1)] as Array[Vector2i],
+		PackedInt32Array([0, 1, 2, 3])
+	)
+	screen.game.hand[2] = s_shape
+	screen.refresh()
+	var button: Button = runner.find_child("MirrorButton") as Button
+	button.pressed.emit()
+	assert_bool(screen.mirroring).is_true()
+	assert_str((runner.find_child("HintLabel") as Label).text).is_equal("HINT_MIRROR")
+	var tray: TrayView = runner.find_child("Tray") as TrayView
+	await Pointer.tap(runner, tray.slot_center(2))
+	assert_that(screen.game.hand[2].cells).is_equal(s_shape.mirrored().cells)
+	assert_bool(screen.mirroring).is_false()
+	# The next tap turns the piece again, as usual.
+	await Pointer.tap(runner, tray.slot_center(2))
+	assert_that(screen.game.hand[2].extent()).is_equal(Vector2i(2, 3))
+
+
+func test_the_mirror_can_be_cancelled_without_using_it() -> void:
+	var runner: GdUnitSceneRunner = await _screen()
+	var screen: TileBlocksScreen = runner.scene() as TileBlocksScreen
+	var button: Button = runner.find_child("MirrorButton") as Button
+	button.pressed.emit()
+	button.pressed.emit()
+	assert_bool(screen.mirroring).is_false()
+	var bonus: String = TileBlocksGame.BONUS_MIRROR
+	assert_int(screen.game.charges(bonus)).is_equal(screen.rules.bonus_free_uses)
+
+
+func test_bonuses_call_for_attention_when_pieces_stop_fitting() -> void:
+	_fake_ads()
+	var runner: GdUnitSceneRunner = await _screen()
+	var screen: TileBlocksScreen = runner.scene() as TileBlocksScreen
+	assert_bool(screen.is_calling_for_bonuses()).is_false()
+	screen.game.bonus_charges[TileBlocksGame.BONUS_NEW_HAND] = 0
+	_fill_but_corner(screen)
+	# Only a piece of one cell still fits, in the last free corner: in trouble, not over.
+	var bar: Piece = Piece.new([Vector2i(0, 0), Vector2i(1, 0)], PackedInt32Array([0, 1]))
+	screen.game.hand.assign([bar, _single(0), null])
+	screen.refresh()
+	assert_bool(screen.is_calling_for_bonuses()).is_true()
+	var offers: Dictionary[String, int] = GameState.progress.stats.ad_offers
+	assert_int(offers[TileBlocksScreen.NEW_HAND_PLACEMENT]).is_equal(1)
+	assert_bool(offers.has(TileBlocksScreen.MIRROR_PLACEMENT)).is_false()
+	screen.refresh()
+	assert_int(offers[TileBlocksScreen.NEW_HAND_PLACEMENT]).is_equal(1)
+
+
+func test_game_over_offers_new_pieces_and_shows_the_best_score() -> void:
+	_fake_ads()
+	var runner: GdUnitSceneRunner = await _screen()
+	var screen: TileBlocksScreen = runner.scene() as TileBlocksScreen
+	screen.game.scores.score = 42
+	_lose(screen)
+	var button: Button = runner.find_child("GameOverNewHandButton") as Button
+	assert_bool(button.visible).is_true()
+	var best: Label = runner.find_child("BestScoreLabel") as Label
+	assert_str(best.text).contains("42")
+	assert_int(GameState.progress.stats.ad_offers[TileBlocksScreen.CONTINUE_PLACEMENT]).is_equal(1)
+
+
+func test_a_game_left_for_a_new_one_counts_as_played() -> void:
+	var runner: GdUnitSceneRunner = await _screen()
+	var screen: TileBlocksScreen = runner.scene() as TileBlocksScreen
+	screen.game.hand[0] = _single(0)
+	screen.game.place(0, Vector2i(0, 0))
+	screen.start(2)
+	screen.start(3)
+	assert_int(GameState.progress.stats.games_played).is_equal(1)
+	assert_int(GameState.progress.stats.total_moves).is_equal(1)

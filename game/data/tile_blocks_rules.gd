@@ -23,5 +23,18 @@ extends Resource
 ## Rows and columns cleared in the middle of the grid by a revive: a cross wide enough for
 ## every shape of `shape_set` (the longest is 5 cells, the widest 3 x 3).
 @export var revive_clear_lines: int = 3
+## Uses of each bonus (new pieces, mirror) given free at the start of a game: the player
+## tries them, then may want them again for an ad (docs/strategies-pub.md).
+@export var bonus_free_uses: int = 1
+## Uses of each bonus a game can earn by watching a rewarded ad (one use per ad).
+@export var bonus_ad_uses: int = 3
+## Pieces drawn for each slot when the "new pieces" bonus is used: the one with the most room
+## is given, so the bonus really helps.
+@export var new_hand_candidates: int = 3
+## Pieces of the hand that still fit, at most, for the player to be "in trouble": the bonus
+## buttons call for attention (the moment an ad is worth the most to the player).
+@export var trouble_fitting_pieces: int = 1
 @export var shape_set: PieceShapeSet
+## Adaptive difficulty; none: every piece is drawn by pure chance.
+@export var difficulty: DifficultyRules
 @export var scoring: ScoreRules

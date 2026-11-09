@@ -2,6 +2,9 @@ extends Node
 ## The playthrough under way (GameProgress) and its save slot. The only place that changes the
 ## state: scenes call its methods, which apply GameProgress's rules and emit Events' signals.
 ## Saves are written only when a slot is chosen: tests and screenshots never write anything.
+## The exported game opens the player's latest slot at start (one profile, no slot menu) and
+## counts the session; it also keeps what the player does (PlayerStats) for the adaptive
+## difficulty and the ad statistics.
 
 const SAVES_DIRECTORY: String = "user://saves"
 
@@ -9,6 +12,43 @@ var progress: GameProgress = GameProgress.new()
 var saves: SaveSlots = SaveSlots.new(SAVES_DIRECTORY)
 ## The slot of the playthrough, or 0: nothing is saved (tests, screenshots).
 var slot: int = 0
+
+
+func _ready() -> void:
+	Events.rewarded_ad_finished.connect(_on_rewarded_ad_finished)
+	if OS.has_feature("template"):
+		open_profile()
+
+
+## Opens the player's latest playthrough (a new one the first time) and counts a session.
+func open_profile() -> void:
+	var latest: int = saves.latest()
+	if latest <= 0 or not load_game(latest):
+		new_game()
+	progress.stats.start_session()
+	save_game()
+
+
+## A game ended with `score` after `moves` moves.
+func record_game(score: int, moves: int) -> void:
+	progress.stats.finish_game(score, moves)
+	Diagnostics.note("game ended: score %d, %d moves" % [score, moves])
+	save_game()
+
+
+## Keeps `score` as the best one when it is (a game is not over until the player leaves it).
+func note_score(score: int) -> void:
+	progress.stats.note_score(score)
+
+
+## A rewarded ad was offered for `placement` at a moment it was worth the most.
+func record_offer(placement: String) -> void:
+	progress.stats.record_offer(placement)
+
+
+func record_bonus(kind: String) -> void:
+	progress.stats.record_bonus(kind)
+	Diagnostics.note("bonus: %s" % kind)
 
 
 ## Back to a blank state, saved nowhere (called before each test).
@@ -51,6 +91,11 @@ func save_game() -> bool:
 func earn(amount: int) -> void:
 	progress.earn(amount)
 	Events.money_changed.emit(progress.money)
+
+
+func _on_rewarded_ad_finished(placement: String, rewarded: bool) -> void:
+	progress.stats.record_ad(placement, rewarded)
+	save_game()
 
 
 func spend(amount: int) -> bool:

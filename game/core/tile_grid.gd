@@ -68,6 +68,17 @@ func fits_anywhere(piece: Piece) -> bool:
 	return false
 
 
+## Number of places where `piece` fits (top-left corners): how much room it has.
+func count_placements(piece: Piece) -> int:
+	var extent: Vector2i = piece.extent()
+	var count: int = 0
+	for y in size - extent.y + 1:
+		for x in size - extent.x + 1:
+			if can_place(piece, Vector2i(x, y)):
+				count += 1
+	return count
+
+
 ## The cells to clear now: full rows and columns, and (when `match_size` > 0) every group of
 ## at least `match_size` identical symbols touching each other.
 func find_clears(match_size: int) -> GridClear:

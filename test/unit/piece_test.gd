@@ -41,3 +41,17 @@ func test_every_shape_starts_at_the_top_left_corner() -> void:
 		assert_int(left).override_failure_message(shape.key).is_equal(0)
 		assert_int(top).override_failure_message(shape.key).is_equal(0)
 		assert_object(SHAPES.find(shape.key)).is_same(shape)
+
+
+func test_a_mirrored_piece_is_flipped_left_to_right() -> void:
+	# An S (two on top, shifted right) becomes a Z; the symbols follow their cells.
+	var s_shape: Piece = Piece.new(
+		[Vector2i(1, 0), Vector2i(2, 0), Vector2i(0, 1), Vector2i(1, 1)] as Array[Vector2i],
+		PackedInt32Array([0, 1, 2, 3])
+	)
+	var flipped: Piece = s_shape.mirrored()
+	assert_that(flipped.cells).is_equal(
+		[Vector2i(1, 0), Vector2i(0, 0), Vector2i(2, 1), Vector2i(1, 1)] as Array[Vector2i]
+	)
+	assert_that(flipped.symbols).is_equal(PackedInt32Array([0, 1, 2, 3]))
+	assert_that(flipped.mirrored().cells).is_equal(s_shape.cells)
