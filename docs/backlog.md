@@ -107,6 +107,11 @@ Chaque ticket : objectif, périmètre, critères d'acceptation, dépendances. Un
 - **À tester par Stelio** (APK) : la difficulté monte-t-elle assez vite (affichée en haut) ? Finit-on par vouloir un bonus ? Les bonus aident-ils assez pour valoir une pub ? Le miroir se comprend-il ?
 - **Bonus suivants proposés** (après son test) : marteau (retirer une tuile), bombe 3 × 3, annuler le dernier coup, tuile joker, score ×2 en fin de partie (les interstitiels sont écartés : aucune pub forcée, décision D4 du 2026-11-09).
 
+### G9b. Ne garder que G1 dans l'app (2026-11-09) — fait (PR à venir)
+
+- **Ses mots** : « Tu peux supprimer les autres jeux de l'app et ne garder que G1. »
+- **Fait** : menu réduit à « Jouer » et « Quitter » ; scènes, logique, données, tests et textes des prototypes 2 à 5 retirés (`docs/conception-du-jeu.md`, section 2). Le code reste dans l'historique git (commit `8774f13`).
+
 ## Suite de l'étude Block Blast (2026-11-09)
 
 **Demande de Stelio (2026-11-09)** : les 8 tickets proposés dans `docs/etude-block-blast.md` (section 8.4), « toutes ». Ils s'appliquent au prototype 1 (« blocs de tuiles »), retenu le 2026-11-09 (D2). Rappel : **aucune pub forcée** (décision D4) ; tout le revenu vient des récompensées.

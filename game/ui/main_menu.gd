@@ -1,14 +1,9 @@
 class_name MainMenu
 extends Control
-## The start menu: one button per prototype to compare (docs/backlog.md, G1, G2, G5 to G7),
-## quit.
+## The start menu: play, quit.
 ## After a crash, it opens on the crash report, to copy and paste to Claude (Diagnostics).
 
 const TILE_BLOCKS_SCENE: String = "res://game/proto_tiles/tile_blocks.tscn"
-const PYRAMID_SCENE: String = "res://game/proto_pyramid/pyramid.tscn"
-const TRAY_GRID_SCENE: String = "res://game/proto_tray_grid/tray_grid.tscn"
-const PAIRS_SCENE: String = "res://game/proto_pairs/pairs.tscn"
-const STAMP_SCENE: String = "res://game/proto_stamp/stamp.tscn"
 
 ## Whether the play buttons open their scene (tests turn it off and check `chosen_scene`).
 @export var opens_game: bool = true
@@ -18,10 +13,6 @@ var chosen_scene: String = ""
 
 @onready var _main: Control = %Main
 @onready var _play: Button = %PlayButton
-@onready var _play_pyramid: Button = %PlayPyramidButton
-@onready var _play_tray_grid: Button = %PlayTrayGridButton
-@onready var _play_pairs: Button = %PlayPairsButton
-@onready var _play_stamp: Button = %PlayStampButton
 @onready var _quit: Button = %QuitButton
 @onready var _crash: Control = %Crash
 @onready var _report_text: TextEdit = %ReportText
@@ -31,10 +22,6 @@ var chosen_scene: String = ""
 
 func _ready() -> void:
 	_play.pressed.connect(play.bind(TILE_BLOCKS_SCENE))
-	_play_pyramid.pressed.connect(play.bind(PYRAMID_SCENE))
-	_play_tray_grid.pressed.connect(play.bind(TRAY_GRID_SCENE))
-	_play_pairs.pressed.connect(play.bind(PAIRS_SCENE))
-	_play_stamp.pressed.connect(play.bind(STAMP_SCENE))
 	_quit.pressed.connect(func() -> void: get_tree().quit())
 	_crash_copy.pressed.connect(copy_crash_report)
 	_crash_close.pressed.connect(close_crash_report)
@@ -59,7 +46,7 @@ func show_page(page: StringName) -> void:
 		_play.grab_focus()
 
 
-## Opens a prototype (no save: each game starts afresh).
+## Opens a game scene.
 func play(scene: String) -> void:
 	chosen_scene = scene
 	if opens_game:

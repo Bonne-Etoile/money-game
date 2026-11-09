@@ -45,39 +45,7 @@ custom_minimum_size = Vector2(560, 88)
 layout_mode = 2
 size_flags_horizontal = 4
 theme_override_font_sizes/font_size = 32
-text = "MENU_PLAY_TILES"
-
-[node name="PlayPyramidButton" type="Button" parent="Main/Page"]
-unique_name_in_owner = true
-custom_minimum_size = Vector2(560, 88)
-layout_mode = 2
-size_flags_horizontal = 4
-theme_override_font_sizes/font_size = 32
-text = "MENU_PLAY_PYRAMID"
-
-[node name="PlayTrayGridButton" type="Button" parent="Main/Page"]
-unique_name_in_owner = true
-custom_minimum_size = Vector2(560, 88)
-layout_mode = 2
-size_flags_horizontal = 4
-theme_override_font_sizes/font_size = 32
-text = "MENU_PLAY_TRAY_GRID"
-
-[node name="PlayPairsButton" type="Button" parent="Main/Page"]
-unique_name_in_owner = true
-custom_minimum_size = Vector2(560, 88)
-layout_mode = 2
-size_flags_horizontal = 4
-theme_override_font_sizes/font_size = 32
-text = "MENU_PLAY_PAIRS"
-
-[node name="PlayStampButton" type="Button" parent="Main/Page"]
-unique_name_in_owner = true
-custom_minimum_size = Vector2(560, 88)
-layout_mode = 2
-size_flags_horizontal = 4
-theme_override_font_sizes/font_size = 32
-text = "MENU_PLAY_STAMP"
+text = "MENU_PLAY"
 
 [node name="QuitButton" type="Button" parent="Main/Page"]
 unique_name_in_owner = true
