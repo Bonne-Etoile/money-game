@@ -16,6 +16,7 @@ Jeu mobile Android (portrait, iOS mis de côté), gratuit et financé par la pub
 - `docs/deploiement-android.md` : publication sur Google Play (compte, test fermé, build AAB, questionnaires, consentement).
 - `docs/strategies-pub.md` : monétisation par la pub (formats, règles AdMob et Google Play à ne jamais franchir, leviers pour faire regarder des pubs, genre et technologie recommandés).
 - `docs/etude-concurrence.md` : concurrence et tendances des classiques de réflexion (blocs, mahjong, flèches, tri, vis).
+- `docs/etude-block-blast.md` : étude détaillée de Block Blast (gameplay, difficulté, pubs) et recommandations pour notre jeu.
 
 ## Stack
 
@@ -86,6 +87,10 @@ Jeu mobile Android (portrait, iOS mis de côté), gratuit et financé par la pub
 - Assets générés par IA autorisés ; à déclarer dans le questionnaire de contenu de Steamworks (tenir la liste à jour).
 - Pas de Git LFS au départ : pas de fichiers lourds (vidéos, sources de travail) dans le dépôt.
 
+## Pubs
+
+- **Aucune pub forcée pour le moment** (décision de Stelio, 2026-11-09) : seulement des pubs récompensées que le joueur choisit. Pas d'interstitiel ni de bannière tant qu'il ne revient pas sur ce choix.
+
 ## Publication
 
 - **Rien n'est publié sans l'accord explicite du joueur-producteur**, à chaque publication (vidéos, textes, page Steam).
@@ -95,7 +100,8 @@ Jeu mobile Android (portrait, iOS mis de côté), gratuit et financé par la pub
 
 Claude enchaîne les tickets de `docs/backlog.md` sans attendre de relecture entre deux tickets.
 
-- **Branches** : `main` (versions publiées, mergée uniquement par l'humain) ← `dev` (intégration) ← une branche par ticket, `claude/<ticket>-<sujet>`, créée depuis `dev` à jour.
+- **Fusion** (décision de Stelio, 2026-11-09 : « Merge les PRs sans m'attendre ») : Claude fusionne lui-même ses PR dans `main` une fois les vérifications vertes et son diff relu, sans attendre Stelio.
+- **Branches** : `main` (versions publiées, où Claude fusionne ses PR vertes, voir ci-dessus) ← `dev` (intégration) ← une branche par ticket, `claude/<ticket>-<sujet>`, créée depuis `dev` à jour.
 - **Un ticket** :
   1. prendre le premier ticket **prêt** dont les dépendances sont **faites** ;
   2. relire `docs/pitfalls/` pour le thème ;

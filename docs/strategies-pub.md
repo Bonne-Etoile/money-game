@@ -165,6 +165,8 @@ Chaque levier ci-dessous est **compatible avec les politiques**, à condition de
 
 ## 5. Interstitiels : où et combien
 
+> **Décision du 2026-11-09 (Stelio)** : aucune pub forcée pour le moment (ni interstitiel, ni bannière). Cette section sert le jour où la décision serait revue.
+
 - **Seulement aux pauses naturelles** : après l'écran de résultat, en revenant au menu, entre deux niveaux. Jamais au lancement, au début d'un niveau, ni pendant la partie.
 - **Plafonds de départ** (à régler ensuite avec les chiffres) :
   - pas d'interstitiel pendant les **3 premières parties** ou la **première session** (laisser le joueur accrocher) ;

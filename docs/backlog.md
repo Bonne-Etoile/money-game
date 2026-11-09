@@ -18,7 +18,8 @@ Chaque ticket : objectif, périmètre, critères d'acceptation, dépendances. Un
 ## Décisions à prendre
 
 - ~~**D1. Technologie du jeu**~~ — **tranchée le 2026-11-08 : Godot 4.7** (le modèle actuel), avec le plugin AdMob de poingstudios. Voir `docs/architecture.md`, décision 16.
-- ~~**D2. Genre du jeu**~~ — **tranchée le 2026-11-08** : un hybride **blocs + tuiles de mahjong**. Deux prototypes à comparer : piste 1 « blocs de tuiles » et piste 2 « la pyramide fournit les pièces » (`docs/etude-concurrence.md`, annexe B). On garde celle qui donne le plus envie de rejouer (test de Stelio).
+- ~~**D2. Genre du jeu**~~ — **tranchée le 2026-11-08** : un hybride **blocs + tuiles de mahjong**. Deux prototypes à comparer : piste 1 « blocs de tuiles » et piste 2 « la pyramide fournit les pièces » (`docs/etude-concurrence.md`, annexe B). On garde celle qui donne le plus envie de rejouer (test de Stelio). **Suite, 2026-11-09 : prototype retenu = G1 « blocs de tuiles »**, avec un mode infini et un mode à niveaux à objectifs dans le même jeu (G17, option C de l'étude Block Blast ; « Ok pour C »). G2, G5 et G6 sont mis de côté ; G7 « tampon sur la pile » pourrait devenir **un jeu à part entière**, à voir plus tard.
+- ~~**D4. Pubs forcées**~~ — **tranchée le 2026-11-09 : aucune pub forcée pour le moment** (ni interstitiel, ni bannière) ; seulement des pubs récompensées choisies par le joueur (« J'aimerais aussi qu'il n'y ait pas de pub forcée pour le moment »).
 - **D3. Public cible** (2026-11-08) : 13 ans et plus recommandé, pour éviter le programme Familles qui interdit la plupart des leviers pub (`docs/deploiement-android.md`, section 6).
 
 ## Actions attendues du joueur
@@ -104,7 +105,68 @@ Chaque ticket : objectif, périmètre, critères d'acceptation, dépendances. Un
 - **Périmètre** : prototype 1 (et 4, qui partage l'écran) : `PlayerStats` gardé dans la sauvegarde ; `DifficultyDirector` (pièces avec le moins de place quand il enchaîne) ; bonus « Nouvelles pièces » et « Miroir », 1 gratuit par partie puis 1 par pub récompensée ; appel au bonus quand une seule pièce rentre encore ; record sur l'écran de fin. Règles dans `docs/conception-du-jeu.md`, décision 19 de `docs/architecture.md`.
 - **Critères** : tests unitaires (statistiques, difficulté, bonus, migration de sauvegarde) et de scénario (bonus gratuit puis pub, pub fermée avant la fin, miroir, appel au bonus, partie comptée) ; captures regardées.
 - **À tester par Stelio** (APK) : la difficulté monte-t-elle assez vite (affichée en haut) ? Finit-on par vouloir un bonus ? Les bonus aident-ils assez pour valoir une pub ? Le miroir se comprend-il ?
-- **Bonus suivants proposés** (après son test) : marteau (retirer une tuile), bombe 3 × 3, annuler le dernier coup, tuile joker, score ×2 en fin de partie ; interstitiels aux pauses naturelles ; trêve d'interstitiels après une pub choisie.
+- **Bonus suivants proposés** (après son test) : marteau (retirer une tuile), bombe 3 × 3, annuler le dernier coup, tuile joker, score ×2 en fin de partie (les interstitiels sont écartés : aucune pub forcée, décision D4 du 2026-11-09).
+
+## Suite de l'étude Block Blast (2026-11-09)
+
+**Demande de Stelio (2026-11-09)** : les 8 tickets proposés dans `docs/etude-block-blast.md` (section 8.4), « toutes ». Ils s'appliquent au prototype 1 (« blocs de tuiles »), retenu le 2026-11-09 (D2). Rappel : **aucune pub forcée** (décision D4) ; tout le revenu vient des récompensées.
+
+### G10. Record au centre — prêt
+
+- **Objectif** : faire du record le moteur de la partie et le moment fort de « Continuer » (étude, 8.1.1 et 8.2.1).
+- **Périmètre** : record affiché en permanence ; barre « vers le record » qui se remplit pendant la partie ; animation et son quand il est battu ; sur l'écran de fin, l'offre « Continuer » dit ce qu'il manquait (« Il te manquait 120 points ») ou salue le record battu.
+- **Critères** : logique (écart au record, record battu) dans `game/core/` avec tests ; test de scénario ; captures regardées.
+- **Dépend de** : G9 (record et `PlayerStats`, PR #5).
+
+### G11. Difficulté dans les deux sens et garantie de jouabilité — prêt
+
+- **Objectif** : garder le joueur moyen, et que toute défaite vienne d'un choix du joueur (étude, 8.1.2 et 8.1.3).
+- **Périmètre** : après 2 parties d'affilée sous la moyenne, ou tant que le score est loin du record, tirer la pièce qui a **le plus** de place ; petites pièces pour les toutes premières parties ; le générateur ne propose jamais un lot impossible (aucune pièce ne rentre dans aucun sens) tant que la grille n'est pas pleine au-delà d'un seuil réglable. Le générateur ne lit jamais l'état des pubs. Réglages dans `game/data/difficulty_rules.tres`.
+- **Critères** : tests unitaires (série d'échecs → niveau qui baisse ; jamais de lot impossible sur des grilles de test) ; description de PR : quoi tester (sensation de difficulté).
+- **Dépend de** : G9.
+
+### G12. Build de test « 3 pièces renouvelées ensemble » — prêt
+
+- **Objectif** : savoir si attendre d'avoir posé les 3 pièces (comme Block Blast) répond au « trop facile » mieux que le remplacement immédiat de G8 (étude, 8.1.5).
+- **Périmètre** : un choix dans le menu ou un réglage (`refill_each_slot` existe déjà) pour comparer les deux sur le même APK.
+- **Critères** : test de scénario des deux modes ; APK de test par le workflow ; **à tester par Stelio**.
+- **Dépend de** : G8.
+
+### G13. Retours d'effacement — prêt
+
+- **Objectif** : rendre chaque effacement satisfaisant et visible dans une vidéo de 5 secondes (étude, 8.1.4).
+- **Périmètre** : mots d'encouragement qui montent avec le combo, explosion des cases, son qui monte à chaque coup du combo, effet qui grossit avec le nombre d'effacements, « grille vide ! » avec gros bonus, vibration courte (réglage dans les options), feu d'artifice au record. Sons par `docs/recettes/sons-et-musique.md` ; textes traduits.
+- **Critères** : captures regardées ; vidéo ou build de test ; **à tester par Stelio** (Claude ne juge ni les sensations ni le son).
+- **Dépend de** : G1.
+
+### G14. Reprise offerte au retour — prêt
+
+- **Objectif** : faire revenir le joueur qui décroche (étude, 8.2.5).
+- **Périmètre** : si le joueur revient après plusieurs jours sans jouer (seuil réglable), la première reprise de la journée est gratuite, avec un bouton qui le dit (« Continuer (offert) »). Date de dernière session dans `PlayerStats` (migration de sauvegarde si besoin).
+- **Critères** : tests unitaires (dates simulées, pas d'horloge réelle) ; test de scénario.
+- **Dépend de** : G9.
+
+### G15. Aide à l'hésitation — prêt
+
+- **Objectif** : aider le joueur bloqué sans casser le défi (étude, 8.1.6).
+- **Périmètre** : après une dizaine de secondes sans coup (réglable), montrer en ombre un placement qui efface une ligne ou un trio, s'il y en a un. Plus tard, éventuellement, un bonus « Indice » contre pub récompensée.
+- **Critères** : recherche du placement dans `game/core/` avec tests ; test de scénario en avançant image par image.
+- **Dépend de** : G1.
+
+### G16. Défi du jour — prêt
+
+- **Objectif** : un rendez-vous quotidien que Block Blast n'a pas (étude, 8.1.8).
+- **Périmètre** : une partie par jour avec la même graine pour tous (`RandomNumberGenerator` à graine tirée de la date) ; meilleur score du jour et série de jours joués gardés dans la sauvegarde ; bouton dans le menu. Classement entre joueurs plus tard (demande un serveur).
+- **Critères** : tests unitaires (même date → mêmes pièces) ; test de scénario ; captures.
+- **Dépend de** : G1.
+
+### G17. Mode à niveaux à objectifs — prêt
+
+- **Décision de Stelio (2026-11-09)** : « Ok pour C » : un seul jeu (G1) avec deux modes, infini et à niveaux, plutôt qu'un second prototype.
+- **Objectif** : donner un but, une fin et une progression au-delà du mode infini (étude, 8.1.7).
+- **Périmètre** : les règles de G1 (grille 8 × 8, pièces de Tetris tournables, lignes et trios). Un niveau = une grille de départ dessinée à la main, un objectif affiché (« Effacer 5 trios d'étoiles », « Libérer les 3 tuiles dorées », « Atteindre 800 points ») et un nombre de pièces limité ; perdu quand il n'y a plus de pièces. Éléments de niveau : **tuiles dorées** (libérées par une ligne ou un trio), **pierres** (seulement par une ligne), **glace** (deux effacements) ; un élément nouveau tous les 10 niveaux environ. Carte des niveaux ; chaque niveau gagné colore une partie d'une grande tuile de mahjong, à partager une fois finie. Pub récompensée **« +5 pièces »** quand il en manque (aucune pub forcée, D4) ; bonus de G9 utilisables. Mode expert débloqué en battant son record (plus tard). Niveaux en `.tres`.
+- **Critères** : chaque niveau gagné par un robot dans les tests ; test de scénario (gagner, perdre, « +5 pièces ») ; captures regardées ; **à tester par Stelio** (difficulté des niveaux).
+- **Dépend de** : G10, G11. À redécouper si trop gros (moteur de niveaux et objectifs ; éléments ; carte et image).
 
 ### G4. …
 

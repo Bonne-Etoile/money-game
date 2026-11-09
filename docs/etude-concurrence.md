@@ -28,6 +28,8 @@ Demandée par Stelio le 8 novembre 2026, pour choisir le genre du jeu (`docs/bac
 
 ### Le leader : Block Blast (Hungry Studio, Singapour)
 
+Étude détaillée (gameplay, difficulté, pubs, recommandations) : `docs/etude-block-blast.md`.
+
 | Année | Téléchargements (AppMagic via Udonis) | Fait marquant |
 |---|---|---|
 | 2022 | 7,5 M | sortie (iOS avril, Android septembre) |
