@@ -99,6 +99,14 @@ Chaque ticket : objectif, périmètre, critères d'acceptation, dépendances. Un
 - **Ses mots** : « 1 - je voudrais pour commencer exactement les mêmes pièces que pour Tetris original. 2 - j'aimerais pouvoir tourner les pièces. 3 - quand il m'est proposé 3 pièces et que j'en prends une, je voudrais qu'une nouvelle prenne sa place une fois que je l'ai posée. »
 - **Fait** : prototypes 1 et 4 avec les 7 tétrominos (sans le nom, le visuel ni la musique de Tetris), rotation par un toucher (prototypes 1, 2, 4, 5 ; formes du prototype 5 aussi réduites aux 7 de base), remplacement immédiat de la pièce posée (prototypes 1 et 4). Règles dans `docs/conception-du-jeu.md`.
 
+### G9. Difficulté adaptative, suivi du joueur et bonus contre pub (2026-11-09) — à tester (branche `claude/project-thread-ug2ilk`)
+
+- **Ses mots** : « c'est beaucoup trop facile. Je n'ai eu aucune pub. La publicité est la clé centrale du jeu. Il nous faut un système de suivi du comportement du joueur, de la pub, et un système d'adaptation pour servir des pièces difficiles quand il enchaîne sans difficulté et surtout pour l'amener à regarder de la pub pour acheter un bonus. […] Pour le premier : retirer les 3 blocs et inverser symétriquement un bloc, ça me paraît la base. »
+- **Périmètre** : prototype 1 (et 4, qui partage l'écran) : `PlayerStats` gardé dans la sauvegarde ; `DifficultyDirector` (pièces avec le moins de place quand il enchaîne) ; bonus « Nouvelles pièces » et « Miroir », 1 gratuit par partie puis 1 par pub récompensée ; appel au bonus quand une seule pièce rentre encore ; record sur l'écran de fin. Règles dans `docs/conception-du-jeu.md`, décision 19 de `docs/architecture.md`.
+- **Critères** : tests unitaires (statistiques, difficulté, bonus, migration de sauvegarde) et de scénario (bonus gratuit puis pub, pub fermée avant la fin, miroir, appel au bonus, partie comptée) ; captures regardées.
+- **À tester par Stelio** (APK) : la difficulté monte-t-elle assez vite (affichée en haut) ? Finit-on par vouloir un bonus ? Les bonus aident-ils assez pour valoir une pub ? Le miroir se comprend-il ?
+- **Bonus suivants proposés** (après son test) : marteau (retirer une tuile), bombe 3 × 3, annuler le dernier coup, tuile joker, score ×2 en fin de partie (les interstitiels sont écartés : aucune pub forcée, décision D4 du 2026-11-09).
+
 ## Suite de l'étude Block Blast (2026-11-09)
 
 **Demande de Stelio (2026-11-09)** : les 8 tickets proposés dans `docs/etude-block-blast.md` (section 8.4), « toutes ». Ils s'appliquent au prototype 1 (« blocs de tuiles »), retenu le 2026-11-09 (D2). Rappel : **aucune pub forcée** (décision D4) ; tout le revenu vient des récompensées.

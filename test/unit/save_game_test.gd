@@ -67,3 +67,19 @@ func test_progress_never_spends_more_than_it_has() -> void:
 	assert_bool(progress.spend(11)).is_false()
 	assert_bool(progress.spend(4)).is_true()
 	assert_int(progress.money).is_equal(6)
+
+
+func test_a_version_1_save_is_migrated_with_empty_statistics() -> void:
+	var save: SaveGame = SaveGame.from_json('{"version": 1, "progress": {"money": 3}}')
+	assert_int(save.progress.money).is_equal(3)
+	assert_int(save.progress.stats.games_played).is_equal(0)
+	var migrated: Dictionary = SaveGame.migrate({"version": 1, "progress": {"money": 3}}, 1)
+	assert_int(JsonRead.integer(migrated, "version")).is_equal(SaveGame.VERSION)
+	assert_bool(JsonRead.dictionary(migrated, "progress").has("stats")).is_true()
+
+
+func test_statistics_are_saved_with_the_progress() -> void:
+	var save: SaveGame = _save(0, 1)
+	save.progress.stats.finish_game(80, 4)
+	var read: SaveGame = SaveGame.from_json(save.to_json())
+	assert_int(read.progress.stats.best_score).is_equal(80)

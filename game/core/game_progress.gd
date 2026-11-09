@@ -8,6 +8,8 @@ extends RefCounted
 var money: int = 0
 ## Seconds of play, pauses left out.
 var play_time: float = 0.0
+## What the player does (sessions, games, ads, bonuses): the adaptive difficulty reads it.
+var stats: PlayerStats = PlayerStats.new()
 
 
 ## Adds `amount` (ignored when not positive).
@@ -25,7 +27,7 @@ func spend(amount: int) -> bool:
 
 
 func to_dict() -> Dictionary:
-	return {"money": money, "play_time": play_time}
+	return {"money": money, "play_time": play_time, "stats": stats.to_dict()}
 
 
 ## Reads saved progress without trusting it (JsonRead): anything invalid keeps its default.
@@ -33,4 +35,5 @@ static func from_dict(data: Dictionary) -> GameProgress:
 	var progress: GameProgress = GameProgress.new()
 	progress.money = maxi(JsonRead.integer(data, "money"), 0)
 	progress.play_time = maxf(JsonRead.number(data, "play_time"), 0.0)
+	progress.stats = PlayerStats.from_dict(JsonRead.dictionary(data, "stats"))
 	return progress

@@ -63,6 +63,8 @@ Jeu mobile Android (portrait, iOS mis de côté), gratuit et financé par la pub
 - Code appelé à la fermeture (`_exit_tree`, `NOTIFICATION_WM_CLOSE_REQUEST`) : `free()`, jamais `queue_free()`.
 - Hasard : jamais le générateur global (`randf()`) pour la logique ; un `RandomNumberGenerator` à graine.
 
+- **Difficulté et bonus** (prototype 1) : `DifficultyDirector` et `PlayerStats` dans `game/core/`, réglages dans `game/data/difficulty_rules.tres` et `tile_blocks_rules.tres`. Un bonus de plus : une constante `BONUS_*` et sa méthode dans `TileBlocksGame`, un bouton et un emplacement de pub dans `game/proto_tiles/tile_blocks.gd`, ses textes `BONUS_<NOM>` et `BONUS_<NOM>_AD` (qui dit qu'une pub va passer).
+
 > **À compléter** au fil du jeu : une puce par système (joueur, interface, son, sauvegarde…) qui dit où il vit et comment l'étendre. C'est ce qui permet à une nouvelle session de reprendre sans relire tout le code.
 
 ## Vérifier les API de Godot

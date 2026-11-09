@@ -4,7 +4,7 @@ extends RefCounted
 ## code, so a shared save would be an attack vector). Older versions are migrated when read;
 ## every change of the format bumps VERSION, adds a step to `migrate` and a test.
 
-const VERSION: int = 1
+const VERSION: int = 2
 
 var progress: GameProgress = GameProgress.new()
 ## When it was saved (Unix time, seconds).
@@ -32,14 +32,15 @@ static func from_dict(data: Dictionary) -> SaveGame:
 	return save
 
 
-## Brings a save of `version` up to VERSION, one step per version. Example of a step:
-##   if version == 1:
-##       var progress: Dictionary = JsonRead.dictionary(migrated, "progress")
-##       progress["new_field"] = 0
-##       migrated["progress"] = progress
+## Brings a save of `version` up to VERSION, one step per version.
 static func migrate(data: Dictionary, version: int) -> Dictionary:
 	var migrated: Dictionary = data.duplicate(true)
 	while version < VERSION:
+		if version == 1:
+			# Version 2 keeps what the player does (PlayerStats): none before.
+			var progress: Dictionary = JsonRead.dictionary(migrated, "progress")
+			progress["stats"] = PlayerStats.new().to_dict()
+			migrated["progress"] = progress
 		version += 1
 	migrated["version"] = VERSION
 	return migrated
