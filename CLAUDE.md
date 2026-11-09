@@ -98,7 +98,8 @@ Jeu mobile Android (portrait, iOS mis de côté), gratuit et financé par la pub
 
 Claude enchaîne les tickets de `docs/backlog.md` sans attendre de relecture entre deux tickets.
 
-- **Branches** : `main` (versions publiées, mergée uniquement par l'humain) ← `dev` (intégration) ← une branche par ticket, `claude/<ticket>-<sujet>`, créée depuis `dev` à jour.
+- **Fusion** (décision de Stelio, 2026-11-09 : « Merge les PRs sans m'attendre ») : Claude fusionne lui-même ses PR dans `main` une fois les vérifications vertes et son diff relu, sans attendre Stelio.
+- **Branches** : `main` (versions publiées, où Claude fusionne ses PR vertes, voir ci-dessus) ← `dev` (intégration) ← une branche par ticket, `claude/<ticket>-<sujet>`, créée depuis `dev` à jour.
 - **Un ticket** :
   1. prendre le premier ticket **prêt** dont les dépendances sont **faites** ;
   2. relire `docs/pitfalls/` pour le thème ;
