@@ -8,8 +8,13 @@ Tout ce qui est fait « au mieux » pour avancer et doit être repris, vérifié
 
 - [ ] Réglages de la difficulté adaptative et des bonus (G9 : 200 points par niveau, 1 à 4 pièces tirées, 1 utilisation gratuite et 3 par pub) : chiffres de départ, à régler avec les tests de Stelio puis les chiffres des joueurs.
 
+- [ ] Sons faits par le code (G13, `game/audio/sound_synth.gd`, `GameSounds`) : des notes simples en attendant de vrais sons (`docs/recettes/sons-et-musique.md`) ; à remplacer et à faire juger par Stelio.
+- [ ] Mots d'encouragement, éclats, tremblement, vibration (G13, `game/data/juice_rules.tres`) : chiffres de départ, à régler à l'œil et au toucher.
+- [ ] Délai de l'aide à l'hésitation (G15, 10 s, `hint_after_seconds`) : à régler avec les tests.
+
 ## Boutons et outils de développement à retirer
 
+- [ ] Option « Pièces : une à la fois / trois à la fois » du menu (G12) : pour comparer les deux sur le même APK ; garder la meilleure et retirer l'option.
 - [ ] Affichage « Difficulté N » en haut de l'écran (G9) : pour que Stelio voie la difficulté s'adapter pendant ses tests ; à retirer (ou à garder caché) avant la sortie.
 
 - [ ] Pubs de test (G3) : `game/data/ad_settings.tres` et le réglage `admob/general/android/app_id` (laissé à sa valeur par défaut) utilisent les identifiants de test de Google. Les remplacer par ceux du compte AdMob de Stelio, et vérifier `docs/strategies-pub.md` (bouton qui dit qu'une pub va passer, aucune pub surprise).

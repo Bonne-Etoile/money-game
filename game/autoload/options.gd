@@ -40,6 +40,16 @@ func set_vsync(enabled: bool) -> void:
 	_changed()
 
 
+func set_refill_together(enabled: bool) -> void:
+	settings.refill_together = enabled
+	_changed()
+
+
+func set_vibration(enabled: bool) -> void:
+	settings.vibration = enabled
+	_changed()
+
+
 func set_language(code: String) -> void:
 	settings.set_language(code)
 	TranslationServer.set_locale(settings.locale(OS.get_locale_language()))

@@ -18,6 +18,7 @@ func after_test() -> void:
 	GameState.saves = SaveSlots.new(GameState.SAVES_DIRECTORY)
 	GameState.reset()
 	Diagnostics.dismiss_crash_report()
+	Options.settings = GameSettings.new()
 
 
 func _menu() -> GdUnitSceneRunner:
@@ -33,6 +34,20 @@ func test_the_play_button_opens_the_game() -> void:
 	(runner.find_child("PlayButton") as Button).pressed.emit()
 	assert_str(menu.chosen_scene).is_equal(MainMenu.TILE_BLOCKS_SCENE)
 	assert_bool(ResourceLoader.exists(MainMenu.TILE_BLOCKS_SCENE)).is_true()
+
+
+func test_the_option_buttons_switch_and_say_their_state() -> void:
+	var runner: GdUnitSceneRunner = _menu()
+	await runner.simulate_frames(2)
+	var refill: Button = runner.find_child("RefillButton") as Button
+	assert_str(refill.text).is_equal("MENU_REFILL_EACH")
+	refill.pressed.emit()
+	assert_bool(Options.settings.refill_together).is_true()
+	assert_str(refill.text).is_equal("MENU_REFILL_TOGETHER")
+	var vibration: Button = runner.find_child("VibrationButton") as Button
+	vibration.pressed.emit()
+	assert_bool(Options.settings.vibration).is_false()
+	assert_str(vibration.text).is_equal("MENU_VIBRATION_OFF")
 
 
 func test_the_menu_opens_on_the_crash_report_after_a_crash() -> void:

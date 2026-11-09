@@ -1,6 +1,7 @@
 class_name MainMenu
 extends Control
-## The start menu: play, quit.
+## The start menu: play, the options worth a button (how the pieces come back, vibration),
+## quit.
 ## After a crash, it opens on the crash report, to copy and paste to Claude (Diagnostics).
 
 const TILE_BLOCKS_SCENE: String = "res://game/proto_tiles/tile_blocks.tscn"
@@ -13,6 +14,8 @@ var chosen_scene: String = ""
 
 @onready var _main: Control = %Main
 @onready var _play: Button = %PlayButton
+@onready var _refill: Button = %RefillButton
+@onready var _vibration: Button = %VibrationButton
 @onready var _quit: Button = %QuitButton
 @onready var _crash: Control = %Crash
 @onready var _report_text: TextEdit = %ReportText
@@ -22,7 +25,10 @@ var chosen_scene: String = ""
 
 func _ready() -> void:
 	_play.pressed.connect(play.bind(TILE_BLOCKS_SCENE))
+	_refill.pressed.connect(toggle_refill)
+	_vibration.pressed.connect(toggle_vibration)
 	_quit.pressed.connect(func() -> void: get_tree().quit())
+	_show_options()
 	_crash_copy.pressed.connect(copy_crash_report)
 	_crash_close.pressed.connect(close_crash_report)
 	show_page(&"crash" if not Diagnostics.crash_report.is_empty() else &"main")
@@ -51,6 +57,24 @@ func play(scene: String) -> void:
 	chosen_scene = scene
 	if opens_game:
 		get_tree().change_scene_to_file(scene)
+
+
+## Three new pieces at once when all are placed, or one new piece in each slot at once (G12).
+func toggle_refill() -> void:
+	Options.set_refill_together(not Options.settings.refill_together)
+	_show_options()
+
+
+func toggle_vibration() -> void:
+	Options.set_vibration(not Options.settings.vibration)
+	_show_options()
+
+
+func _show_options() -> void:
+	_refill.text = (
+		"MENU_REFILL_TOGETHER" if Options.settings.refill_together else "MENU_REFILL_EACH"
+	)
+	_vibration.text = "MENU_VIBRATION_ON" if Options.settings.vibration else "MENU_VIBRATION_OFF"
 
 
 func copy_crash_report() -> void:

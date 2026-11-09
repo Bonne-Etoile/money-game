@@ -15,6 +15,12 @@ func _init(score_rules: ScoreRules) -> void:
 	rules = score_rules
 
 
+## Adds `points` (a bonus outside the move's own scoring); ignored when not positive.
+func add(points: int) -> void:
+	if points > 0:
+		score += points
+
+
 ## Scores a move and returns its points.
 func score_move(placed_cells: int, clear: GridClear) -> int:
 	var points: int = placed_cells * rules.points_per_cell_placed

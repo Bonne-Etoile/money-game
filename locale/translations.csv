@@ -22,5 +22,14 @@ BONUS_MIRROR,Mirror (%d),Miroir (%d),Bonus button under the pieces: the next tap
 BONUS_MIRROR_AD,Mirror (ad),Miroir (pub),"Bonus button once the free uses are spent: shows a rewarded ad, then the next tapped piece is flipped. Must say that an ad plays (ad network rules)"
 BONUS_CANCEL,Cancel,Annuler,Mirror bonus button while waiting for a piece to flip: cancels without using the bonus
 HINT_MIRROR,Tap a piece to flip it,Touchez une pièce pour la retourner,"Under the pieces, after the mirror bonus: the next tap flips a piece left to right"
-NEW_RECORD,New record!,Nouveau record !,"Shown when the score beats the best score: on the record bar during the game, and on the game-over panel"
-RECORD_MISSING,You were %d points short of your record,Il vous manquait %d points pour battre votre record,"Game-over panel, above the continue button: %d is the points missing to beat the best score"
+NEW_RECORD,New record!,Nouveau record !,"Shown when the score beats the best score: on the record bar during the game, and on the game-over panel"
+RECORD_MISSING,You were %d points short of your record,Il vous manquait %d points pour battre votre record,"Game-over panel, above the continue button: %d is the points missing to beat the best score"
+MENU_REFILL_EACH,Pieces: one at a time,Pièces : une à la fois,"Start menu, test option (tap to switch): a new piece takes the place of each placed piece at once"
+MENU_REFILL_TOGETHER,Pieces: three at a time,Pièces : trois à la fois,"Start menu, test option (tap to switch): three new pieces come only once the three are placed"
+MENU_VIBRATION_ON,Vibration: on,Vibration : oui,"Start menu option (tap to switch): short vibrations on clears, phones only"
+MENU_VIBRATION_OFF,Vibration: off,Vibration : non,Start menu option (tap to switch): no vibration
+PRAISE_1,Nice!,Bien !,"Word of praise rising over the grid after a good clear (2 clears at once, or a combo)"
+PRAISE_2,Great!,Super !,Word of praise after a better clear (stronger than PRAISE_1)
+PRAISE_3,Awesome!,Génial !,Word of praise after a great clear (stronger than PRAISE_2)
+PRAISE_4,Incredible!,Incroyable !,"Word of praise after the best clears, the strongest"
+PRAISE_EMPTY_GRID,Grid cleared! +%d,Grille vide ! +%d,Rising over the grid when a move empties the whole grid; %d is the bonus points

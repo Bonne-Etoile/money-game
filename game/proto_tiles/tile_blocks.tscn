@@ -6,6 +6,9 @@
 [ext_resource type="Script" path="res://game/board/board_view.gd" id="4_board"]
 [ext_resource type="Script" path="res://game/board/tray_view.gd" id="5_tray"]
 [ext_resource type="Script" path="res://game/board/drag_layer.gd" id="6_drag"]
+[ext_resource type="Resource" path="res://game/data/juice_rules.tres" id="7_juice"]
+[ext_resource type="Script" path="res://game/board/clear_effects.gd" id="8_effects"]
+[ext_resource type="Script" path="res://game/audio/game_sounds.gd" id="9_sounds"]
 
 [sub_resource type="StyleBoxFlat" id="record_fill"]
 bg_color = Color(1, 0.85, 0.3, 1)
@@ -24,6 +27,7 @@ grow_vertical = 2
 script = ExtResource("1_screen")
 rules = ExtResource("2_rules")
 art = ExtResource("3_art")
+juice = ExtResource("7_juice")
 
 [node name="Background" type="ColorRect" parent="."]
 unique_name_in_owner = true
@@ -186,6 +190,21 @@ unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_font_sizes/font_size = 28
+
+[node name="Effects" type="Control" parent="."]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("8_effects")
+
+[node name="Sounds" type="Node" parent="."]
+unique_name_in_owner = true
+script = ExtResource("9_sounds")
 
 [node name="DragLayer" type="Control" parent="."]
 unique_name_in_owner = true

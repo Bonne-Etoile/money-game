@@ -116,7 +116,7 @@ Chaque ticket : objectif, périmètre, critères d'acceptation, dépendances. Un
 
 **Demande de Stelio (2026-11-09)** : les 8 tickets proposés dans `docs/etude-block-blast.md` (section 8.4), « toutes ». Ils s'appliquent au prototype 1 (« blocs de tuiles »), retenu le 2026-11-09 (D2). Rappel : **aucune pub forcée** (décision D4) ; tout le revenu vient des récompensées.
 
-### G10. Record au centre — à tester (PR à venir)
+### G10. Record au centre — à tester (PR #8, fusionnée)
 
 - **Objectif** : faire du record le moteur de la partie et le moment fort de « Continuer » (étude, 8.1.1 et 8.2.1).
 - **Périmètre** : record affiché en permanence ; barre « vers le record » qui se remplit pendant la partie ; animation et son quand il est battu ; sur l'écran de fin, l'offre « Continuer » dit ce qu'il manquait (« Il te manquait 120 points ») ou salue le record battu.
@@ -124,7 +124,7 @@ Chaque ticket : objectif, périmètre, critères d'acceptation, dépendances. Un
 - **Dépend de** : G9 (record et `PlayerStats`, PR #5).
 - **Fait (2026-11-09)** : `RecordChase` (`game/core/`), ligne du record et barre dorée, « Nouveau record ! » qui grossit, ligne « Il vous manquait … » sur l'écran de fin. Son et feu d'artifice au record : avec G13. **À tester par Stelio** : la barre donne-t-elle envie d'aller au bout ? La phrase de l'écran de fin pousse-t-elle à « Continuer » ?
 
-### G11. Difficulté dans les deux sens et garantie de jouabilité — à tester (PR à venir)
+### G11. Difficulté dans les deux sens et garantie de jouabilité — à tester (PR #8, fusionnée)
 
 - **Objectif** : garder le joueur moyen, et que toute défaite vienne d'un choix du joueur (étude, 8.1.2 et 8.1.3).
 - **Périmètre** : après 2 parties d'affilée sous la moyenne, ou tant que le score est loin du record, tirer la pièce qui a **le plus** de place ; petites pièces pour les toutes premières parties ; le générateur ne propose jamais un lot impossible (aucune pièce ne rentre dans aucun sens) tant que la grille n'est pas pleine au-delà d'un seuil réglable. Le générateur ne lit jamais l'état des pubs. Réglages dans `game/data/difficulty_rules.tres`.
@@ -132,19 +132,21 @@ Chaque ticket : objectif, périmètre, critères d'acceptation, dépendances. Un
 - **Dépend de** : G9.
 - **Fait (2026-11-09)** : niveaux sous 0 (pièce avec le plus de place parmi 2 ou 3), 2 premières parties et partie après 2 parties sous la moyenne au niveau −1, garantie de jouabilité jusqu'à 70 % de grille remplie (`docs/conception-du-jeu.md`). « Petites pièces » des premières parties : obtenues par « le plus de place » plutôt que par une liste de formes. **À tester par Stelio** : les premières parties sont-elles trop faciles ? Après deux mauvaises parties, sent-on l'aide ? Y a-t-il encore des défaites « injustes » ?
 
-### G12. Build de test « 3 pièces renouvelées ensemble » — prêt
+### G12. Build de test « 3 pièces renouvelées ensemble » — à tester (PR à venir)
 
 - **Objectif** : savoir si attendre d'avoir posé les 3 pièces (comme Block Blast) répond au « trop facile » mieux que le remplacement immédiat de G8 (étude, 8.1.5).
 - **Périmètre** : un choix dans le menu ou un réglage (`refill_each_slot` existe déjà) pour comparer les deux sur le même APK.
 - **Critères** : test de scénario des deux modes ; APK de test par le workflow ; **à tester par Stelio**.
 - **Dépend de** : G8.
+- **Fait (2026-11-09)** : option du menu « Pièces : une à la fois / trois à la fois » (gardée dans les options du joueur). **À tester par Stelio** : laquelle donne le plus envie de rejouer ? Laquelle est assez difficile ?
 
-### G13. Retours d'effacement — prêt
+### G13. Retours d'effacement — à tester (PR à venir)
 
 - **Objectif** : rendre chaque effacement satisfaisant et visible dans une vidéo de 5 secondes (étude, 8.1.4).
 - **Périmètre** : mots d'encouragement qui montent avec le combo, explosion des cases, son qui monte à chaque coup du combo, effet qui grossit avec le nombre d'effacements, « grille vide ! » avec gros bonus, vibration courte (réglage dans les options), feu d'artifice au record. Sons par `docs/recettes/sons-et-musique.md` ; textes traduits.
 - **Critères** : captures regardées ; vidéo ou build de test ; **à tester par Stelio** (Claude ne juge ni les sensations ni le son).
 - **Dépend de** : G1.
+- **Fait (2026-11-09)** : mots d'encouragement, éclats, tremblement, son qui monte avec le combo, « Grille vide ! +300 », vibration (option du menu, permission Android `VIBRATE`), feu d'artifice et fanfare au record. Sons faits par le code (pas de clé ElevenLabs dans la session) : à remplacer (`docs/avant-la-sortie.md`). **À tester par Stelio** : est-ce satisfaisant ? Trop chargé ? Les sons sont-ils supportables ? La vibration ?
 
 ### G14. Reprise offerte au retour — prêt
 
@@ -153,12 +155,13 @@ Chaque ticket : objectif, périmètre, critères d'acceptation, dépendances. Un
 - **Critères** : tests unitaires (dates simulées, pas d'horloge réelle) ; test de scénario.
 - **Dépend de** : G9.
 
-### G15. Aide à l'hésitation — prêt
+### G15. Aide à l'hésitation — à tester (PR à venir)
 
 - **Objectif** : aider le joueur bloqué sans casser le défi (étude, 8.1.6).
 - **Périmètre** : après une dizaine de secondes sans coup (réglable), montrer en ombre un placement qui efface une ligne ou un trio, s'il y en a un. Plus tard, éventuellement, un bonus « Indice » contre pub récompensée.
 - **Critères** : recherche du placement dans `game/core/` avec tests ; test de scénario en avançant image par image.
 - **Dépend de** : G1.
+- **Fait (2026-11-09)** : `MoveHint` (`game/core/`), tuiles pâles après 10 s sans geste. **À tester par Stelio** : l'aide arrive-t-elle trop tôt ou trop tard ? Gâche-t-elle le défi ?
 
 ### G16. Défi du jour — prêt
 
