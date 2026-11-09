@@ -53,10 +53,33 @@ func test_statistics_read_back_the_same_and_without_trust() -> void:
 	assert_int(bad.ads_watched.size()).is_equal(0)
 
 
-func test_a_new_player_starts_at_level_zero() -> void:
+func test_a_new_player_is_helped_at_first() -> void:
 	var director: DifficultyDirector = DifficultyDirector.new(DIFFICULTY, PlayerStats.new())
+	assert_int(director.level(0, 0)).is_equal(DIFFICULTY.help_level)
+	assert_bool(director.hardest(director.level(0, 0))).is_false()
+	assert_int(director.candidates(DIFFICULTY.help_level)).is_greater(1)
+	# The score of the game raises the level back as usual.
+	assert_int(director.level(DIFFICULTY.points_per_level, 0)).is_equal(DIFFICULTY.help_level + 1)
+
+
+func test_without_statistics_the_level_starts_at_zero() -> void:
+	var director: DifficultyDirector = DifficultyDirector.new(DIFFICULTY, null)
 	assert_int(director.level(0, 0)).is_equal(0)
 	assert_int(director.candidates(0)).is_equal(1)
+
+
+func test_a_run_of_poor_games_lowers_the_level() -> void:
+	var stats: PlayerStats = PlayerStats.new()
+	for _game in 4:
+		stats.finish_game(1200, 50)
+	assert_int(DifficultyDirector.new(DIFFICULTY, stats).start_level).is_greater(0)
+	stats.finish_game(100, 20)
+	assert_int(DifficultyDirector.new(DIFFICULTY, stats).start_level).is_greater_equal(0)
+	stats.finish_game(100, 20)
+	var director: DifficultyDirector = DifficultyDirector.new(DIFFICULTY, stats)
+	assert_int(director.start_level).is_equal(DIFFICULTY.help_level)
+	stats.finish_game(5000, 90)
+	assert_int(DifficultyDirector.new(DIFFICULTY, stats).start_level).is_greater_equal(0)
 
 
 func test_the_level_rises_with_the_score_and_a_combo() -> void:
@@ -71,7 +94,9 @@ func test_the_level_rises_with_the_score_and_a_combo() -> void:
 func test_a_good_player_starts_higher_once_past_the_first_games() -> void:
 	var stats: PlayerStats = PlayerStats.new()
 	stats.finish_game(100000, 50)
-	assert_int(DifficultyDirector.new(DIFFICULTY, stats).start_level).is_equal(0)
+	assert_int(DifficultyDirector.new(DIFFICULTY, stats).start_level).is_equal(
+		DIFFICULTY.help_level
+	)
 	for _game in DIFFICULTY.beginner_games:
 		stats.finish_game(100000, 50)
 	var director: DifficultyDirector = DifficultyDirector.new(DIFFICULTY, stats)

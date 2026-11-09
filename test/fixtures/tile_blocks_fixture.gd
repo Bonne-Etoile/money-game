@@ -12,6 +12,7 @@ const DRAG_OFFSET: Vector2 = Vector2(30, -25)
 
 func _ready() -> void:
 	var screen: TileBlocksScreen = scene.instantiate()
+	GameState.progress.stats.best_score = 500
 	add_child(screen)
 	screen.start(SEED)
 	for _move in MOVES:

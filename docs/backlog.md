@@ -116,19 +116,21 @@ Chaque ticket : objectif, périmètre, critères d'acceptation, dépendances. Un
 
 **Demande de Stelio (2026-11-09)** : les 8 tickets proposés dans `docs/etude-block-blast.md` (section 8.4), « toutes ». Ils s'appliquent au prototype 1 (« blocs de tuiles »), retenu le 2026-11-09 (D2). Rappel : **aucune pub forcée** (décision D4) ; tout le revenu vient des récompensées.
 
-### G10. Record au centre — prêt
+### G10. Record au centre — à tester (PR à venir)
 
 - **Objectif** : faire du record le moteur de la partie et le moment fort de « Continuer » (étude, 8.1.1 et 8.2.1).
 - **Périmètre** : record affiché en permanence ; barre « vers le record » qui se remplit pendant la partie ; animation et son quand il est battu ; sur l'écran de fin, l'offre « Continuer » dit ce qu'il manquait (« Il te manquait 120 points ») ou salue le record battu.
 - **Critères** : logique (écart au record, record battu) dans `game/core/` avec tests ; test de scénario ; captures regardées.
 - **Dépend de** : G9 (record et `PlayerStats`, PR #5).
+- **Fait (2026-11-09)** : `RecordChase` (`game/core/`), ligne du record et barre dorée, « Nouveau record ! » qui grossit, ligne « Il vous manquait … » sur l'écran de fin. Son et feu d'artifice au record : avec G13. **À tester par Stelio** : la barre donne-t-elle envie d'aller au bout ? La phrase de l'écran de fin pousse-t-elle à « Continuer » ?
 
-### G11. Difficulté dans les deux sens et garantie de jouabilité — prêt
+### G11. Difficulté dans les deux sens et garantie de jouabilité — à tester (PR à venir)
 
 - **Objectif** : garder le joueur moyen, et que toute défaite vienne d'un choix du joueur (étude, 8.1.2 et 8.1.3).
 - **Périmètre** : après 2 parties d'affilée sous la moyenne, ou tant que le score est loin du record, tirer la pièce qui a **le plus** de place ; petites pièces pour les toutes premières parties ; le générateur ne propose jamais un lot impossible (aucune pièce ne rentre dans aucun sens) tant que la grille n'est pas pleine au-delà d'un seuil réglable. Le générateur ne lit jamais l'état des pubs. Réglages dans `game/data/difficulty_rules.tres`.
 - **Critères** : tests unitaires (série d'échecs → niveau qui baisse ; jamais de lot impossible sur des grilles de test) ; description de PR : quoi tester (sensation de difficulté).
 - **Dépend de** : G9.
+- **Fait (2026-11-09)** : niveaux sous 0 (pièce avec le plus de place parmi 2 ou 3), 2 premières parties et partie après 2 parties sous la moyenne au niveau −1, garantie de jouabilité jusqu'à 70 % de grille remplie (`docs/conception-du-jeu.md`). « Petites pièces » des premières parties : obtenues par « le plus de place » plutôt que par une liste de formes. **À tester par Stelio** : les premières parties sont-elles trop faciles ? Après deux mauvaises parties, sent-on l'aide ? Y a-t-il encore des défaites « injustes » ?
 
 ### G12. Build de test « 3 pièces renouvelées ensemble » — prêt
 

@@ -10,3 +10,7 @@ average_points_per_start_level = 400
 max_start_level = 2
 combo_for_extra_level = 3
 candidates_per_level = Array[int]([1, 2, 2, 3, 3, 4])
+help_candidates_per_level = Array[int]([2, 3])
+help_level = -1
+poor_games_for_help = 2
+playable_until_fill_percent = 70

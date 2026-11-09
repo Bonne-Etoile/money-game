@@ -51,6 +51,24 @@ func next_piece_among(grid: TileGrid, candidates: int, hardest: bool, can_turn: 
 	return chosen
 
 
+## A random piece that fits somewhere on `grid` (in some turn when `can_turn`): each shape is
+## tried once, in a random order; null when no shape fits at all.
+func piece_that_fits(grid: TileGrid, can_turn: bool) -> Piece:
+	var order: Array[int] = []
+	for index in _shapes.size():
+		order.append(index)
+	for index in range(order.size() - 1, 0, -1):
+		var other: int = _rng.randi_range(0, index)
+		var kept: int = order[index]
+		order[index] = order[other]
+		order[other] = kept
+	for index in order:
+		var piece: Piece = _draw_symbols(_shapes[index])
+		if room(grid, piece, can_turn) > 0:
+			return piece
+	return null
+
+
 ## Places where `piece` fits on `grid`, in each of its different turns when it can turn.
 static func room(grid: TileGrid, piece: Piece, can_turn: bool) -> int:
 	var total: int = 0
