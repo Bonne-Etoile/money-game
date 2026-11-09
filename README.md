@@ -6,14 +6,14 @@ Modèle de départ pour un jeu Godot développé par Claude et un humain, tiré 
 
 | Quoi | Où | Pourquoi |
 |---|---|---|
-| Projet Godot 4.7.2 prêt à l'emploi | `project.godot`, `.godot-version`, `export_presets.cfg` | Forward+, Jolt, GDScript typé strict (avertissements en erreurs), entrées par position physique, traductions déclarées, exports Windows et Linux sans les outils de test. |
+| Projet Godot 4.7.2 prêt à l'emploi | `project.godot`, `.godot-version`, `export_presets.cfg` | 2D en portrait (720 × 1280), rendu Compatibility, GDScript typé strict (avertissements en erreurs), entrée tactile par l'action `pointer`, traductions déclarées, exports Windows et Linux sans les outils de test. |
 | Squelette de jeu | `game/` | Autoloads `Events`, `GameState`, `Diagnostics`, `Display`, `Options` ; logique pure dans `game/core/` (sauvegarde JSON versionnée, réglages, rapport de crash, lecture JSON sans confiance, statistiques d'images) ; un menu de démarrage et une scène de jeu. |
 | Tests | `test/` | gdUnit4 6.2.2 (`addons/gdUnit4`) : 49 tests unitaires et de scénario, dont les garde-fous (réglages du projet, traductions complètes, textes de scène traduits). |
 | Quatre commandes | `Makefile` | `make lint check test build`, identiques dans la session cloud, en CI et avant chaque PR ; `make screenshot(s)` pour voir le jeu. |
-| Outils | `tools/` | Installation de la session cloud, vérification du projet, captures d'écran, test de lancement de l'export, renommage du jeu ; `tools/assets/` : génération et traitement des sons, modèles par script (Godot, Blender), import glb avec niveaux de détail. |
+| Outils | `tools/` | Installation de la session cloud, vérification du projet, captures d'écran, test de lancement de l'export, renommage du jeu ; `tools/assets/` : génération et traitement des sons. |
 | CI | `.github/workflows/` | Vérifications sur `main`/`dev`, build Windows à la demande (branche `claude/test-build-*`). |
 | Règles pour Claude | `CLAUDE.md` | Règles de code, de test, de workflow et de travail autonome, à compléter. |
-| Documentation | `docs/` | Pièges par thème, recettes (dont sons et musique, modèles 3D), ressources, modèles de documents (architecture, backlog, feuille de route, conception, avant la sortie). |
+| Documentation | `docs/` | Pièges par thème, recettes (dont sons et musique), ressources, modèles de documents (architecture, backlog, feuille de route, conception, avant la sortie). |
 
 ## Démarrer un nouveau jeu
 

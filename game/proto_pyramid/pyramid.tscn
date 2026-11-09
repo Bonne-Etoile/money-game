@@ -1,0 +1,178 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://game/proto_pyramid/pyramid.gd" id="1_screen"]
+[ext_resource type="Resource" path="res://game/data/pyramid_rules.tres" id="2_rules"]
+[ext_resource type="Resource" path="res://game/data/tile_art.tres" id="3_art"]
+[ext_resource type="Script" path="res://game/board/board_view.gd" id="4_board"]
+[ext_resource type="Script" path="res://game/board/tray_view.gd" id="5_tray"]
+[ext_resource type="Script" path="res://game/board/drag_layer.gd" id="6_drag"]
+[ext_resource type="Script" path="res://game/board/stack_view.gd" id="7_stack"]
+
+[node name="Pyramid" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_screen")
+rules = ExtResource("2_rules")
+art = ExtResource("3_art")
+
+[node name="Background" type="ColorRect" parent="."]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="TopBar" type="HBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_left = 24.0
+offset_top = 24.0
+offset_right = -24.0
+offset_bottom = 104.0
+grow_horizontal = 2
+theme_override_constants/separation = 16
+
+[node name="MenuButton" type="Button" parent="TopBar"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(160, 72)
+layout_mode = 2
+theme_override_font_sizes/font_size = 28
+text = "BUTTON_MENU"
+
+[node name="LevelLabel" type="Label" parent="TopBar"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 32
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="ScoreLabel" type="Label" parent="TopBar"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(200, 0)
+layout_mode = 2
+theme_override_font_sizes/font_size = 32
+horizontal_alignment = 2
+vertical_alignment = 1
+
+[node name="Stack" type="Control" parent="."]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -340.0
+offset_top = -524.0
+offset_right = 340.0
+offset_bottom = -94.0
+grow_horizontal = 2
+script = ExtResource("7_stack")
+
+[node name="Tray" type="Control" parent="."]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -240.0
+offset_top = -84.0
+offset_right = 240.0
+offset_bottom = 44.0
+grow_horizontal = 2
+script = ExtResource("5_tray")
+
+[node name="Board" type="Control" parent="."]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -256.0
+offset_top = 60.0
+offset_right = 256.0
+offset_bottom = 572.0
+grow_horizontal = 2
+mouse_filter = 2
+script = ExtResource("4_board")
+
+[node name="DragLayer" type="Control" parent="."]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("6_drag")
+
+[node name="EndPanel" type="ColorRect" parent="."]
+unique_name_in_owner = true
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 0.7)
+
+[node name="Center" type="CenterContainer" parent="EndPanel"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Page" type="VBoxContainer" parent="EndPanel/Center"]
+layout_mode = 2
+theme_override_constants/separation = 24
+
+[node name="EndTitle" type="Label" parent="EndPanel/Center/Page"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 56
+text = "GAME_OVER"
+horizontal_alignment = 1
+
+[node name="EndScoreLabel" type="Label" parent="EndPanel/Center/Page"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 40
+horizontal_alignment = 1
+
+[node name="NextButton" type="Button" parent="EndPanel/Center/Page"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(400, 88)
+layout_mode = 2
+theme_override_font_sizes/font_size = 36
+text = "BUTTON_NEXT_LEVEL"
+
+[node name="RetryButton" type="Button" parent="EndPanel/Center/Page"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(400, 88)
+layout_mode = 2
+theme_override_font_sizes/font_size = 36
+text = "BUTTON_RETRY"
+
+[node name="EndMenuButton" type="Button" parent="EndPanel/Center/Page"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(400, 88)
+layout_mode = 2
+theme_override_font_sizes/font_size = 36
+text = "BUTTON_MENU"

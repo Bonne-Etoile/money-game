@@ -9,6 +9,14 @@
 /reports/*
 !/reports/.gdignore
 
+# Android build template, installed by Godot (make android)
+/android/
+
+# AdMob plugin: binaries (installed by tools/install-admob-binaries.sh) and downloads
+/addons/admob/android/bin/
+/addons/admob/ios/bin/
+/addons/admob/downloads/
+
 # Python tooling
 /.venv/
 __pycache__/

@@ -1,0 +1,183 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://game/proto_tiles/tile_blocks.gd" id="1_screen"]
+[ext_resource type="Resource" path="res://game/data/tile_blocks_rules.tres" id="2_rules"]
+[ext_resource type="Resource" path="res://game/data/tile_art.tres" id="3_art"]
+[ext_resource type="Script" path="res://game/board/board_view.gd" id="4_board"]
+[ext_resource type="Script" path="res://game/board/tray_view.gd" id="5_tray"]
+[ext_resource type="Script" path="res://game/board/drag_layer.gd" id="6_drag"]
+
+[node name="TileBlocks" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_screen")
+rules = ExtResource("2_rules")
+art = ExtResource("3_art")
+
+[node name="Background" type="ColorRect" parent="."]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="TopBar" type="HBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_left = 24.0
+offset_top = 24.0
+offset_right = -24.0
+offset_bottom = 104.0
+grow_horizontal = 2
+theme_override_constants/separation = 16
+
+[node name="MenuButton" type="Button" parent="TopBar"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(160, 72)
+layout_mode = 2
+theme_override_font_sizes/font_size = 28
+text = "BUTTON_MENU"
+
+[node name="ScoreLabel" type="Label" parent="TopBar"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 40
+horizontal_alignment = 2
+vertical_alignment = 1
+
+[node name="ComboLabel" type="Label" parent="."]
+unique_name_in_owner = true
+visible = false
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_top = 112.0
+offset_bottom = 160.0
+grow_horizontal = 2
+theme_override_colors/font_color = Color(1, 0.85, 0.3, 1)
+theme_override_font_sizes/font_size = 36
+horizontal_alignment = 1
+
+[node name="Board" type="Control" parent="."]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -328.0
+offset_top = -470.0
+offset_right = 328.0
+offset_bottom = 186.0
+grow_horizontal = 2
+mouse_filter = 2
+script = ExtResource("4_board")
+
+[node name="Tray" type="Control" parent="."]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -340.0
+offset_top = 220.0
+offset_right = 340.0
+offset_bottom = 500.0
+grow_horizontal = 2
+script = ExtResource("5_tray")
+
+[node name="RotateHint" type="Label" parent="."]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -340.0
+offset_top = 500.0
+offset_right = 340.0
+offset_bottom = 548.0
+grow_horizontal = 2
+theme_override_colors/font_color = Color(1, 1, 1, 0.6)
+theme_override_font_sizes/font_size = 26
+text = "HINT_ROTATE"
+horizontal_alignment = 1
+
+[node name="DragLayer" type="Control" parent="."]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("6_drag")
+
+[node name="GameOver" type="ColorRect" parent="."]
+unique_name_in_owner = true
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 0.7)
+
+[node name="Center" type="CenterContainer" parent="GameOver"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Page" type="VBoxContainer" parent="GameOver/Center"]
+layout_mode = 2
+theme_override_constants/separation = 24
+
+[node name="Title" type="Label" parent="GameOver/Center/Page"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 56
+text = "GAME_OVER"
+horizontal_alignment = 1
+
+[node name="FinalScoreLabel" type="Label" parent="GameOver/Center/Page"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 40
+horizontal_alignment = 1
+
+[node name="ContinueButton" type="Button" parent="GameOver/Center/Page"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(400, 88)
+layout_mode = 2
+theme_override_font_sizes/font_size = 36
+text = "BUTTON_CONTINUE_AD"
+
+[node name="ReplayButton" type="Button" parent="GameOver/Center/Page"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(400, 88)
+layout_mode = 2
+theme_override_font_sizes/font_size = 36
+text = "BUTTON_REPLAY"
+
+[node name="GameOverMenuButton" type="Button" parent="GameOver/Center/Page"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(400, 88)
+layout_mode = 2
+theme_override_font_sizes/font_size = 36
+text = "BUTTON_MENU"

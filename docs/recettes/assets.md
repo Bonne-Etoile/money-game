@@ -1,6 +1,6 @@
 # Assets : licences et crédits
 
-Les méthodes de production : `modeles-3d.md` (modèles) et `sons-et-musique.md` (sons et musiques). Ce fichier garde ce qui vaut pour tous les assets.
+Les méthodes de production : `sons-et-musique.md` (sons et musiques ; le jeu est en 2D depuis G0, la recette des modèles 3D a été retirée). Ce fichier garde ce qui vaut pour tous les assets.
 
 ## Licences et crédits
 

@@ -1,0 +1,53 @@
+[gd_resource type="Resource" script_class="PyramidRules" format=3]
+
+[ext_resource type="Script" path="res://game/data/pyramid_rules.gd" id="1_rules"]
+[ext_resource type="Resource" path="res://game/data/piece_shapes.tres" id="2_shapes"]
+[ext_resource type="Script" path="res://game/data/score_rules.gd" id="3_score"]
+[ext_resource type="Script" path="res://game/data/pyramid_level.gd" id="4_level"]
+
+[sub_resource type="Resource" id="scoring"]
+script = ExtResource("3_score")
+points_per_cell_placed = 1
+points_per_cell_cleared = 10
+multi_clear_bonus_percent = 50
+combo_bonus_percent = 50
+combo_grace_moves = 2
+
+[sub_resource type="Resource" id="level_1"]
+script = ExtResource("4_level")
+layers = Array[String](["b.d.b.\n......\nc.f.c.", "......\n.g.h.."])
+symbol_seed = 1
+
+[sub_resource type="Resource" id="level_2"]
+script = ExtResource("4_level")
+layers = Array[String](["d.b.b.d.\n........\nf.c.c.f.\n........\na.g.h.a.", "........\n.e.....\n........\n...j.i.."])
+symbol_seed = 2
+
+[sub_resource type="Resource" id="level_3"]
+script = ExtResource("4_level")
+layers = Array[String](["d.b.e.d.\n........\nf.g.h.f.\n........\nb.k.l.b.", "........\n.c.c.c..\n........\n.a.i....", "........\n........\n..m....."])
+symbol_seed = 3
+grid_rows = Array[String](["#.#.#.#.", ".#.#.#.#", "#.#.#.#.", ".#.#.#.#"])
+
+[sub_resource type="Resource" id="level_4"]
+script = ExtResource("4_level")
+layers = Array[String](["b.d.d.b.\n........\ng.f.f.h.\n........\nc.o.p.c.\n........\na.k.k.a.", "........\n.e.b.e..\n........\n...q....\n........\n.j...i..", "........\n........\n..n....."])
+symbol_seed = 4
+grid_rows = Array[String](["#.##.#.#", ".##.##.#", "#.#.##.#", "##.#.##.", "#.##.#.#", ".#.##.#."])
+
+[sub_resource type="Resource" id="level_5"]
+script = ExtResource("4_level")
+layers = Array[String](["d.b.f.b.d.\n..........\nc.g.l.h.c.\n..........\nf.o.a.p.f.\n..........\nb.k.e.k.b.", "..........\n.a.c.c.a..\n..........\n.i.....j..\n..........\n...r......", "..........\n..........\n..m.n....."])
+symbol_seed = 5
+grid_rows = Array[String](["........", "........", "........", "........", "........", "........", "#.##.#.#", ".##.##.#"])
+
+[resource]
+script = ExtResource("1_rules")
+grid_size = 8
+tray_size = 2
+symbol_count = 5
+match_size = 0
+legend = Dictionary[String, String]({"a": "dot", "b": "i2h", "c": "i2v", "d": "i3h", "e": "i3v", "f": "o2", "g": "c3a", "h": "c3b", "i": "c3c", "j": "c3d", "k": "i4h", "l": "i4v", "m": "t4b", "n": "l4a", "o": "s4h", "p": "z4h", "q": "t4a", "r": "l4c"})
+shape_set = ExtResource("2_shapes")
+scoring = SubResource("scoring")
+levels = Array[ExtResource("4_level")]([SubResource("level_1"), SubResource("level_2"), SubResource("level_3"), SubResource("level_4"), SubResource("level_5")])

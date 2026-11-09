@@ -6,10 +6,10 @@ extends RefCounted
 
 const VERSION: int = 1
 ## Smallest window the game accepts, in pixels.
-const MIN_SIZE: Vector2i = Vector2i(640, 360)
+const MIN_SIZE: Vector2i = Vector2i(360, 640)
 
 var fullscreen: bool = false
-var size: Vector2i = Vector2i(1280, 720)
+var size: Vector2i = Vector2i(450, 800)
 ## Top-left corner of the window on the desktop; null until the player moved it.
 var position: Variant = null
 

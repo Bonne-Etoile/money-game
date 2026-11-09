@@ -9,3 +9,10 @@ signal money_changed(total: int)
 ## A new playthrough started, or a saved one was loaded (GameState).
 @warning_ignore("unused_signal")
 signal game_started
+## A rewarded ad became ready to show, or stopped being ready (Ads).
+@warning_ignore("unused_signal")
+signal rewarded_ad_ready_changed(ready: bool)
+## A rewarded ad asked for `placement` closed; `rewarded` is true when the player watched it
+## to the end and earned the reward (Ads).
+@warning_ignore("unused_signal")
+signal rewarded_ad_finished(placement: String, rewarded: bool)

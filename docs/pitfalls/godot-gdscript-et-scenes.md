@@ -75,6 +75,7 @@ Format : **symptôme**, **cause**, **bonne pratique** (voir `README.md`).
 
 - **Symptôme** : un script qui ajoute un réglage puis appelle `ProjectSettings.save()` change tout le fichier : commentaire d'en-tête, format des touches de l'Input Map, et supprime les réglages égaux à leur valeur par défaut (ici `renderer/rendering_method`).
 - **Bonne pratique** : s'en servir seulement pour voir le format exact d'une entrée, puis annuler (`git checkout project.godot`) et ajouter l'entrée à la main.
+- **Exception, greffon AdMob** (2026-11-08) : activé, il appelle `ProjectSettings.save()` à chaque lancement de l'éditeur (ses réglages `admob/…` restent à leur valeur par défaut, donc absents du fichier, donc « nouveaux » à chaque fois). `project.godot` est donc versionné au format que Godot écrit (en-tête d'origine de Godot) ; ce format est stable d'un lancement à l'autre. Continuer à éditer à la main, puis lancer `make import` pour que le fichier reprenne ce format avant de committer.
 
 ## Uniform global de shader : à déclarer, et illisible hors de l'éditeur
 

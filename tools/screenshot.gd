@@ -5,8 +5,6 @@ extends SceneTree
 ## User arguments (after `--`):
 ##   --scene=res://...       scene to render (required)
 ##   --out=/abs/path.png     output file, absolute path (required)
-##   --camera=x,y,z          adds a camera at this position (otherwise the scene's camera is used)
-##   --look-at=x,y,z         point the added camera looks at (default: 0,0,0)
 ##   --frames=N              frames rendered before the capture (default: 10)
 ##   --locale=fr             interface language (default: the system language)
 
@@ -21,7 +19,7 @@ func _initialize() -> void:
 	var scene_path: String = options.get("scene", "")
 	_out_path = options.get("out", "")
 	if scene_path.is_empty() or not _out_path.is_absolute_path():
-		_fail("usage: -- --scene=res://... --out=/absolute/path.png [--camera=x,y,z]")
+		_fail("usage: -- --scene=res://... --out=/absolute/path.png [--frames=N]")
 		return
 	var packed: PackedScene = load(scene_path)
 	if packed == null:
@@ -33,15 +31,6 @@ func _initialize() -> void:
 	_frames_left = frames.to_int()
 	var scene: Node = packed.instantiate()
 	root.add_child(scene)
-	if options.has("camera"):
-		# The tree is not running yet in _initialize: set the transform directly, not look_at().
-		var position: Vector3 = _parse_vector(options["camera"])
-		var look_at_text: String = options.get("look-at", "0,0,0")
-		var target: Vector3 = _parse_vector(look_at_text)
-		var camera: Camera3D = Camera3D.new()
-		camera.transform = Transform3D(Basis.looking_at(target - position), position)
-		camera.current = true
-		scene.add_child(camera)
 
 
 func _process(_delta: float) -> bool:
@@ -67,14 +56,6 @@ func _parse_user_args() -> Dictionary[String, String]:
 		if arg.begins_with("--") and arg.contains("="):
 			options[arg.substr(2).get_slice("=", 0)] = arg.get_slice("=", 1)
 	return options
-
-
-func _parse_vector(text: String) -> Vector3:
-	var parts: PackedFloat64Array = text.split_floats(",")
-	if parts.size() != 3:
-		_fail("expected x,y,z but got %s" % text)
-		return Vector3.ZERO
-	return Vector3(parts[0], parts[1], parts[2])
 
 
 func _fail(message: String) -> void:

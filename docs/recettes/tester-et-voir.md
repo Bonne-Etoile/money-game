@@ -16,7 +16,7 @@
 
 ## Capture d'écran
 
-- `make screenshot SCENE=res://… OUT=build/screenshots/x.png` (`CAMERA=x,y,z LOOK_AT=x,y,z LOCALE=fr FRAMES=30`).
+- `make screenshot SCENE=res://… OUT=build/screenshots/x.png` (`LOCALE=fr FRAMES=30 RESOLUTION=720x1280`).
 - Puis **la regarder** (outil Read). Chercher `SHADER ERROR` et `ERROR` dans la sortie : un shader cassé ne fait échouer ni `check` ni `test`.
 - Une situation de jeu (un menu ouvert, un objet tenu) : une scène de `test/fixtures/` qui instancie la scène du jeu et un petit script `*_shot.gd` qui la prépare. L'ajouter à `make screenshots`.
 - Comparer avant/après dans les mêmes conditions (même vue, mêmes réglages) ; pour un visuel important, faire juger à l'aveugle par un agent séparé.

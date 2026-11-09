@@ -10,10 +10,10 @@ XVFB_RUN ?= xvfb-run -a -s "-screen 0 1920x1080x24"
 GD_SOURCES := game test tools
 
 # Name of the exported binaries (tools/new-game.sh renames it).
-GAME_NAME := my_game
+GAME_NAME := block_tiles
 BUILD_DIR := build
 
-.PHONY: lint check test build import screenshot screenshots model-view
+.PHONY: lint check test build android import screenshot screenshots
 
 lint:
 	$(GDLINT) $(GD_SOURCES)
@@ -40,28 +40,46 @@ build: import
 	$(GODOT) --headless --path . --export-release "Windows" $(BUILD_DIR)/windows/$(GAME_NAME).exe
 	tools/smoke_test.sh $(BUILD_DIR)/linux/$(GAME_NAME).x86_64
 
+# Android test APK, signed with the debug key Godot makes. Run tools/setup-android.sh first;
+# the Gradle build needs dl.google.com. Godot installs the Android build template in android/
+# (not versioned).
+ANDROID_HOME ?= /opt/android-sdk
+# Godot's Gradle build wants JDK 17, whatever JAVA_HOME (21 in the cloud) says.
+ANDROID_JAVA_HOME ?= $(firstword $(wildcard /usr/lib/jvm/java-17-openjdk*) \
+	$(shell dirname "$$(dirname "$$(readlink -f "$$(command -v javac)")")"))
+android: import
+	mkdir -p $(BUILD_DIR)/android
+	ANDROID_HOME="$(ANDROID_HOME)" \
+		JAVA_HOME="$(ANDROID_JAVA_HOME)" \
+		$(GODOT) --headless --path . --install-android-build-template \
+		--export-debug "Android" $(BUILD_DIR)/android/$(GAME_NAME).apk
+
 # Renders a scene and saves a PNG (tools/screenshot.gd). Needs Xvfb, like the tests.
 #   make screenshot SCENE=res://game/ui/main_menu.tscn OUT=build/screenshots/menu.png
-#   optional: CAMERA=x,y,z LOOK_AT=x,y,z LOCALE=fr FRAMES=10 RESOLUTION=1280x720
-RESOLUTION ?= 1280x720
+#   optional: LOCALE=fr FRAMES=10 RESOLUTION=720x1280 (a phone in portrait, the default)
+RESOLUTION ?= 720x1280
 screenshot: import
 	$(XVFB_RUN) $(GODOT) --path . --audio-driver Dummy --resolution $(RESOLUTION) \
 		--script res://tools/screenshot.gd -- --scene=$(SCENE) --out=$(abspath $(OUT)) \
-		$(if $(CAMERA),--camera=$(CAMERA)) $(if $(LOOK_AT),--look-at=$(LOOK_AT)) \
 		$(if $(LOCALE),--locale=$(LOCALE)) $(if $(FRAMES),--frames=$(FRAMES))
 
 # Screenshots Claude looks at before a PR (not run in CI). Add every scene worth reviewing.
 SCREENSHOT_DIR := $(BUILD_DIR)/screenshots
 screenshots:
-	$(MAKE) screenshot SCENE=res://test/fixtures/screenshot_fixture.tscn \
-		OUT=$(SCREENSHOT_DIR)/fixture.png CAMERA=4,3,6 LOOK_AT=0,0.5,0
+	$(MAKE) screenshot SCENE=res://test/fixtures/tile_blocks_fixture.tscn FRAMES=10 LOCALE=fr \
+		OUT=$(SCREENSHOT_DIR)/tile_blocks.png
+	$(MAKE) screenshot SCENE=res://test/fixtures/tile_blocks_game_over_fixture.tscn FRAMES=10 \
+		LOCALE=fr OUT=$(SCREENSHOT_DIR)/tile_blocks_game_over.png
+	$(MAKE) screenshot SCENE=res://test/fixtures/pyramid_fixture.tscn FRAMES=10 LOCALE=fr \
+		OUT=$(SCREENSHOT_DIR)/pyramid.png
+	$(MAKE) screenshot SCENE=res://test/fixtures/tray_grid_fixture.tscn FRAMES=10 LOCALE=fr \
+		OUT=$(SCREENSHOT_DIR)/tray_grid.png
+	$(MAKE) screenshot SCENE=res://test/fixtures/pairs_fixture.tscn FRAMES=10 LOCALE=fr \
+		OUT=$(SCREENSHOT_DIR)/pairs.png
+	$(MAKE) screenshot SCENE=res://test/fixtures/stamp_fixture.tscn FRAMES=10 LOCALE=fr \
+		OUT=$(SCREENSHOT_DIR)/stamp.png
 	for locale in en fr; do \
 		$(MAKE) screenshot SCENE=res://game/ui/main_menu.tscn FRAMES=10 LOCALE=$$locale \
 			OUT=$(SCREENSHOT_DIR)/main_menu_$$locale.png || exit 1; \
 	done
 
-# Models side by side under the game's light, to judge them in the game (docs/recettes/modeles-3d.md).
-#   make model-view MODELS=res://assets/models/a.res,res://assets/models/b.glb OUT=build/screenshots/models.png
-model-view:
-	MODELS=$(MODELS) $(MAKE) screenshot SCENE=res://test/fixtures/model_view.tscn FRAMES=20 \
-		OUT=$(or $(OUT),$(SCREENSHOT_DIR)/models.png)

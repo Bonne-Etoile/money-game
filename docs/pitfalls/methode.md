@@ -46,7 +46,7 @@ Ce qui a fait gagner ou perdre du temps dans la façon de travailler, pas dans u
 ## Des références pour tout ce qui se voit, et un critique séparé
 
 - **Ce qui s'est passé** : Ganesh refait d'après des images de référence générées par Stelio, comparé à l'aveugle à la version sans référence par un critique séparé : 7/6/6/6/8 contre 4/4/5/4/6.
-- **Pratique** : pour un modèle ou un visuel important, obtenir d'abord des images de référence (voir `modeles-3d.md`), puis faire juger à l'aveugle par un agent séparé, avec la référence (skill `/gauntlet-loop`).
+- **Pratique** : pour un modèle ou un visuel important, obtenir d'abord des images de référence (voir `modeles-3d.md` des pièges), puis faire juger à l'aveugle par un agent séparé, avec la référence (skill `/gauntlet-loop`).
 
 ## Les décisions du joueur, datées et à leur place
 

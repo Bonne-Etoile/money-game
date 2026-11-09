@@ -1,6 +1,6 @@
-# My Game
+# Block Tiles
 
-> **À compléter** : une ou deux phrases sur le jeu (genre, plateforme, ce que fait le joueur), et qui le développe. Exemple de River Cleaner : « Jeu PC (Steam uniquement) à la première personne… Projet commercial développé par Claude et Stelio : la qualité du jeu et la fiabilité passent avant la vitesse. »
+Jeu mobile Android (portrait, iOS mis de côté), gratuit et financé par la pub (AdMob) : un puzzle hybride **blocs + tuiles de mahjong** (`docs/etude-concurrence.md`, annexe B). Développé par Claude pour Stelio ; titre de travail « Block Tiles ».
 
 ## Documentation (`docs/`)
 
@@ -19,7 +19,7 @@
 
 ## Stack
 
-- **Godot 4.7.2-stable** (version standard, sans .NET), épinglée dans `.godot-version`. Rendu Forward+, physique Jolt.
+- **Godot 4.7.2-stable** (version standard, sans .NET), épinglée dans `.godot-version`. Jeu 2D en portrait (720 × 1280, étirement `canvas_items` + `expand`), rendu Compatibility (OpenGL ES 3, le plus compatible sur Android), entrées tactiles par l'action `pointer` (le toucher est converti en souris).
 - **GDScript entièrement typé** : `untyped_declaration` et les avertissements `unsafe_*` sont des erreurs (garde-fou : `test/unit/project_settings_test.gd`).
 - Tests : **gdUnit4 6.2.2**, copié dans `addons/gdUnit4` (ne pas modifier ; exclu des exports, sinon l'export plante). Lint et format : **gdtoolkit 4.5.0** (`requirements-dev.txt`).
 - Steam (si besoin) : GodotSteam (GDExtension), derrière un autoload `Platform`, avec une version factice pour le développement et les tests.
@@ -37,9 +37,10 @@
 - `make lint` (gdlint + gdformat --check sur `game/`, `test/`, `tools/`), `make check` (import, puis `tools/check_project.gd` charge chaque script, scène et ressource et vérifie leurs dépendances), `make test` (gdUnit4 sous Xvfb ; `GAME_TESTS=1` permet de laisser de côté ce qui est purement visuel et lent : `AutomatedTests`), `make build` (exports Windows et Linux, puis `tools/smoke_test.sh` lance l'export Linux quelques images et échoue sur un plantage ou une erreur). Claude les lance toutes les quatre avant chaque PR.
 - CI (`.github/workflows/ci.yml`) : `make lint check test` sur chaque PR vers `main` et chaque push sur `dev` ou `main`. Pas de job sur les PR vers `dev` (trop lent pour un jeu 3D) : Claude y fait foi de ses propres vérifications.
 - Build de test (`.github/workflows/build.yml`) : `make build` et l'export Windows en artefact (14 jours). Déclenché par une branche `claude/test-build-<n>` créée depuis le commit à tester (la session cloud ne peut pas pousser de tag), par le bouton « Run workflow » (une fois le fichier sur `main`) et sur chaque PR vers `main`.
+- APK Android de test (`.github/workflows/android.yml`) : `make android` et l'APK en artefact (14 jours), pour l'installer sur le téléphone de Stelio (les fichiers du projet sont trop gros pour l'app Claude sur mobile). Mêmes déclencheurs que le build de test (branche `claude/test-build-<n>`, bouton « Run workflow » une fois sur `main`).
 - Installation de la session cloud : `tools/setup-cloud.sh`, lancé par le hook `.claude/hooks/session-start.sh` (sessions cloud seulement), puis import du projet. Chaque étape est sautée si elle est déjà faite. Après un changement de `.godot-version` ou de `requirements-dev.txt`, relancer le script.
-- Assets : `tools/assets/` (sons : `generate_audio.py`, `audio_prompts.json`, `process_audio.sh` ; modèles : `build_mesh_example.gd`, `blender/build_prop_example.py`, `import_glb_mesh.gd`). `make model-view MODELS=res://…,res://…` montre des modèles côte à côte sous la lumière du jeu. Méthodes : `docs/recettes/sons-et-musique.md`, `docs/recettes/modeles-3d.md`.
-- Capture d'écran : `make screenshot SCENE=res://… OUT=chemin.png` (options `CAMERA=x,y,z`, `LOOK_AT=x,y,z`, `LOCALE=fr`, `FRAMES=N`, `RESOLUTION=1280x720`). Toujours **regarder** la capture (outil Read) avant de conclure. `make screenshots` produit les captures utiles à la relecture d'une PR : y ajouter chaque scène qui compte. Une situation de jeu à capturer : une scène de `test/fixtures/` qui instancie le jeu et le prépare.
+- Assets : `tools/assets/` (sons : `generate_audio.py`, `audio_prompts.json`, `process_audio.sh`). Méthode : `docs/recettes/sons-et-musique.md`. Le jeu est en 2D : les graphismes du prototype sont dessinés par le code (`_draw()`).
+- Capture d'écran : `make screenshot SCENE=res://… OUT=chemin.png` (options `LOCALE=fr`, `FRAMES=N`, `RESOLUTION=720x1280` par défaut, la taille d'un téléphone en portrait). Toujours **regarder** la capture (outil Read) avant de conclure. `make screenshots` produit les captures utiles à la relecture d'une PR : y ajouter chaque scène qui compte. Une situation de jeu à capturer : une scène de `test/fixtures/` qui instancie le jeu et le prépare.
 
 ## Règles de code
 

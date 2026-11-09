@@ -1,0 +1,194 @@
+[gd_resource type="Resource" script_class="PieceShapeSet" format=3]
+
+[ext_resource type="Script" path="res://game/data/piece_shape_set.gd" id="1_set"]
+[ext_resource type="Script" path="res://game/data/piece_shape.gd" id="2_shape"]
+
+[sub_resource type="Resource" id="dot"]
+script = ExtResource("2_shape")
+key = "dot"
+cells = Array[Vector2i]([Vector2i(0, 0)])
+weight = 2
+
+[sub_resource type="Resource" id="i2h"]
+script = ExtResource("2_shape")
+key = "i2h"
+cells = Array[Vector2i]([Vector2i(0, 0), Vector2i(1, 0)])
+weight = 3
+
+[sub_resource type="Resource" id="i2v"]
+script = ExtResource("2_shape")
+key = "i2v"
+cells = Array[Vector2i]([Vector2i(0, 0), Vector2i(0, 1)])
+weight = 3
+
+[sub_resource type="Resource" id="i3h"]
+script = ExtResource("2_shape")
+key = "i3h"
+cells = Array[Vector2i]([Vector2i(0, 0), Vector2i(1, 0), Vector2i(2, 0)])
+weight = 3
+
+[sub_resource type="Resource" id="i3v"]
+script = ExtResource("2_shape")
+key = "i3v"
+cells = Array[Vector2i]([Vector2i(0, 0), Vector2i(0, 1), Vector2i(0, 2)])
+weight = 3
+
+[sub_resource type="Resource" id="i4h"]
+script = ExtResource("2_shape")
+key = "i4h"
+cells = Array[Vector2i]([Vector2i(0, 0), Vector2i(1, 0), Vector2i(2, 0), Vector2i(3, 0)])
+weight = 2
+
+[sub_resource type="Resource" id="i4v"]
+script = ExtResource("2_shape")
+key = "i4v"
+cells = Array[Vector2i]([Vector2i(0, 0), Vector2i(0, 1), Vector2i(0, 2), Vector2i(0, 3)])
+weight = 2
+
+[sub_resource type="Resource" id="i5h"]
+script = ExtResource("2_shape")
+key = "i5h"
+cells = Array[Vector2i]([Vector2i(0, 0), Vector2i(1, 0), Vector2i(2, 0), Vector2i(3, 0), Vector2i(4, 0)])
+weight = 1
+
+[sub_resource type="Resource" id="i5v"]
+script = ExtResource("2_shape")
+key = "i5v"
+cells = Array[Vector2i]([Vector2i(0, 0), Vector2i(0, 1), Vector2i(0, 2), Vector2i(0, 3), Vector2i(0, 4)])
+weight = 1
+
+[sub_resource type="Resource" id="o2"]
+script = ExtResource("2_shape")
+key = "o2"
+cells = Array[Vector2i]([Vector2i(0, 0), Vector2i(1, 0), Vector2i(0, 1), Vector2i(1, 1)])
+weight = 3
+
+[sub_resource type="Resource" id="c3a"]
+script = ExtResource("2_shape")
+key = "c3a"
+cells = Array[Vector2i]([Vector2i(0, 0), Vector2i(1, 0), Vector2i(0, 1)])
+weight = 2
+
+[sub_resource type="Resource" id="c3b"]
+script = ExtResource("2_shape")
+key = "c3b"
+cells = Array[Vector2i]([Vector2i(0, 0), Vector2i(1, 0), Vector2i(1, 1)])
+weight = 2
+
+[sub_resource type="Resource" id="c3c"]
+script = ExtResource("2_shape")
+key = "c3c"
+cells = Array[Vector2i]([Vector2i(0, 0), Vector2i(0, 1), Vector2i(1, 1)])
+weight = 2
+
+[sub_resource type="Resource" id="c3d"]
+script = ExtResource("2_shape")
+key = "c3d"
+cells = Array[Vector2i]([Vector2i(1, 0), Vector2i(0, 1), Vector2i(1, 1)])
+weight = 2
+
+[sub_resource type="Resource" id="t4a"]
+script = ExtResource("2_shape")
+key = "t4a"
+cells = Array[Vector2i]([Vector2i(0, 0), Vector2i(1, 0), Vector2i(2, 0), Vector2i(1, 1)])
+weight = 1
+
+[sub_resource type="Resource" id="t4b"]
+script = ExtResource("2_shape")
+key = "t4b"
+cells = Array[Vector2i]([Vector2i(1, 0), Vector2i(0, 1), Vector2i(1, 1), Vector2i(2, 1)])
+weight = 1
+
+[sub_resource type="Resource" id="t4c"]
+script = ExtResource("2_shape")
+key = "t4c"
+cells = Array[Vector2i]([Vector2i(0, 0), Vector2i(0, 1), Vector2i(1, 1), Vector2i(0, 2)])
+weight = 1
+
+[sub_resource type="Resource" id="t4d"]
+script = ExtResource("2_shape")
+key = "t4d"
+cells = Array[Vector2i]([Vector2i(1, 0), Vector2i(0, 1), Vector2i(1, 1), Vector2i(1, 2)])
+weight = 1
+
+[sub_resource type="Resource" id="l4a"]
+script = ExtResource("2_shape")
+key = "l4a"
+cells = Array[Vector2i]([Vector2i(0, 0), Vector2i(0, 1), Vector2i(0, 2), Vector2i(1, 2)])
+weight = 1
+
+[sub_resource type="Resource" id="l4b"]
+script = ExtResource("2_shape")
+key = "l4b"
+cells = Array[Vector2i]([Vector2i(1, 0), Vector2i(1, 1), Vector2i(0, 2), Vector2i(1, 2)])
+weight = 1
+
+[sub_resource type="Resource" id="l4c"]
+script = ExtResource("2_shape")
+key = "l4c"
+cells = Array[Vector2i]([Vector2i(0, 0), Vector2i(1, 0), Vector2i(2, 0), Vector2i(0, 1)])
+weight = 1
+
+[sub_resource type="Resource" id="l4d"]
+script = ExtResource("2_shape")
+key = "l4d"
+cells = Array[Vector2i]([Vector2i(0, 0), Vector2i(1, 0), Vector2i(2, 0), Vector2i(2, 1)])
+weight = 1
+
+[sub_resource type="Resource" id="s4h"]
+script = ExtResource("2_shape")
+key = "s4h"
+cells = Array[Vector2i]([Vector2i(1, 0), Vector2i(2, 0), Vector2i(0, 1), Vector2i(1, 1)])
+weight = 1
+
+[sub_resource type="Resource" id="z4h"]
+script = ExtResource("2_shape")
+key = "z4h"
+cells = Array[Vector2i]([Vector2i(0, 0), Vector2i(1, 0), Vector2i(1, 1), Vector2i(2, 1)])
+weight = 1
+
+[sub_resource type="Resource" id="o3"]
+script = ExtResource("2_shape")
+key = "o3"
+cells = Array[Vector2i]([Vector2i(0, 0), Vector2i(1, 0), Vector2i(2, 0), Vector2i(0, 1), Vector2i(1, 1), Vector2i(2, 1), Vector2i(0, 2), Vector2i(1, 2), Vector2i(2, 2)])
+weight = 1
+
+[sub_resource type="Resource" id="j4a"]
+script = ExtResource("2_shape")
+key = "j4a"
+cells = Array[Vector2i]([Vector2i(0, 0), Vector2i(1, 0), Vector2i(0, 1), Vector2i(0, 2)])
+weight = 0
+
+[sub_resource type="Resource" id="j4b"]
+script = ExtResource("2_shape")
+key = "j4b"
+cells = Array[Vector2i]([Vector2i(0, 0), Vector2i(1, 0), Vector2i(1, 1), Vector2i(1, 2)])
+weight = 0
+
+[sub_resource type="Resource" id="j4c"]
+script = ExtResource("2_shape")
+key = "j4c"
+cells = Array[Vector2i]([Vector2i(0, 0), Vector2i(0, 1), Vector2i(1, 1), Vector2i(2, 1)])
+weight = 0
+
+[sub_resource type="Resource" id="j4d"]
+script = ExtResource("2_shape")
+key = "j4d"
+cells = Array[Vector2i]([Vector2i(2, 0), Vector2i(0, 1), Vector2i(1, 1), Vector2i(2, 1)])
+weight = 0
+
+[sub_resource type="Resource" id="s4v"]
+script = ExtResource("2_shape")
+key = "s4v"
+cells = Array[Vector2i]([Vector2i(0, 0), Vector2i(0, 1), Vector2i(1, 1), Vector2i(1, 2)])
+weight = 0
+
+[sub_resource type="Resource" id="z4v"]
+script = ExtResource("2_shape")
+key = "z4v"
+cells = Array[Vector2i]([Vector2i(1, 0), Vector2i(0, 1), Vector2i(1, 1), Vector2i(0, 2)])
+weight = 0
+
+[resource]
+script = ExtResource("1_set")
+shapes = Array[ExtResource("2_shape")]([SubResource("dot"), SubResource("i2h"), SubResource("i2v"), SubResource("i3h"), SubResource("i3v"), SubResource("i4h"), SubResource("i4v"), SubResource("i5h"), SubResource("i5v"), SubResource("o2"), SubResource("c3a"), SubResource("c3b"), SubResource("c3c"), SubResource("c3d"), SubResource("t4a"), SubResource("t4b"), SubResource("t4c"), SubResource("t4d"), SubResource("l4a"), SubResource("l4b"), SubResource("l4c"), SubResource("l4d"), SubResource("s4h"), SubResource("z4h"), SubResource("o3"), SubResource("j4a"), SubResource("j4b"), SubResource("j4c"), SubResource("j4d"), SubResource("s4v"), SubResource("z4v")])
