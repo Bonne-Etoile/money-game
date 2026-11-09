@@ -1,10 +1,10 @@
 class_name TileBlocksScreen
 extends Control
-## Prototype 1, "tile blocks": the grid, the score, the three pieces to drag onto the grid,
-## the bonus buttons (new pieces, mirror: free uses, then one use per rewarded ad), and the
-## game-over panel, which offers to go on after a rewarded ad. The rules are in
-## TileBlocksGame (game/core/); this scene shows them, turns the player's drags into moves
-## and tells GameState what the player does (games, ad offers, bonuses).
+## Prototype 1, "tile blocks": the grid, the score and the race to the record, the three
+## pieces to drag onto the grid, the bonus buttons (new pieces, mirror: free uses, then one use
+## per rewarded ad), and the game-over panel, which offers to go on after a rewarded ad. The
+## rules are in TileBlocksGame (game/core/); this scene shows them, turns the player's drags
+## into moves and tells GameState what the player does (games, ad offers, bonuses).
 
 const MENU_SCENE: String = "res://game/ui/main_menu.tscn"
 ## What each rewarded ad is for (Ads.show_rewarded).
@@ -16,11 +16,16 @@ const CALL_COLOR: Color = Color(1.0, 0.8, 0.3)
 const CALL_PULSE_SECONDS: float = 0.45
 ## Text colour of a button that plays a rewarded ad: the player sees at once which ones do.
 const AD_TEXT_COLOR: Color = Color(0.55, 0.85, 1.0)
+## The record label grows this much, then shrinks back, when the record is beaten.
+const RECORD_POP_SCALE: float = 1.4
+const RECORD_POP_SECONDS: float = 0.25
 
 @export var rules: TileBlocksRules
 @export var art: TileArt
 
 var game: TileBlocksGame
+## The race against the record of the game under way.
+var chase: RecordChase = RecordChase.new(0)
 ## Whether the next tap on a piece flips it (the mirror bonus) instead of turning it.
 var mirroring: bool = false
 var _drag: PieceDrag = PieceDrag.new()
@@ -28,6 +33,8 @@ var _drag: PieceDrag = PieceDrag.new()
 var _was_over: bool = false
 var _was_in_trouble: bool = false
 var _call_tween: Tween = null
+## The score the last refresh showed, to notice the moment the record is beaten.
+var _shown_score: int = 0
 
 @onready var _background: ColorRect = %Background
 @onready var _board: BoardView = %Board
@@ -35,6 +42,9 @@ var _call_tween: Tween = null
 @onready var _score: Label = %ScoreLabel
 @onready var _level: Label = %LevelLabel
 @onready var _combo: Label = %ComboLabel
+@onready var _record: Label = %RecordLabel
+@onready var _record_progress: ProgressBar = %RecordProgress
+@onready var _record_gap: Label = %RecordGapLabel
 @onready var _hint: Label = %HintLabel
 @onready var _new_hand: Button = %NewHandButton
 @onready var _mirror: Button = %MirrorButton
@@ -82,6 +92,8 @@ func _unhandled_input(event: InputEvent) -> void:
 func start(random_seed: int) -> void:
 	_finish_game()
 	game = TileBlocksGame.new(rules, random_seed, GameState.progress.stats)
+	chase = RecordChase.new(GameState.progress.stats.best_score)
+	_shown_score = 0
 	_board.grid = game.grid
 	_drag.cancel()
 	mirroring = false
@@ -101,6 +113,7 @@ func refresh() -> void:
 	_level.text = tr("HUD_DIFFICULTY") % game.level()
 	_combo.text = tr("HUD_COMBO") % game.scores.combo
 	_combo.visible = game.scores.combo >= 2
+	_show_record()
 	var over: bool = game.is_over()
 	if over:
 		mirroring = false
@@ -124,6 +137,33 @@ func refresh() -> void:
 	)
 	_note_offers(over)
 	_call_for_bonuses(game.is_in_trouble())
+
+
+## The record, always on screen, with a bar that fills up towards it; when it is beaten, the
+## label says so and pops.
+func _show_record() -> void:
+	var score: int = game.score()
+	if chase.is_beaten(score):
+		_record.text = tr("NEW_RECORD")
+	else:
+		_record.text = tr("HUD_BEST") % chase.record
+	_record_progress.visible = chase.has_record()
+	_record_progress.value = 100 if chase.is_beaten(score) else chase.percent(score)
+	if chase.beaten_between(_shown_score, score):
+		_pop_record()
+	_shown_score = score
+	if chase.is_beaten(score):
+		_record_gap.text = tr("NEW_RECORD")
+	else:
+		_record_gap.text = tr("RECORD_MISSING") % chase.missing(score)
+	_record_gap.visible = chase.has_record()
+
+
+func _pop_record() -> void:
+	_record.pivot_offset = _record.size / 2.0
+	var pop: Tween = create_tween()
+	pop.tween_property(_record, "scale", Vector2.ONE * RECORD_POP_SCALE, RECORD_POP_SECONDS)
+	pop.tween_property(_record, "scale", Vector2.ONE, RECORD_POP_SECONDS)
 
 
 func back_to_menu() -> void:

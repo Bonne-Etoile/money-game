@@ -268,3 +268,32 @@ func test_a_game_left_for_a_new_one_counts_as_played() -> void:
 	screen.start(3)
 	assert_int(GameState.progress.stats.games_played).is_equal(1)
 	assert_int(GameState.progress.stats.total_moves).is_equal(1)
+
+
+func test_the_record_is_always_shown_and_celebrated_when_beaten() -> void:
+	GameState.progress.stats.best_score = 400
+	var runner: GdUnitSceneRunner = await _screen()
+	var screen: TileBlocksScreen = runner.scene() as TileBlocksScreen
+	var record: Label = runner.find_child("RecordLabel") as Label
+	var bar: ProgressBar = runner.find_child("RecordProgress") as ProgressBar
+	assert_str(record.text).is_equal(tr("HUD_BEST") % 400)
+	screen.game.scores.score = 100
+	screen.refresh()
+	assert_float(bar.value).is_equal(25.0)
+	screen.game.scores.score = 401
+	screen.refresh()
+	assert_str(record.text).is_equal(tr("NEW_RECORD"))
+	assert_float(bar.value).is_equal(100.0)
+	await runner.simulate_frames(3)
+	assert_float(record.scale.x).is_greater(1.0)
+
+
+func test_the_game_over_panel_says_what_was_missing_for_the_record() -> void:
+	GameState.progress.stats.best_score = 400
+	var runner: GdUnitSceneRunner = await _screen()
+	var screen: TileBlocksScreen = runner.scene() as TileBlocksScreen
+	screen.game.scores.score = 280
+	_lose(screen)
+	var gap: Label = runner.find_child("RecordGapLabel") as Label
+	assert_bool(gap.visible).is_true()
+	assert_str(gap.text).is_equal(tr("RECORD_MISSING") % 121)

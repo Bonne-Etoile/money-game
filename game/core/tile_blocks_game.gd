@@ -5,7 +5,9 @@ extends RefCounted
 ## column clears, and so do 3 identical symbols touching each other. A new piece takes the
 ## place of a placed one (or three come when the hand is empty); the game is over when
 ## no piece of the hand fits anywhere, unless the player revives it (after a rewarded ad).
-## New pieces get harder as the player does well (DifficultyDirector). Bonuses (new pieces,
+## New pieces get harder as the player does well, easier when they struggle (DifficultyDirector),
+## and a new hand never leaves the player without a move while the grid has room
+## (DifficultyRules.playable_until_fill_percent). Bonuses (new pieces,
 ## mirror) have a few free uses per game, then one more use per rewarded ad.
 
 ## Replaces every piece of the hand by one with room (TileBlocksGame.new_hand).
@@ -76,6 +78,7 @@ func place(slot: int, origin: Vector2i) -> MoveResult:
 	moves += 1
 	if rules.refill_each_slot:
 		hand[slot] = _next_piece()
+		_keep_playable([slot])
 	elif hand.all(func(waiting: Piece) -> bool: return waiting == null):
 		_refill_hand()
 	return result
@@ -198,15 +201,39 @@ func _piece_in(slot: int) -> Piece:
 	return hand[slot]
 
 
+## Deals a whole new hand (start of a game, all pieces placed without `refill_each_slot`).
 func _refill_hand() -> void:
 	hand.clear()
-	for _slot in rules.hand_size:
+	var slots: Array[int] = []
+	for slot in rules.hand_size:
 		hand.append(_next_piece())
+		slots.append(slot)
+	_keep_playable(slots)
 
 
-## A new piece, as hard as the difficulty level says.
+## A new hand on the grid as it is (tests of the playability guarantee).
+func deal_hand() -> void:
+	_refill_hand()
+
+
+## Playability guarantee: when the new pieces of `slots` leave no piece of the hand that fits,
+## while the grid still has room, the last of them is replaced by a piece that fits.
+func _keep_playable(slots: Array[int]) -> void:
+	if difficulty == null or slots.is_empty() or not is_over():
+		return
+	if not difficulty.guarantees_play(grid.filled_count(), grid.size * grid.size):
+		return
+	var fitting: Piece = _generator.piece_that_fits(grid, rules.can_rotate)
+	if fitting != null:
+		hand[slots[-1]] = fitting
+
+
+## A new piece, as hard (or as easy) as the difficulty level says.
 func _next_piece() -> Piece:
 	if difficulty == null:
 		return _generator.next_piece()
-	var candidates: int = difficulty.candidates(level())
-	return _generator.next_piece_among(grid, candidates, true, rules.can_rotate)
+	var at_level: int = level()
+	var candidates: int = difficulty.candidates(at_level)
+	return _generator.next_piece_among(
+		grid, candidates, difficulty.hardest(at_level), rules.can_rotate
+	)

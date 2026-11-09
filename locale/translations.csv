@@ -22,3 +22,5 @@ BONUS_MIRROR,Mirror (%d),Miroir (%d),Bonus button under the pieces: the next tap
 BONUS_MIRROR_AD,Mirror (ad),Miroir (pub),"Bonus button once the free uses are spent: shows a rewarded ad, then the next tapped piece is flipped. Must say that an ad plays (ad network rules)"
 BONUS_CANCEL,Cancel,Annuler,Mirror bonus button while waiting for a piece to flip: cancels without using the bonus
 HINT_MIRROR,Tap a piece to flip it,Touchez une pièce pour la retourner,"Under the pieces, after the mirror bonus: the next tap flips a piece left to right"
+NEW_RECORD,New record!,Nouveau record !,"Shown when the score beats the best score: on the record bar during the game, and on the game-over panel"
+RECORD_MISSING,You were %d points short of your record,Il vous manquait %d points pour battre votre record,"Game-over panel, above the continue button: %d is the points missing to beat the best score"
