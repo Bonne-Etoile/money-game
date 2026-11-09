@@ -19,15 +19,16 @@ func test_a_new_game_offers_a_full_hand() -> void:
 	assert_bool(game.is_over()).is_false()
 
 
-func test_a_placed_piece_leaves_the_hand_and_scores() -> void:
+func test_a_placed_piece_is_replaced_at_once_and_scores() -> void:
 	var game: TileBlocksGame = _game()
-	game.hand[0] = _single(0)
+	var placed: Piece = _single(0)
+	game.hand[0] = placed
 	var result: MoveResult = game.place(0, Vector2i(3, 3))
 	assert_object(result).is_not_null()
 	assert_that(result.placed).is_equal([Vector2i(3, 3)] as Array[Vector2i])
-	assert_object(game.hand[0]).is_null()
+	assert_object(game.hand[0]).is_not_null()
+	assert_object(game.hand[0]).is_not_same(placed)
 	assert_int(game.score()).is_equal(RULES.scoring.points_per_cell_placed)
-	assert_object(game.place(0, Vector2i(4, 4))).is_null()
 
 
 func test_three_identical_symbols_clear() -> void:
@@ -52,8 +53,10 @@ func test_a_full_row_clears() -> void:
 	assert_int(game.grid.filled_count()).is_equal(0)
 
 
-func test_the_hand_is_refilled_once_empty() -> void:
-	var game: TileBlocksGame = _game()
+func test_without_refill_each_slot_the_hand_is_refilled_once_empty() -> void:
+	var rules: TileBlocksRules = RULES.duplicate()
+	rules.refill_each_slot = false
+	var game: TileBlocksGame = TileBlocksGame.new(rules, 1)
 	for slot in game.hand.size():
 		game.hand[slot] = _single(slot)
 	game.place(0, Vector2i(0, 0))
@@ -120,3 +123,59 @@ func test_revives_are_limited_per_game() -> void:
 	assert_bool(game.is_over()).is_true()
 	assert_bool(game.can_revive()).is_false()
 	assert_bool(game.revive()).is_false()
+
+
+func test_the_pieces_are_the_seven_tetris_shapes() -> void:
+	var game: TileBlocksGame = _game()
+	var seen: Dictionary[String, bool] = {}
+	for _move in 60:
+		for slot in game.hand.size():
+			seen[str(game.hand[slot].cells)] = true
+		game.hand[0] = _single(0)
+		game.place(0, Vector2i(7, 7))
+		game.grid.remove([Vector2i(7, 7)] as Array[Vector2i])
+	assert_int(seen.size()).is_equal(RULES.shape_keys.size())
+	for key in RULES.shape_keys:
+		assert_int(RULES.shape_set.find(key).cells.size()).is_equal(4)
+
+
+func test_a_tap_turns_a_piece_a_quarter_turn() -> void:
+	var game: TileBlocksGame = _game()
+	var bar: Piece = Piece.new(
+		[Vector2i(0, 0), Vector2i(1, 0), Vector2i(2, 0)] as Array[Vector2i],
+		PackedInt32Array([0, 1, 2])
+	)
+	game.hand[0] = bar
+	assert_bool(game.rotate(0)).is_true()
+	assert_that(game.hand[0].cells).is_equal(
+		[Vector2i(0, 0), Vector2i(0, 1), Vector2i(0, 2)] as Array[Vector2i]
+	)
+	assert_that(game.hand[0].symbols).is_equal(PackedInt32Array([0, 1, 2]))
+	var ell: Piece = Piece.new(
+		[Vector2i(0, 0), Vector2i(0, 1), Vector2i(1, 1)] as Array[Vector2i],
+		PackedInt32Array([3, 4, 0])
+	)
+	# Four quarter turns bring a piece back as it was.
+	var turned: Piece = ell
+	for _turn in 4:
+		turned = turned.rotated()
+	assert_that(turned.cells).is_equal(ell.cells)
+
+
+func test_a_piece_that_fits_only_turned_does_not_end_the_game() -> void:
+	var game: TileBlocksGame = _game()
+	# Only a vertical gap of 3 cells is left in the last column.
+	for y in 8:
+		for x in 8:
+			if not (x == 7 and y < 3):
+				game.grid.set_symbol(Vector2i(x, y), (x + y) % 2)
+	var bar: Piece = Piece.new(
+		[Vector2i(0, 0), Vector2i(1, 0), Vector2i(2, 0)] as Array[Vector2i],
+		PackedInt32Array([0, 1, 0])
+	)
+	game.hand.assign([bar, null, null])
+	assert_bool(game.is_over()).is_false()
+	var rules: TileBlocksRules = RULES.duplicate()
+	rules.can_rotate = false
+	game.rules = rules
+	assert_bool(game.is_over()).is_true()

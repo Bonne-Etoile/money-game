@@ -98,6 +98,23 @@ offset_bottom = 500.0
 grow_horizontal = 2
 script = ExtResource("5_tray")
 
+[node name="RotateHint" type="Label" parent="."]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -340.0
+offset_top = 500.0
+offset_right = 340.0
+offset_bottom = 548.0
+grow_horizontal = 2
+theme_override_colors/font_color = Color(1, 1, 1, 0.6)
+theme_override_font_sizes/font_size = 26
+text = "HINT_ROTATE"
+horizontal_alignment = 1
+
 [node name="DragLayer" type="Control" parent="."]
 unique_name_in_owner = true
 layout_mode = 1

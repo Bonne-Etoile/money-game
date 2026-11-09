@@ -1,12 +1,17 @@
 class_name TrayView
 extends Control
-## The pieces waiting to be placed, side by side. Pressing one starts a drag: the tray keeps
-## the pointer until it is released, and reports where it goes (global coordinates).
+## The pieces waiting to be placed, side by side. Pressing one and moving starts a drag: the
+## tray keeps the pointer until it is released, and reports where it goes (global
+## coordinates). Pressing and releasing without moving is a tap (to turn the piece).
 
 signal drag_started(slot: int, pointer: Vector2)
 signal drag_moved(pointer: Vector2)
 signal drag_ended(pointer: Vector2)
+## A piece was touched and released without moving (to turn it).
+signal tapped(slot: int)
 
+## How far the pointer moves, in pixels, before a touch becomes a drag rather than a tap.
+const TAP_SLOP: float = 16.0
 ## Space around a slot's box, in pixels.
 const SLOT_MARGIN: float = 8.0
 
@@ -19,6 +24,9 @@ var hidden_slot: int = -1
 var show_slots: bool = false
 var _pieces: Array[Piece] = []
 var _dragging: bool = false
+## The slot under the pointer since it was pressed (-1: none).
+var _pressed_slot: int = -1
+var _press_point: Vector2 = Vector2.ZERO
 
 
 func _ready() -> void:
@@ -58,15 +66,24 @@ func _gui_input(event: InputEvent) -> void:
 	if event.is_action_pressed("pointer"):
 		var slot: int = slot_at(pointer.position)
 		if slot >= 0 and _pieces[slot] != null:
-			_dragging = true
-			drag_started.emit(slot, pointer.global_position)
+			_pressed_slot = slot
+			_press_point = pointer.global_position
+			_dragging = false
 			accept_event()
-	elif _dragging and event.is_action_released("pointer"):
+	elif _pressed_slot >= 0 and event.is_action_released("pointer"):
+		if _dragging:
+			drag_ended.emit(pointer.global_position)
+		else:
+			tapped.emit(_pressed_slot)
+		_pressed_slot = -1
 		_dragging = false
-		drag_ended.emit(pointer.global_position)
 		accept_event()
-	elif _dragging and event is InputEventMouseMotion:
-		drag_moved.emit(pointer.global_position)
+	elif _pressed_slot >= 0 and event is InputEventMouseMotion:
+		if not _dragging and pointer.global_position.distance_to(_press_point) > TAP_SLOP:
+			_dragging = true
+			drag_started.emit(_pressed_slot, _press_point)
+		if _dragging:
+			drag_moved.emit(pointer.global_position)
 		accept_event()
 
 

@@ -12,7 +12,7 @@ Ce que fait le joueur à la minute, à la session, sur toute la partie.
 
 ### Prototype 1 « blocs de tuiles » (G1, 2026-11-08)
 
-- Grille 8 × 8. Trois pièces proposées sous la grille, sans rotation ; on les fait glisser sur la grille, dans l'ordre qu'on veut. Trois nouvelles pièces quand les trois sont posées.
+- Grille 8 × 8. Trois pièces proposées sous la grille ; on les fait glisser sur la grille, dans l'ordre qu'on veut. **Retours de Stelio (2026-11-09)** : les pièces sont **les 7 formes du Tetris d'origine** (I, O, T, S, Z, J, L ; réglage `shape_keys`), **toucher une pièce la tourne** d'un quart de tour (`can_rotate`, aussi dans les prototypes 2, 4 et 5), et **une nouvelle pièce prend aussitôt la place** de celle qu'on vient de poser (`refill_each_slot`). La partie n'est perdue que si aucune pièce ne rentre dans aucun de ses sens.
 - Chaque case d'une pièce porte un **symbole** (5 symboles : rond rouge, carré vert, triangle bleu, losange violet, étoile jaune ; forme **et** couleur, pour les daltoniens).
 - **Effacement** : une ligne ou une colonne pleine, **ou** 3 symboles identiques (ou plus) qui se touchent par un côté. Tout ce qui est effacé en même temps compte une fois.
 - Une pièce tirée au hasard ne contient jamais à elle seule 3 symboles identiques qui se touchent (sinon elle s'effacerait gratuitement en la posant).

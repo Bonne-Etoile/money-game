@@ -42,6 +42,7 @@ func _ready() -> void:
 	_continue.pressed.connect(func() -> void: Ads.show_rewarded(CONTINUE_PLACEMENT))
 	Events.rewarded_ad_ready_changed.connect(_on_rewarded_ad_ready_changed)
 	Events.rewarded_ad_finished.connect(_on_rewarded_ad_finished)
+	_tray.tapped.connect(rotate_piece)
 	_board.resized.connect(refresh)
 	start(_new_seed())
 
@@ -98,3 +99,9 @@ func _on_rewarded_ad_finished(placement: String, rewarded: bool) -> void:
 
 func _new_seed() -> int:
 	return int(Time.get_unix_time_from_system() * 1000.0) ^ Time.get_ticks_usec()
+
+
+## Turns a piece of the tray a quarter turn (a tap on it).
+func rotate_piece(slot: int) -> void:
+	if game.rotate(slot):
+		refresh()

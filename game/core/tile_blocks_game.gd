@@ -1,8 +1,9 @@
 class_name TileBlocksGame
 extends RefCounted
 ## Prototype 1, "tile blocks" (docs/etude-concurrence.md, appendix B, idea 1): pieces of tiles
-## placed on a grid, without rotation. A full row or column clears, and so do 3 identical
-## symbols touching each other. New pieces come when the hand is empty; the game is over when
+## placed on a grid; the player may turn them (TileBlocksRules.can_rotate). A full row or
+## column clears, and so do 3 identical symbols touching each other. A new piece takes the
+## place of a placed one (or three come when the hand is empty); the game is over when
 ## no piece of the hand fits anywhere, unless the player revives it (after a rewarded ad).
 
 var rules: TileBlocksRules
@@ -20,7 +21,7 @@ func _init(game_rules: TileBlocksRules, random_seed: int) -> void:
 	grid = TileGrid.new(rules.grid_size)
 	scores = ScoreKeeper.new(rules.scoring)
 	_generator = PieceGenerator.new(
-		rules.shape_set.shapes, rules.symbol_count, rules.match_size, random_seed
+		rules.shape_set.pick(rules.shape_keys), rules.symbol_count, rules.match_size, random_seed
 	)
 	_refill_hand()
 
@@ -50,17 +51,37 @@ func place(slot: int, origin: Vector2i) -> MoveResult:
 	grid.remove(result.clear.cells)
 	result.points = scores.score_move(piece.cells.size(), result.clear)
 	result.combo = scores.combo
-	if hand.all(func(waiting: Piece) -> bool: return waiting == null):
+	if rules.refill_each_slot:
+		hand[slot] = _generator.next_piece()
+	elif hand.all(func(waiting: Piece) -> bool: return waiting == null):
 		_refill_hand()
 	return result
 
 
-## Over when no piece left in the hand fits anywhere.
+## Turns the piece of `slot` a quarter turn clockwise; false when not allowed.
+func rotate(slot: int) -> bool:
+	if not rules.can_rotate or _piece_in(slot) == null:
+		return false
+	hand[slot] = hand[slot].rotated()
+	return true
+
+
+## Over when no piece left in the hand fits anywhere (in any of its turns, when the player
+## can turn pieces).
 func is_over() -> bool:
 	for piece in hand:
-		if piece != null and grid.fits_anywhere(piece):
+		if piece != null and _fits_somehow(piece):
 			return false
 	return true
+
+
+func _fits_somehow(piece: Piece) -> bool:
+	var turned: Piece = piece
+	for _turn in 4 if rules.can_rotate else 1:
+		if grid.fits_anywhere(turned):
+			return true
+		turned = turned.rotated()
+	return false
 
 
 ## True when the game is over and a revive is left.

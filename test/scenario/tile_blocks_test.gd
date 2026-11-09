@@ -47,8 +47,9 @@ func test_dragging_a_piece_completes_a_trio_and_scores() -> void:
 	screen.game.grid.set_symbol(Vector2i(3, 4), 1)
 	screen.game.hand[1] = _single(1)
 	screen.refresh()
+	var placed: Piece = screen.game.hand[1]
 	await _drag(runner, 1, Vector2i(4, 4))
-	assert_object(screen.game.hand[1]).is_null()
+	assert_object(screen.game.hand[1]).is_not_same(placed)
 	assert_int(screen.game.grid.filled_count()).is_equal(0)
 	assert_int(screen.game.score()).is_greater(1)
 	var score: Label = runner.find_child("ScoreLabel") as Label
@@ -136,3 +137,17 @@ func test_the_continue_button_waits_for_an_ad() -> void:
 	assert_bool(button.disabled).is_true()
 	fake.ready = true
 	assert_bool(button.disabled).is_false()
+
+
+func test_tapping_a_piece_turns_it() -> void:
+	var runner: GdUnitSceneRunner = await _screen()
+	var screen: TileBlocksScreen = runner.scene() as TileBlocksScreen
+	var bar: Piece = Piece.new(
+		[Vector2i(0, 0), Vector2i(1, 0)] as Array[Vector2i], PackedInt32Array([0, 1])
+	)
+	screen.game.hand[2] = bar
+	screen.refresh()
+	var tray: TrayView = runner.find_child("Tray") as TrayView
+	await Pointer.tap(runner, tray.slot_center(2))
+	assert_that(screen.game.hand[2].extent()).is_equal(Vector2i(1, 2))
+	assert_int(screen.game.grid.filled_count()).is_equal(0)

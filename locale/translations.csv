@@ -21,3 +21,4 @@ BUTTON_RETRY,Try again,Recommencer,Prototype 2: end-of-level panel: plays the sa
 MENU_PLAY_TRAY_GRID,3. Tiles on a small grid,3. Tuiles sur petite grille,"Start menu: prototype 3, single tiles from a pile placed on a 5 x 5 grid"
 MENU_PLAY_PAIRS,4. Pairs,4. Paires,"Start menu: prototype 4, like 1 but two identical symbols touching clear"
 MENU_PLAY_STAMP,5. Stamp the pile,5. Tampon sur la pile,"Start menu: prototype 5, a shape stamped on a pile of tiles takes them"
+HINT_ROTATE,Tap a piece to turn it,Touchez une pièce pour la tourner,"Under the pieces to place: a tap turns a piece a quarter turn, a drag places it"

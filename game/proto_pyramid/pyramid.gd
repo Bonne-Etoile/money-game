@@ -39,6 +39,7 @@ func _ready() -> void:
 	_drag.placed.connect(func(_result: MoveResult) -> void: refresh())
 	add_child(_drag)
 	_stack.tile_tapped.connect(take)
+	_tray.tapped.connect(rotate_piece)
 	(%MenuButton as Button).pressed.connect(back_to_menu)
 	(%EndMenuButton as Button).pressed.connect(back_to_menu)
 	(%RetryButton as Button).pressed.connect(func() -> void: start_level(level_index))
@@ -95,3 +96,9 @@ func back_to_menu() -> void:
 ## The pointer position that drops the piece of `slot` with its corner on `origin` (tests).
 func pointer_for(slot: int, origin: Vector2i) -> Vector2:
 	return _drag.pointer_for(game.tray[slot], origin)
+
+
+## Turns a piece of the tray a quarter turn (a tap on it).
+func rotate_piece(slot: int) -> void:
+	if game.rotate(slot):
+		refresh()

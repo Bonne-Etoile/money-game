@@ -22,6 +22,15 @@ static func uniform(shape_cells: Array[Vector2i], symbol: int) -> Piece:
 	return Piece.new(shape_cells, all_symbols)
 
 
+## The piece turned a quarter turn clockwise, its corner back at the top left.
+func rotated() -> Piece:
+	var height: int = extent().y
+	var turned: Array[Vector2i] = []
+	for cell in cells:
+		turned.append(Vector2i(height - 1 - cell.y, cell.x))
+	return Piece.new(turned, symbols)
+
+
 ## Width and height in cells.
 func extent() -> Vector2i:
 	var corner: Vector2i = Vector2i.ZERO

@@ -42,6 +42,8 @@ func _ready() -> void:
 		tray.art = art
 	_hand.show_slots = true
 	_next_tray.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_shape_tray.tapped.connect(func(_slot: int) -> void: rotate_shape())
+	_hand.tapped.connect(func(_slot: int) -> void: rotate_piece())
 	_stamp_drag.art = art
 	_stamp_drag.connect_views(_pile, _shape_tray, layer)
 	_stamp_drag.piece_in = func(_slot: int) -> Piece: return game.current_shape()
@@ -119,3 +121,15 @@ func pointer_for_stamp(origin: Vector2i) -> Vector2:
 ## The pointer position that drops the piece in hand with its corner on `origin` (tests).
 func pointer_for_place(origin: Vector2i) -> Vector2:
 	return _piece_drag.pointer_for(game.hand[0], origin)
+
+
+## Turns the shape to stamp a quarter turn (a tap on it).
+func rotate_shape() -> void:
+	if game.rotate_shape():
+		refresh()
+
+
+## Turns the piece in hand a quarter turn (a tap on it).
+func rotate_piece() -> void:
+	if game.rotate_piece():
+		refresh()

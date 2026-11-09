@@ -42,6 +42,14 @@ func take(index: int) -> bool:
 	return true
 
 
+## Turns the piece of `slot` a quarter turn clockwise; false when the slot is empty.
+func rotate(slot: int) -> bool:
+	if slot < 0 or slot >= tray.size() or tray[slot] == null:
+		return false
+	tray[slot] = tray[slot].rotated()
+	return true
+
+
 func can_place(slot: int, origin: Vector2i) -> bool:
 	return slot >= 0 and slot < tray.size() and grid.can_place(tray[slot], origin)
 
@@ -73,6 +81,16 @@ func is_lost() -> bool:
 	if is_won():
 		return false
 	for piece in tray:
-		if piece != null and grid.fits_anywhere(piece):
+		if piece != null and _fits_somehow(piece):
 			return false
 	return not tray.has(null) or stack.free_tiles().is_empty()
+
+
+## Whether `piece` fits somewhere, in one of its four turns.
+func _fits_somehow(piece: Piece) -> bool:
+	var turned: Piece = piece
+	for _turn in 4:
+		if grid.fits_anywhere(turned):
+			return true
+		turned = turned.rotated()
+	return false

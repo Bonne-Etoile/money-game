@@ -41,6 +41,22 @@ func current_shape() -> Piece:
 	return queue[0] if hand[0] == null and not pile.is_empty() else null
 
 
+## Turns the shape to stamp a quarter turn clockwise; false when there is none.
+func rotate_shape() -> bool:
+	if current_shape() == null:
+		return false
+	queue[0] = queue[0].rotated()
+	return true
+
+
+## Turns the piece in hand a quarter turn clockwise; false when the hand is empty.
+func rotate_piece() -> bool:
+	if hand[0] == null:
+		return false
+	hand[0] = hand[0].rotated()
+	return true
+
+
 func can_stamp(origin: Vector2i) -> bool:
 	return current_shape() != null and pile.can_stamp(queue[0], origin)
 
@@ -88,7 +104,14 @@ func is_won() -> bool:
 
 
 func is_lost() -> bool:
-	return hand[0] != null and not grid.fits_anywhere(hand[0])
+	if hand[0] == null:
+		return false
+	var turned: Piece = hand[0]
+	for _turn in 4:
+		if grid.fits_anywhere(turned):
+			return false
+		turned = turned.rotated()
+	return true
 
 
 func _fill_pile() -> void:
@@ -109,8 +132,13 @@ func _draw_shape() -> Piece:
 ## When the shape to stamp fits nowhere on the pile, the first fallback shape that fits
 ## replaces it.
 func _fit_current_shape() -> void:
-	if pile.is_empty() or pile.fits_anywhere(queue[0]):
+	if pile.is_empty():
 		return
+	var turned: Piece = queue[0]
+	for _turn in 4:
+		if pile.fits_anywhere(turned):
+			return
+		turned = turned.rotated()
 	for key in rules.fallback_keys:
 		var shape: Piece = _blank(key)
 		if pile.fits_anywhere(shape):
