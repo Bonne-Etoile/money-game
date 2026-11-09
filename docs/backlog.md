@@ -148,7 +148,7 @@ Chaque ticket : objectif, périmètre, critères d'acceptation, dépendances. Un
 - **Dépend de** : G1.
 - **Fait (2026-11-09)** : mots d'encouragement, éclats, tremblement, son qui monte avec le combo, « Grille vide ! +300 », vibration (option du menu, permission Android `VIBRATE`), feu d'artifice et fanfare au record. Sons faits par le code (pas de clé ElevenLabs dans la session) : à remplacer (`docs/avant-la-sortie.md`). **À tester par Stelio** : est-ce satisfaisant ? Trop chargé ? Les sons sont-ils supportables ? La vibration ?
 
-### G14. Reprise offerte au retour — à tester (PR à venir)
+### G14. Reprise offerte au retour — à tester (PR #10, fusionnée)
 
 - **Objectif** : faire revenir le joueur qui décroche (étude, 8.2.5).
 - **Périmètre** : si le joueur revient après plusieurs jours sans jouer (seuil réglable), la première reprise de la journée est gratuite, avec un bouton qui le dit (« Continuer (offert) »). Date de dernière session dans `PlayerStats` (migration de sauvegarde si besoin).
@@ -164,7 +164,7 @@ Chaque ticket : objectif, périmètre, critères d'acceptation, dépendances. Un
 - **Dépend de** : G1.
 - **Fait (2026-11-09)** : `MoveHint` (`game/core/`), tuiles pâles après 10 s sans geste. **À tester par Stelio** : l'aide arrive-t-elle trop tôt ou trop tard ? Gâche-t-elle le défi ?
 
-### G16. Défi du jour — à tester (PR à venir)
+### G16. Défi du jour — à tester (PR #10, fusionnée)
 
 - **Objectif** : un rendez-vous quotidien que Block Blast n'a pas (étude, 8.1.8).
 - **Périmètre** : une partie par jour avec la même graine pour tous (`RandomNumberGenerator` à graine tirée de la date) ; meilleur score du jour et série de jours joués gardés dans la sauvegarde ; bouton dans le menu. Classement entre joueurs plus tard (demande un serveur).
