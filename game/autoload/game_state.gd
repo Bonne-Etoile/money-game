@@ -12,6 +12,8 @@ var progress: GameProgress = GameProgress.new()
 var saves: SaveSlots = SaveSlots.new(SAVES_DIRECTORY)
 ## The slot of the playthrough, or 0: nothing is saved (tests, screenshots).
 var slot: int = 0
+## The day number to use instead of the system's (tests, screenshots); -1: the system's.
+var day_override: int = -1
 
 
 func _ready() -> void:
@@ -25,7 +27,7 @@ func open_profile() -> void:
 	var latest: int = saves.latest()
 	if latest <= 0 or not load_game(latest):
 		new_game()
-	progress.stats.start_session()
+	progress.stats.start_session(today())
 	save_game()
 
 
@@ -39,6 +41,35 @@ func record_game(score: int, moves: int) -> void:
 ## Keeps `score` as the best one when it is (a game is not over until the player leaves it).
 func note_score(score: int) -> void:
 	progress.stats.note_score(score)
+
+
+## Today's day number (DailyChallenge.day_of), from the system's local date.
+func today() -> int:
+	if day_override >= 0:
+		return day_override
+	var date: Dictionary = Time.get_date_dict_from_system()
+	return DailyChallenge.day_of(
+		JsonRead.integer(date, "year"),
+		JsonRead.integer(date, "month"),
+		JsonRead.integer(date, "day")
+	)
+
+
+## The comeback gift (G14): a free continue today after `days` away.
+func has_comeback_gift(days: int) -> bool:
+	return progress.stats.has_comeback_gift(today(), days)
+
+
+func use_comeback_gift() -> void:
+	progress.stats.use_comeback_gift(today())
+	Diagnostics.note("comeback gift used")
+	save_game()
+
+
+## A daily challenge game ended with `score` (G16).
+func record_daily(score: int) -> void:
+	progress.stats.finish_daily(today(), score)
+	save_game()
 
 
 ## A rewarded ad was offered for `placement` at a moment it was worth the most.
@@ -55,6 +86,7 @@ func record_bonus(kind: String) -> void:
 func reset() -> void:
 	progress = GameProgress.new()
 	slot = 0
+	day_override = -1
 	Events.money_changed.emit(progress.money)
 
 
