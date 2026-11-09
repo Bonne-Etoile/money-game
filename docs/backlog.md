@@ -172,7 +172,7 @@ Chaque ticket : objectif, périmètre, critères d'acceptation, dépendances. Un
 - **Dépend de** : G1.
 - **Fait (2026-11-09)** : `DailyChallenge` (graine de la date), scène `game/proto_tiles/daily.tscn`, meilleur score du jour et série dans la sauvegarde, bouton du menu. **À tester par Stelio** : donne-t-il envie de revenir chaque jour ?
 
-### G17. Mode à niveaux à objectifs — à tester (PR à venir)
+### G17. Mode à niveaux à objectifs — à tester (PR #11, fusionnée)
 
 - **Décision de Stelio (2026-11-09)** : « Ok pour C » : un seul jeu (G1) avec deux modes, infini et à niveaux, plutôt qu'un second prototype.
 - **Objectif** : donner un but, une fin et une progression au-delà du mode infini (étude, 8.1.7).
