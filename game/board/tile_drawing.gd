@@ -14,10 +14,14 @@ const SYMBOL_MARGIN: float = 0.22
 static var _box: StyleBoxFlat = StyleBoxFlat.new()
 
 
-## A tile in `rect`; `tint` multiplies every colour (ghosts, fading).
+## A tile in `rect`; `tint` multiplies every colour (ghosts, fading). A negative symbol is an
+## empty shape (prototype "stamp"): a plain coloured block.
 static func draw_tile(
 	canvas: CanvasItem, rect: Rect2, symbol: int, art: TileArt, tint: Color = Color.WHITE
 ) -> void:
+	if symbol < 0:
+		draw_box(canvas, rect, art.shape_color * tint)
+		return
 	draw_box(canvas, rect, art.tile_side * tint)
 	var face: Rect2 = Rect2(rect.position, Vector2(rect.size.x, rect.size.y * (1.0 - SIDE)))
 	draw_box(canvas, face, art.tile_face * tint)
