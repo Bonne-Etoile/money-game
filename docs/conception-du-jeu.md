@@ -4,7 +4,7 @@ Référence pour tout ce qui touche au gameplay. Chaque décision du joueur y en
 
 ## 1. Le jeu en une phrase
 
-Un puzzle de blocs dont les pièces sont faites de tuiles de mahjong : on pose des pièces sur une grille, et on efface en complétant des lignes ou en réunissant des symboles. Deux prototypes sont comparés avant de choisir (`docs/backlog.md`, D2, G1 et G2).
+Un puzzle de blocs dont les pièces sont faites de tuiles de mahjong : on pose des pièces sur une grille, et on efface en complétant des lignes ou en réunissant des symboles. Deux prototypes sont comparés avant de choisir (`docs/backlog.md`, D2, G1 et G2). **Choix de Stelio (2026-11-09)** : le jeu est le prototype 1 « blocs de tuiles », avec un **mode infini** et un **mode à niveaux à objectifs** (`docs/backlog.md`, G17). Le prototype 5 « tampon sur la pile » pourrait devenir un jeu à part, plus tard.
 
 ## 2. Boucle de jeu
 

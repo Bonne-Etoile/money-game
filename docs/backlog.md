@@ -18,7 +18,7 @@ Chaque ticket : objectif, périmètre, critères d'acceptation, dépendances. Un
 ## Décisions à prendre
 
 - ~~**D1. Technologie du jeu**~~ — **tranchée le 2026-11-08 : Godot 4.7** (le modèle actuel), avec le plugin AdMob de poingstudios. Voir `docs/architecture.md`, décision 16.
-- ~~**D2. Genre du jeu**~~ — **tranchée le 2026-11-08** : un hybride **blocs + tuiles de mahjong**. Deux prototypes à comparer : piste 1 « blocs de tuiles » et piste 2 « la pyramide fournit les pièces » (`docs/etude-concurrence.md`, annexe B). On garde celle qui donne le plus envie de rejouer (test de Stelio).
+- ~~**D2. Genre du jeu**~~ — **tranchée le 2026-11-08** : un hybride **blocs + tuiles de mahjong**. Deux prototypes à comparer : piste 1 « blocs de tuiles » et piste 2 « la pyramide fournit les pièces » (`docs/etude-concurrence.md`, annexe B). On garde celle qui donne le plus envie de rejouer (test de Stelio). **Suite, 2026-11-09 : prototype retenu = G1 « blocs de tuiles »**, avec un mode infini et un mode à niveaux à objectifs dans le même jeu (G17, option C de l'étude Block Blast ; « Ok pour C »). G2, G5 et G6 sont mis de côté ; G7 « tampon sur la pile » pourrait devenir **un jeu à part entière**, à voir plus tard.
 - ~~**D4. Pubs forcées**~~ — **tranchée le 2026-11-09 : aucune pub forcée pour le moment** (ni interstitiel, ni bannière) ; seulement des pubs récompensées choisies par le joueur (« J'aimerais aussi qu'il n'y ait pas de pub forcée pour le moment »).
 - **D3. Public cible** (2026-11-08) : 13 ans et plus recommandé, pour éviter le programme Familles qui interdit la plupart des leviers pub (`docs/deploiement-android.md`, section 6).
 
@@ -101,7 +101,7 @@ Chaque ticket : objectif, périmètre, critères d'acceptation, dépendances. Un
 
 ## Suite de l'étude Block Blast (2026-11-09)
 
-**Demande de Stelio (2026-11-09)** : les 8 tickets proposés dans `docs/etude-block-blast.md` (section 8.4), « toutes ». Ils s'appliquent au prototype 1 (« blocs de tuiles », le seul qui a la pub « Continuer » et la difficulté de G9) en attendant le choix du prototype ; à reporter sur celui qui sera retenu. Rappel : **aucune pub forcée** (décision D4) ; tout le revenu vient des récompensées.
+**Demande de Stelio (2026-11-09)** : les 8 tickets proposés dans `docs/etude-block-blast.md` (section 8.4), « toutes ». Ils s'appliquent au prototype 1 (« blocs de tuiles »), retenu le 2026-11-09 (D2). Rappel : **aucune pub forcée** (décision D4) ; tout le revenu vient des récompensées.
 
 ### G10. Record au centre — prêt
 
@@ -152,12 +152,13 @@ Chaque ticket : objectif, périmètre, critères d'acceptation, dépendances. Un
 - **Critères** : tests unitaires (même date → mêmes pièces) ; test de scénario ; captures.
 - **Dépend de** : G1.
 
-### G17. Mode à objectifs avec image révélée — décision requise
+### G17. Mode à niveaux à objectifs — prêt
 
-- **Objectif** : donner un but et une progression au-delà du mode infini (étude, 8.1.7).
-- **Périmètre** : niveaux courts (effacer N trios, libérer des tuiles « gemmes », grille de départ avec obstacles) ; une image de tuiles de mahjong révélée niveau après niveau ; bouton Partager à la fin ; un mode expert débloqué en battant son record.
-- **Critères** : niveaux gagnables par un robot dans les tests ; captures.
-- **Dépend de** : le choix du prototype par Stelio (G1 à G7), puis G10 et G11.
+- **Décision de Stelio (2026-11-09)** : « Ok pour C » : un seul jeu (G1) avec deux modes, infini et à niveaux, plutôt qu'un second prototype.
+- **Objectif** : donner un but, une fin et une progression au-delà du mode infini (étude, 8.1.7).
+- **Périmètre** : les règles de G1 (grille 8 × 8, pièces de Tetris tournables, lignes et trios). Un niveau = une grille de départ dessinée à la main, un objectif affiché (« Effacer 5 trios d'étoiles », « Libérer les 3 tuiles dorées », « Atteindre 800 points ») et un nombre de pièces limité ; perdu quand il n'y a plus de pièces. Éléments de niveau : **tuiles dorées** (libérées par une ligne ou un trio), **pierres** (seulement par une ligne), **glace** (deux effacements) ; un élément nouveau tous les 10 niveaux environ. Carte des niveaux ; chaque niveau gagné colore une partie d'une grande tuile de mahjong, à partager une fois finie. Pub récompensée **« +5 pièces »** quand il en manque (aucune pub forcée, D4) ; bonus de G9 utilisables. Mode expert débloqué en battant son record (plus tard). Niveaux en `.tres`.
+- **Critères** : chaque niveau gagné par un robot dans les tests ; test de scénario (gagner, perdre, « +5 pièces ») ; captures regardées ; **à tester par Stelio** (difficulté des niveaux).
+- **Dépend de** : G10, G11. À redécouper si trop gros (moteur de niveaux et objectifs ; éléments ; carte et image).
 
 ### G4. …
 

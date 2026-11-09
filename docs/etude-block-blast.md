@@ -190,7 +190,7 @@ Classées par priorité. G9 renvoie à la PR #5 (difficulté adaptative, bonus, 
 5. **Reprise offerte au retour** (8.2.5) — petit.
 6. **Aide à l'hésitation** (8.1.6) — petit.
 7. **Défi du jour** (8.1.8) — moyen.
-8. **Mode à objectifs avec image révélée et partage** (8.1.7) — gros, après le choix du prototype.
+8. **Mode à objectifs avec image révélée et partage** (8.1.7) — gros. **Choix de Stelio (2026-11-09)** : niveaux ajoutés au prototype 1 (même règle que le mode infini), voir `docs/backlog.md`, G17.
 
 ## Sources
 
