@@ -2,159 +2,182 @@
 
 Demandée par Stelio le 9 novembre 2026 : tout ce qu'on peut apprendre de Block Blast (Hungry Studio) sur le design, le gameplay, les pubs et la difficulté, et ce qu'on en retient pour Block Tiles. Complète la section 3 de `docs/etude-concurrence.md` (chiffres de marché, concurrents), sans la répéter.
 
-**À lire avec prudence** : Hungry Studio ne publie ni règles détaillées ni post-mortem. Trois sortes de sources, à ne pas confondre :
+**Trois niveaux de fiabilité**, indiqués à chaque fois :
 
 - **sûr** : ce que montre le jeu, et les annonces officielles (Apple, communiqués) pour les faits datés ;
 - **déclaré** : ce que dit l'éditeur (interviews, communiqués, études de cas de ses partenaires), non vérifiable ;
-- **allégué** : la décompilation publiée par un développeur indépendant en octobre 2026 (section 5). Rien ne confirme ni ne dément ces règles ; elles sont citées parce qu'elles décrivent très concrètement ce qu'un tel jeu *peut* faire, pas parce qu'elles sont prouvées.
+- **décompilé** : la décompilation publiée le 15 octobre 2026 par Ayo Omolewa (« Ayoships », section 4). Elle cite le code avec ses numéros de ligne, publie des empreintes et des paquets de preuves vérifiables, et a observé certaines règles en direct. Hungry Studio n'a répondu ni à la presse ni à MobileGamer.biz. C'est la source la plus précise sur le fonctionnement du jeu, mais elle vient d'un seul auteur, qui en fait un contenu viral ; sa rédaction est critiquée sur Hacker News, pas ses constats.
 
-Les guides de joueurs et blogs « astuces » trouvés en ligne se contredisent (barème, fenêtre de combo) : ils ne sont pas repris ici.
+Les guides de joueurs et blogs « astuces » se contredisent (barème, fenêtre de combo) : ils ne sont pas repris.
 
 ## 1. En bref
 
-1. **Une seule mécanique, polie à l'extrême.** Grille 8 × 8, 3 pièces, lignes et colonnes. L'éditeur dit en faire sa philosophie : pas de nouvelles règles, mais des milliers de réglages fins.
-2. **Le jeu est une machine à tests A/B** : plus de 10 000 expériences en 2025, jusqu'à 300 en parallèle (déclaré). Les deux mesures qui tranchent tout : **la rétention et le temps de jeu**, pas le revenu par pub.
-3. **Pub seulement** : bannière, interstitiel après chaque partie ou niveau, pub récompensée pour continuer. Aucun achat, même pas « sans pubs » (les joueurs le réclament).
-4. **La difficulté s'adapte au joueur**, dans les deux sens : plus dure quand il va bien, plus douce après des échecs (déclaré par l'éditeur ; règles précises alléguées par la décompilation).
-5. **Le moment fort de la pub, c'est le record.** Selon la décompilation, le jeu aide le joueur à dépasser son record, puis peut lui servir une partie perdue d'avance quand une pub chère est prête. Si c'est vrai, c'est exactement ce qu'on ne doit **pas** faire (section 8.3).
-6. **Ce que les joueurs lui reprochent** : pubs trop longues, pub imposée même quand on refuse de continuer, pubs en plein niveau sur Android, aucune option payante pour les retirer, aucun aspect social.
-7. **2026 a été agitée** : retiré de Google Play un jour sans explication (28 mai), version sans pub sur Apple Arcade (3 septembre), soupçons de « triche » après la décompilation (fin octobre). La confiance des joueurs est devenue un sujet : c'est une ouverture pour un jeu qui joue franc-jeu.
+1. **Une seule mécanique, polie à l'extrême.** Grille 8 × 8, 3 pièces, lignes et colonnes. L'éditeur en fait sa philosophie : pas de règle nouvelle, mais l'interface, l'art, la difficulté, les effets et la vibration réglés par des milliers de tests.
+2. **Le jeu est une machine à tests A/B.** Plus de 10 000 expériences en 2025, jusqu'à 300 en parallèle (déclaré) ; ≈ 3 % seulement s'avèrent positives. Juges : **la rétention et le temps de jeu**.
+3. **Le jeu est un assemblage de ≈ 700 petites règles** (« traits ») téléchargées depuis le serveur après l'installation. Chaque joueur en reçoit une sélection (254 pour l'installation étudiée) : deux joueurs côte à côte ne jouent pas au même jeu (décompilé).
+4. **La difficulté s'adapte dans les deux sens** : pièces faciles après des échecs ou pour les joueurs peu engagés, pièces dures pour qui joue vite près de son record (décompilé).
+5. **Le jeu sait fabriquer une défaite.** Un générateur cherche 3 pièces dont 2 rentrent mais qu'aucun ordre ne permet de poser toutes. Plusieurs règles le déclenchent, presque toutes **juste après le record battu** ; l'une attend qu'une pub récompensée **3,5 fois plus chère** que la précédente soit chargée (décompilé). C'est exactement ce que nous ne ferons pas (section 8.3).
+6. **Pubs peu nombreuses mais pilotées par la valeur du joueur** : bannière, interstitiel court entre deux parties, une récompensée « Continuer ». Un modèle sur le téléphone estime ce que vaut chaque joueur en pub ; le jeu choisit les formats en conséquence (décompilé).
+7. **Ce que les joueurs reprochent** : pub même quand on refuse de continuer, pubs longues, pas d'achat « sans pubs », pas d'aspect social, et depuis octobre 2026 le soupçon d'être « truqué ». C'est notre ouverture : un jeu honnête, qui le dit.
 
 ## 2. Fiche d'identité (complément)
 
-Les chiffres d'audience et de revenus sont dans `docs/etude-concurrence.md`. Faits nouveaux :
+Les chiffres d'audience et de téléchargements sont dans `docs/etude-concurrence.md`. Ce qui s'ajoute :
 
 | Date | Fait | Fiabilité |
 |---|---|---|
-| 2021 | Création de Hungry Studio | déclaré |
-| 2025 | ≈ 356 à 368 M de téléchargements, n°1 mondial ; prix « meilleur jeu de réflexion » Sensor Tower APAC 2025 | estimations de trackers |
-| janvier 2026 | Communiqué : 70 M de joueurs par jour, 300 M par mois, plus de 10 000 tests A/B en 2025 | déclaré |
-| 28 → 29 mai 2026 | Disparaît de Google Play une journée, sans explication, puis revient | sûr (PocketGamer.biz) |
-| 3 septembre 2026 | **Block Blast!+** sur Apple Arcade : même jeu, **sans pub ni achat** | sûr (Apple Newsroom) |
-| fin octobre 2026 | Un développeur (Ayo Omolewa, « Ayoships ») publie une décompilation qui accuse le jeu de régler la difficulté selon la valeur des pubs ; reprise par The Star, Inc., MobileGamer.biz, Hacker News | allégué |
+| 2021 | Création de Hungry Studio (siège à Hong Kong selon la presse, Singapour selon d'autres sources) | déclaré |
+| fin 2024 | 40 M de joueurs par jour, plus de 3 000 tests A/B depuis la sortie, dont ≈ 100 positifs (interview de Jason Wang, Baijing) | déclaré |
+| 2025 | n°1 mondial des téléchargements ; meilleur jeu de réflexion aux Sensor Tower APAC Awards | estimations |
+| janvier 2026 | 70 M de joueurs par jour, 300 M par mois, plus de 10 000 tests A/B en 2025 | déclaré |
+| janvier à mai 2026 | **≈ 127 M $ de revenus publicitaires**, n°1 mondial (Vita Mahjong 2ᵉ à 89,8 M $, Candy Crush 81,1 M $) ; ≈ 60 % hors des États-Unis | estimation Sensor Tower |
+| 28 → 29 mai 2026 | Retiré de Google Play une journée ; une rumeur parle d'une plainte pour droit d'auteur (DMCA), non confirmée | sûr (le retrait) |
+| 3 septembre 2026 | **Block Blast!+** sur Apple Arcade : même jeu, sans pub ni achat | sûr (Apple Newsroom) |
+| 15 octobre 2026 | Décompilation publiée par Ayoships ; vidéo à plus de 15 M de vues, reprise par Inc., The Star, MobileGamer.biz, Hacker News | décompilé |
 
-- **Revenu** : estimé entre 0,6 et 1 M $ par jour de pub (tiers, écarts énormes). Les achats intégrés sont négligeables.
-- **Régie** : AppLovin MAX en médiation (allégué par la décompilation, cohérent avec les études de cas de DT Exchange et d'AdMob qui citent Hungry Studio comme client). AdMob annonce +8 % de rétention grâce à son partenariat (étude de cas commerciale).
+- **Revenu** : pub presque exclusivement (≈ 66 000 $ d'achats en tout, selon AppMagic). ≈ 0,6 à 1 M $ par jour, ≈ 1,8 M $ le jour du Black Friday 2025 (Gamigion).
+- **Contexte du marché** : la pub dans les jeux mobiles pèse plus de 12 Md $ (2025) ; le puzzle en fait 53 %, le sous-genre « blocs » à lui seul ≈ 10 %. Surtout : **les jeux hors du top 1 000 captent 29 % des revenus publicitaires, contre 9 % des achats** (Sensor Tower, juin 2026). La pub profite aux petits jeux bien plus que l'achat intégré : bon signe pour nous.
+- **Session moyenne** : ≈ 12 minutes, plusieurs fois par jour ; rétention J1 ≈ 26 % (Udonis, AppMagic).
+- **Régies** : AppLovin MAX en médiation, AdMob dans les enchères (décompilé ; AdMob et InMobi publient des études de cas sur le studio : +8 % de rétention, +5 % de revenu par joueur et par jour).
 
 ## 3. Gameplay et design
 
 ### Les règles
 
 - Grille **8 × 8**. Trois pièces proposées sous la grille ; on les pose dans l'ordre qu'on veut, **sans les tourner**. Les trois posées, trois nouvelles arrivent.
-- Une **ligne ou une colonne pleine** s'efface. Plusieurs à la fois et des effacements à la suite (combo) rapportent beaucoup plus (le barème exact n'est publié nulle part).
+- Une **ligne ou une colonne pleine** s'efface. Plusieurs à la fois et des effacements à la suite (combo) rapportent beaucoup plus ; une grille vidée donne un gros bonus.
 - **Fin** : aucune des pièces restantes ne rentre. Pas de minuteur, pas de vies.
-- Différences avec nos prototypes : nous **tournons** les pièces (retour de Stelio) et **remplaçons** chaque pièce dès qu'elle est posée (G8). Chez Block Blast, ne pas tourner et attendre d'avoir posé les trois sont précisément ce qui crée la tension : une pièce gênante reste là et oblige à prévoir de la place.
+- Différences avec nos prototypes : nous **tournons** les pièces (retour de Stelio) et **remplaçons** chaque pièce dès qu'elle est posée (G8). Chez Block Blast, ne pas tourner et attendre d'avoir posé les trois créent la tension : une pièce gênante reste là et oblige à prévoir de la place.
 
-### Les deux modes
+### Les modes
 
-- **Classique** : partie infinie, un seul but, battre son **record**. Le record est affiché en permanence et sa barre est le vrai moteur de la partie.
-- **Aventure** : 96 niveaux par saison. Chaque niveau a un objectif (atteindre un score, ou récupérer des **gemmes** prises dans des cases en effaçant leur ligne). Chaque niveau gagné colore une case d'une **mosaïque** ; toutes les cases révèlent une image (thème renouvelé). Cet écran de mosaïque est sorti d'un test A/B ; moins de 1 % des joueurs finissent les 96 niveaux (interview de l'éditeur). Interstitiel entre deux niveaux.
+- **Classique** (« sans fin ») : un seul but, battre son **record**, affiché en permanence. **90 % des joueurs commencent par là** (interview).
+- **Aventure** : 96 niveaux, renouvelés chaque semaine environ. La grille commence avec des **blocs obstacles** ; il faut effacer un nombre donné de blocs (ou récupérer des gemmes). Chaque niveau gagné colore une case d'une **mosaïque en points** ; l'image finie est faite pour être **partagée en capture d'écran** (elle a remplacé une illustration avec citation, après un test A/B). Moins de 1 % des joueurs finissent les 96 niveaux.
+- **Mode caché « chute »** (*falling*) : un mode plus difficile, caché derrière « More Games » dans le Classique, pour les joueurs qui veulent plus de défi (interview).
 
 ### Ce qui fait « bon » à jouer
 
-- **Lisibilité totale** : couleurs franches, fond sombre, aucune décoration autour de la grille. Rien à lire pour comprendre.
-- **Retours massifs à chaque effacement** : animation des cases qui éclatent, mots d'encouragement (« Good! », « Great! », « Perfect! » pour une grille vidée), sons courts, vibration. Les combos montent en intensité.
-- **Le presque-record** : on voit le record approcher, chaque partie peut être « la bonne ». Le *near-miss* (« presque ! ») est le ressort principal de la relance.
-- **Sessions de 2 à 5 minutes**, jouables d'une main, sans connexion pour le mode Classique.
-- **Pas de méta-jeu** (ni monnaie, ni boutique, ni personnage) : tout le temps de développement va au cœur du jeu et à son réglage.
+- **Lisibilité totale** : couleurs franches, fond sombre, rien autour de la grille. Rien à lire pour comprendre.
+- **Retours massifs à chaque effacement**, réglés un par un : les noms des règles trouvées dans le code en donnent la liste (décompilé) : arc-en-ciel sur les combos (`ComboRainbowTrait`), score qui s'envole (`ComboflyScoreTrait`), effets qui grossissent avec le nombre d'effacements (`TheMoreEliminateTheMoreGoodEffectTrait`), onde en cœur quand la grille est vidée (`ClearBoardHeartRippleAniTrait`), feu d'artifice en fin de partie (`SettleFireworkTrait`), vibration (`IsOpenVibrateTrait`), tremblement des boutons, animations ralenties pour les joueurs lents (`SlowPlayerAnimTrait`), effets allégés sur les petits téléphones (`CTLowDeviceEffectTrait`, 30 images/s).
+- **Aide discrète** : indice d'effacement possible (`AddClearTipsExTrait`), aide quand le joueur réfléchit longtemps (`LongThinkClearAssistTrait`), aide au placement (`IsOpenRightPutTrait`, `PlaceHabitAdaptPathTrait`).
+- **Début soigné** : pièces plus petites pour les débutants (`LimitNoviceBlockSizeTrait`), premier score réglé (`FirstGameScoreTrait`, `NewbieScoreRegulationTrait`), incitation à rejouer pour les nouveaux (`NewPlayerContinuePlayIncentiveTrait`).
+- **Rendez-vous** : séries de victoires quotidiennes (`DailyWinStreakStateTrait`), apparences de pièces (*skins*) qu'on change, mode débloqué en battant son record (`GameLobbyUnlockByBreakHighScoreTrait`).
+- **Le presque-record** : on voit le record approcher, chaque partie peut être « la bonne ».
+- **Pas de méta-jeu** (ni monnaie, ni boutique) : l'effort va au cœur du jeu et à son réglage.
 
 ### Ce qui lui manque (nos ouvertures)
 
-- **Aucun aspect social** : pas de classement, pas de défi entre amis, pas de défi du jour commun.
-- **Lassitude du mode infini** : le Classique n'a qu'un but ; l'Aventure en donne un, mais 99 % ne la finissent pas.
-- **Pas d'option sans pub** sur Android (elle n'existe que dans l'abonnement Apple Arcade).
+- **Aucun aspect social** : pas de classement, pas de défi entre amis, pas de défi du jour commun (le partage de la mosaïque est le seul geste social).
+- **Lassitude du mode infini** : 99 % ne finissent pas l'Aventure.
+- **Pas d'option sans pub** sur Android (seulement dans l'abonnement Apple Arcade).
+- **La confiance** : depuis octobre 2026, une partie du public pense que le jeu triche.
 
-## 4. Difficulté
+## 4. Difficulté : ce que montre la décompilation
 
-### Ce que dit l'éditeur
+### L'architecture
 
-- La difficulté de chaque niveau d'Aventure est réglée par tests A/B, comme les visuels et les sons.
-- Un **robot joueur** (« Block AI ») imite les joueurs pour évaluer un réglage avant de le montrer à de vrais joueurs.
+- Le jeu installé est presque vide de logique. Au lancement, le serveur envoie une configuration qui choisit, pour ce joueur, une variante (« bras ») de chaque règle ; les règles arrivent en JavaScript chiffré, **hors de l'examen des magasins**. Tout est donc testable et modifiable à distance, joueur par joueur.
+- Avant chaque lot de 3 pièces, une liste de règles décide **quel générateur** utiliser : remplissage facile, tirage dur, tirage « mortel », etc.
 
-### Ce qu'allègue la décompilation (octobre 2026)
+### Le générateur « mortel » (`ZHI_SI_TI`, « question qui tue »)
 
-Le tirage des pièces passerait par des **règles nommées**, chacune pouvant demander au générateur des pièces « faciles », « dures » ou un **tirage mortel** (trois pièces dont aucune ne rentre ou presque) :
+Il cherche **2 pièces qui rentrent et 1 qui ne rentre pas encore**, et ne garde le lot que si **aucun ordre et aucun placement** ne permet de poser les trois, en comptant les lignes effacées en route. Le lot n'a pas l'air impossible : deux pièces se posent. Exemple publié : deux dominos et un carré 3 × 3, impossibles sur la grille de test, alors que ces trois pièces se posent de 67 680 façons sur une grille vide.
 
-| Règle (nom dans le code) | Condition | Effet |
-|---|---|---|
-| `FailStreakStrategyTrait` | 2 parties d'affilée sous le record | pièces plus **faciles** |
-| — | partie très en dessous du record | pièces plus faciles |
-| `FastHandPunishTrait` | les 6 derniers lots joués en moins de 4,2 s en moyenne **et** score au-delà de 93 % du record | pièces **dures** |
-| « High Value Ad Harvest » | 3 dernières pubs récompensées regardées jusqu'au bout, pub chargée ≥ 3,5 × l'eCPM de la précédente, score ≥ record + 1 000 (500 ou 750 dans d'autres groupes de test) | **tirage mortel** : le joueur perd, l'offre « Continuer » arrive au moment où elle vaut le plus |
-| offre de reprise | après certaines reprises | bonus de score jusqu'à 10 % du record |
+### Les règles qui le déclenchent (ou adoucissent le jeu)
 
-- L'auteur dit avoir lancé le fichier non modifié avec des valeurs de test et vu la règle se déclencher. Comme elle exige une pub chargée, elle ne joue pas hors ligne.
-- Ce n'est **ni confirmé ni démenti** par Hungry Studio ; on ne sait pas quelle part des joueurs est concernée.
+| Règle | Condition | Effet | Observée |
+|---|---|---|---|
+| `RewardHighValueAdHarvestTrait` | 3 dernières pubs récompensées vues jusqu'au bout, pub chargée ≥ 3,5 × la précédente, score ≥ record + 1 000 (500 ou 750 selon le bras) | lot mortel ; peut revenir après une reprise | code exécuté sur 28 cas ; en direct sur iPhone, en attente (pub à 1,94 ×). Version iOS « V2 » : jusqu'à 1 seule pub suffit, même fermée |
+| `PersonalMarginBreakTrait` | score à plus de 10 % au-dessus du record | à chaque lot, **20 % de chances** de lot mortel | **en direct** (iPhone) |
+| `MultiClearBoostThenKillTrait` | joueurs classés par le serveur « peu sensibles à être forcés de mourir » | attend un gros effacement, puis lot mortel quelques tours après, vers la durée habituelle de partie du joueur | code |
+| `MABXiBaiTrait` | expérience à 6 bras | délai avant le premier lot mortel possible : jamais, 4, 6, 10, ≈ 17 ou 30 minutes ; mesure si le joueur relance une partie dans les 15 minutes et accepte les reprises | code |
+| modèle `predict_travel_difficulty_dead` | mode Aventure : forêt XGBoost de 500 arbres, 52 entrées (niveau, essais, parties de la semaine, ancienneté) | choisit **où** perdre dans le niveau (début, milieu, fin) ; offre une reprise en plus aux joueurs qui en prennent souvent, puis lot mortel | code |
+| `FastHandPunishTrait` | 6 derniers lots joués en moins de 4,2 s en moyenne, et plus de 93 % du record | pièces dures | code |
+| `FailStreakStrategyTrait` | 2 parties d'affilée sous le record | pièces **faciles** | **en direct** |
+| `MaturityDevelopmentV2Trait` | « maturité » du joueur = habitude + talent + historique de pubs (sous 65) | remplace des lots durs par des remplissages faciles | **en direct** |
+| `ConsecutiveLossRecoveryTrait`, `IsWarmhandsTrait`, `LoginTimeFirstDifficultyRatioTrait` | (noms seulement) | rattrapage après des défaites, échauffement, difficulté au premier lancement | noms |
+| `AdPlusMinusStrategyTrait` | après une offre de reprise en plus | bonus aléatoire jusqu'à 10 % du record ajouté au score | code |
+| `NextDayLowActivityFirstReviveFreeTrait` | un modèle (LightGBM, 1 000 arbres) prédit que le joueur jouera moins demain (≥ 0,69) | **reprise gratuite, sans pub**, une fois par jour, bouton rose | code |
 
-### Ce qu'on en retient (indépendamment de la véracité)
+### Ce qu'on en retient
 
-- Une bonne difficulté adaptative **descend aussi** : après des échecs, le jeu aide. C'est ce qui garde le joueur moyen.
-- Le **record** est le repère naturel de la difficulté : facile loin en dessous, plus dur près du record (le moment de tension), jamais impossible.
-- Le **rythme** du joueur (temps par coup) est un bon signal de maîtrise, gratuit à mesurer.
-- Un débat de conception connu dans le genre : le hasard pur crée des séries de pièces impossibles (« le jeu m'a tué »), un générateur trop gentil rend la partie infinie. Les réponses courantes : sac de pièces (chaque forme sort une fois par sac), ou **garantie qu'au moins une des pièces rentre**.
+- **Le record est le pivot** : facile loin en dessous, plus dur près du record (la tension), et c'est juste après le record battu que le joueur veut le plus continuer.
+- **Une bonne difficulté descend aussi** : après des échecs, pour un nouveau joueur, pour un joueur peu engagé. C'est ce qui garde le joueur moyen.
+- **Le rythme** (temps par lot) et **l'hésitation** (longue réflexion) sont de bons signaux, gratuits à mesurer.
+- **La générosité ciblée fidélise** : une reprise offerte au joueur qui décroche coûte une pub et peut sauver un joueur.
+- **Tout est réglable à distance et mesuré** : chaque seuil est un bras d'expérience, jugé sur le retour du joueur (relance dans les 15 minutes, retour le lendemain).
 
 ## 5. Les pubs
 
-### Formats et placements (observés et rapportés)
+### Formats et placements
 
 | Format | Où | Remarques |
 |---|---|---|
-| Bannière | en bas, en permanence pendant la partie | source de revenu de fond |
-| Interstitiel | après chaque défaite (Classique), entre deux niveaux (Aventure) | souvent 15 à 30 s, parfois plus et non passables ; pendant un niveau sur Android selon des joueurs |
-| Récompensée | « Continuer » après une défaite (reprise de la partie) | le seul choix du joueur ; aussi, selon des avis, une pub **même quand on refuse** de continuer (le compte à rebours finit sur une pub) |
+| Bannière | en bas, en permanence pendant la partie | pas de bannière les premiers jours d'un nouveau joueur (`NoBannerAdNewUserByDaysTrait`, décompilé) ; bannière affichée selon la progression (`HighProgressShowBannerTrait`) |
+| Interstitiel | entre deux parties (Classique), entre deux niveaux (Aventure) | court ; pas d'interstitiel selon le temps de jeu (`PlaytimeNoInterstitial1Trait`), répit après un interstitiel cher (`HighValueInterstitialReliefTrait`), **aucun** pour les joueurs qui ne rapportent presque rien (`IsOpenEcpmTooLowNoInterTrait`), un de plus pour ceux qui rapportent beaucoup (`FullScreenAdAddByEcpmTrait`) |
+| Récompensée | « Continuer » après une défaite | **une par partie** en principe (Applixir), des reprises en plus pour les joueurs dont la récompensée vaut ≥ 2 × l'interstitiel ; pas de bouton s'il n'y a pas de vidéo prête (`IsOpenNoVideoNoRevivieTrait`) |
 
-- **Pas** de multiplicateur de gain, de coffre, de boutique, de bonus contre pub : il n'y a rien à multiplier. Toute la valeur de la récompensée tient à **une** offre, au moment de la défaite.
-- Le placement et la fréquence ont fait l'objet de « dizaines de milliers » de tests (Udonis), toujours jugés à la rétention et au temps de jeu (l'éditeur dit limiter les pubs pour protéger la rétention).
-- Les plaintes les plus fréquentes dans les avis (≈ 8 900 avis analysés par un agrégateur) : fréquence, longueur, pub imposée après un refus, et l'absence d'achat pour les retirer.
+- **Hors ligne, pas de pub** : c'est la « soupape » qui remplace l'achat « sans pubs » (Applixir).
+- **La valeur du joueur** : un modèle XGBoost (59 arbres, 27 entrées : prix des pubs reçues, pays, téléphone, mémoire, source d'installation, score de la première partie) estime ce que vaut chaque joueur en pub (eCPM) ; d'autres modèles côté serveur (désabonnement, valeur à vie, clic sur la reprise). Exemple publié : le même joueur vaut 25,5 aux États-Unis, 8,1 au Brésil, 5,6 en Inde (iPhone).
+- **Ce que dit l'éditeur** (fin 2024) : ils ont **retiré des formats de pub qui gênaient les joueurs**, au prix d'une baisse de revenu à court terme ; leur retour sur investissement est plus long que celui des concurrents à cause de cette retenue ; leur croissance dépend « lourdement » de l'achat de joueurs.
+- **Ce que reprochent les joueurs** (≈ 8 900 avis analysés) : pub même quand on refuse « Continuer », pubs longues ou non passables, pas d'achat pour les retirer.
 
 ### Lecture
 
-Block Blast gagne énormément avec un système de pub **pauvre** : peu de formats, une seule récompensée. Sa force est l'audience (des dizaines de millions de joueurs par jour), pas l'ingénierie de la pub. Un petit jeu n'a pas cette audience : il doit au contraire **tirer plus de chaque joueur** avec des récompensées choisies et bien placées (notre stratégie, `docs/strategies-pub.md`), et soigner la rétention, que Block Blast obtient par sa simplicité.
+L'analyse d'Applixir résume le modèle : **peu de pubs, mais placées au seul moment où le joueur en veut une** (juste après avoir perdu une partie à laquelle il tenait), et **rationnées** pour que la reprise garde sa valeur. La rétention est le revenu : un test qui fait revenir les joueurs multiplie toutes les pubs futures ; une pub de plus est un gain ponctuel contre un risque permanent. Block Blast a ajouté par-dessus une couche d'optimisation par joueur (formats selon sa valeur, défaites provoquées) que nous ne reprendrons pas.
 
 ## 6. Acquisition de joueurs
 
-- Pubs d'acquisition : ≈ 78 % vidéo, 16 % image, 7 % *playable* (Insightrackr). Beaucoup de vidéos de joueurs (UGC) reprises de TikTok, perçues comme authentiques.
-- Une partie des pubs montre autre chose que le jeu (accroche spectaculaire, faux Tetris). À ne pas copier : Google Play et les régies sanctionnent les pubs trompeuses, et un joueur qui retrouve dans le jeu ce que la pub promettait reste nettement plus longtemps.
-- Forte croissance par pays émergents (Indonésie, Vietnam, Brésil, Inde, Mexique) : eCPM plus bas, mais volume énorme et acquisition bon marché.
+- Croissance **achetée** : 30 à 40 M d'installations par mois au pic, payées par les revenus de pub ; pubs à la télévision connectée, préinstallations chez des fabricants de téléphones (Udonis).
+- Pubs d'acquisition : ≈ 78 % vidéo, 16 % image, 7 % jouables (Insightrackr). Montrent surtout le vrai jeu : blocs qui s'emboîtent, effacements en chaîne, « presque perdu », défi (« seul 1 % arrive à vider la grille »), avec une accroche visuelle sans rapport (une tornade) dans les 2 premières secondes. Vidéos de créateurs TikTok réutilisées en pub.
+- Les joueurs qui trouvent dans le jeu ce que la pub promettait restent nettement plus (Sensor Tower) : une pub honnête est un levier de rétention.
 
 ## 7. Comment l'équipe travaille
 
-- **« Égalité d'expérience »** : principe affiché par l'éditeur, qui guide produit, marketing et pub (même jeu pour tous, pas d'avantage payant).
-- **Tests en continu** : ≈ 50 expériences par semaine par équipe, idées venues de toute l'entreprise, « le test bat l'expérience et l'autorité ». Chaque test est jugé sur la rétention et le temps de jeu, pour qu'aucune équipe n'optimise seule son chiffre.
-- **Instrumentation d'abord** : un exemple cité (ThinkingData) d'une chute brutale de nouveaux joueurs qui venait d'un événement de mesure manquant, pas du jeu.
+- **« Égalité d'expérience »** (体验平权) : le jeu doit être facile à prendre pour tous, quels que soient le pays, la langue, le réseau ou le téléphone. D'où les effets allégés sur les petits téléphones et le mode hors ligne.
+- **« Moins, c'est plus »** : un seul jeu, un seul mécanisme, choisi parce que les blocs évoquent l'enfance et se comprennent tout de suite. Pas d'innovation « pour innover » : améliorer les détails de l'expérience.
+- **Tests en continu**, ≈ 50 par semaine, idées venues de tous (« innovation sans chef »), « l'exploration bat l'expérience et l'autorité ». 3 % de tests positifs : c'est normal une fois les gains faciles pris.
+- **Un robot joueur** (« Block AI ») imite les joueurs pour évaluer un réglage avant de le montrer.
+- **Mesure d'abord** : une chute de nouveaux joueurs venait en fait d'un événement de mesure manquant (ThinkingData).
+- **Achats intégrés écartés** : ils divisent les joueurs en payants et gratuits, difficiles à servir tous les deux.
 
 ## 8. Recommandations pour Block Tiles
 
-Classées par priorité. Les références G9 renvoient à la PR #5 (difficulté adaptative, bonus, suivi du joueur).
+Classées par priorité. G9 renvoie à la PR #5 (difficulté adaptative, bonus, suivi du joueur).
 
 ### 8.1 À faire (gameplay et ressenti)
 
-1. **Mettre le record au centre de l'écran de jeu.** Record visible en permanence, et une barre « vers le record » qui se remplit pendant la partie ; animation et son quand on le dépasse. C'est le ressort qui fait relancer une partie, et le meilleur moment pour l'offre « Continuer ». Coût : faible (le record existe déjà dans `PlayerStats`).
-2. **Une difficulté qui descend aussi** (à ajouter à G9). Aujourd'hui, la difficulté monte avec le score, les combos et la moyenne des parties. Ajouter : après **2 parties d'affilée sous la moyenne**, ou tant que le score est loin du record, le générateur tire la pièce qui a **le plus** de place (le contraire du mode dur) ; et réduire le niveau dans les 3 premières parties (déjà le cas) **et** juste après un record battu (laisser savourer).
-3. **Garantie de jouabilité** : le générateur ne propose jamais 3 pièces dont aucune ne rentre dans aucun sens, **sauf** si la grille est vraiment pleine. Perdre doit toujours venir d'un choix du joueur. C'est aussi notre argument face aux soupçons qui visent Block Blast.
-4. **Retours d'effacement au niveau du genre** : mots d'encouragement qui montent avec le combo, explosion des cases, son qui monte d'un demi-ton par coup de combo, vibration courte (réglable dans les options), « grille vide ! » avec gros bonus. C'est ce qui se voit dans une vidéo de 5 secondes. À capturer et à faire juger par Stelio (Claude ne peut pas juger les sensations).
-5. **Essayer en test A/B maison la règle de Block Blast « on remplace les 3 pièces quand les 3 sont posées »** contre notre remplacement immédiat (G8). La version Block Blast crée plus de tension (on doit caser une pièce gênante) ; la nôtre est plus fluide mais plus facile. Ça peut répondre au « trop facile » sans toucher au générateur. Un réglage `refill_each_slot` existe déjà : il suffit de le proposer à Stelio sur un build de test.
-6. **Mode à objectifs façon Aventure, avec notre accroche** : niveaux courts avec un but (effacer N trios, libérer les tuiles « gemmes » prises dans la grille, atteindre un score), et une **image de tuiles de mahjong** qui se révèle niveau après niveau. Ça donne un rendez-vous et une progression que le mode infini n'a pas, et ça se prête aux interstitiels entre niveaux (pause naturelle).
-7. **Ce que Block Blast n'a pas** : un **défi du jour** (même graine pour tous, `RandomNumberGenerator` à graine : déjà notre règle) avec un score à comparer, puis un classement simple. Coût moyen (le classement demande un serveur ; le défi du jour, non).
+1. **Mettre le record au centre.** Record visible en permanence, barre « vers le record » qui se remplit, animation et son quand on le dépasse. C'est le ressort qui fait relancer une partie et le meilleur moment pour « Continuer ». Coût faible (le record existe dans `PlayerStats`).
+2. **Une difficulté qui descend aussi** (suite de G9, qui la fait seulement monter). Après **2 parties d'affilée sous la moyenne**, ou tant que le score est loin du record, tirer la pièce qui a **le plus** de place ; niveau bas pendant les premières parties (déjà le cas) ; petites pièces pour les tout débutants.
+3. **Garantie de jouabilité** : le générateur ne propose jamais un lot impossible tant que la grille n'est pas vraiment pleine. Une défaite doit toujours venir d'un choix du joueur. On peut le **dire** (écran d'aide, page du Play Store : « jamais de pièces impossibles ») : c'est un argument face aux soupçons qui visent Block Blast.
+4. **Retours d'effacement au niveau du genre** : mots qui montent avec le combo, explosion des cases, son qui monte par coup de combo, effet qui grossit avec le nombre d'effacements, « grille vide ! » avec gros bonus, vibration courte (réglable), feu d'artifice au record. C'est ce qui se voit dans une vidéo de 5 secondes. À faire juger par Stelio (Claude ne peut pas juger les sensations).
+5. **Essayer « les 3 pièces renouvelées ensemble »** contre notre remplacement immédiat (G8), sur un build de test. La version Block Blast crée plus de tension ; ça peut répondre au « trop facile » sans toucher au générateur. Le réglage `refill_each_slot` existe déjà.
+6. **Aide à l'hésitation** : si le joueur ne joue pas pendant une dizaine de secondes, montrer en ombre un placement qui efface une ligne ou un trio. Gratuit au début, puis (au choix) un bonus « Indice » contre pub.
+7. **Mode à objectifs façon Aventure, avec notre accroche** : niveaux courts (effacer N trios, libérer des tuiles « gemmes », grille de départ avec obstacles), et une **image de tuiles de mahjong** révélée niveau après niveau, avec un bouton **Partager**. Interstitiels entre deux niveaux (pause naturelle).
+8. **Ce que Block Blast n'a pas** : un **défi du jour** (même graine pour tous, `RandomNumberGenerator` à graine : déjà notre règle) et un score à comparer ; plus tard un classement simple. Et un **mode expert** à débloquer en battant son record (pièces non tournables, par exemple).
 
 ### 8.2 À faire (pubs)
 
-1. **Garder l'offre « Continuer » au moment où elle compte** : déjà en place (G3) ; la montrer **surtout** quand la partie était proche du record (≥ 50 % du record, `docs/strategies-pub.md` 4.2) et le dire : « Il te manquait 120 points pour ton record ».
-2. **Bonus contre pub au moment de la difficulté, pas à la place du jeu** (G9 le fait : boutons qui brillent quand une seule pièce rentre). Ajouter les bonus déjà proposés (marteau, bombe, annuler, joker) un par un, chacun jugé sur le taux de pubs vues **et** la durée des parties.
-3. **Ne jamais imposer de pub quand le joueur refuse « Continuer »** : c'est la plainte n°1 contre Block Blast. Si un interstitiel suit une défaite, il vient **après** l'écran de fin, jamais à la fin du compte à rebours de l'offre.
-4. **Interstitiels plus rares que Block Blast** : nos plafonds de `docs/strategies-pub.md` (section 5 : rien pendant les 3 premières parties, un toutes les 2 à 3 parties, trêve de 10 minutes après une récompensée). Avec une petite audience, la rétention vaut plus que l'interstitiel de trop.
-5. **Achat « Sans pubs » en version 1.1** : les joueurs de Block Blast le réclament et ne l'ont pas. C'est un argument de page Play Store (« pubs supprimables »).
-6. **Mesurer comme eux** : chaque réglage de pub jugé sur la rétention J1/J7 et le temps de jeu, pas seulement sur le revenu du jour. Le suivi du joueur de G9 est la base ; il faudra l'envoyer à un outil d'analyse (Firebase ou Supabase) pour comparer deux groupes de joueurs. Prévoir les plafonds et les seuils de difficulté **réglables à distance**.
+1. **« Continuer » au moment où il compte** : déjà en place (G3), une fois par partie. Le mettre en avant quand la partie était proche du record ou l'a battu (« Il te manquait 120 points »). Pas de bouton sans pub prête (déjà notre règle).
+2. **Bonus contre pub au moment de la difficulté** (G9 le fait : boutons qui brillent quand une seule pièce rentre). Ajouter les bonus proposés (marteau, bombe, annuler, joker) un par un, chacun jugé sur le taux de pubs vues **et** la durée des parties.
+3. **Ne jamais imposer de pub quand le joueur refuse « Continuer »** : plainte n°1. Un interstitiel éventuel vient **après** l'écran de fin, jamais à la fin du compte à rebours.
+4. **Protéger les nouveaux joueurs** : ni interstitiel ni bannière pendant les premières parties, voire le premier jour (Block Blast le fait pour la bannière). Nos plafonds de `docs/strategies-pub.md` (section 5) vont dans ce sens.
+5. **Une reprise offerte à qui décroche** : par exemple, pour un joueur qui revient après plusieurs jours d'absence, la première reprise du jour est gratuite. Simple à faire sans modèle (date de dernière session dans `PlayerStats`).
+6. **Pas de pub hors ligne** : il n'y en aura de toute façon pas (rien à charger) ; le jeu doit rester entièrement jouable hors ligne, boutons de pub masqués.
+7. **Achat « Sans pubs » en version 1.1** : réclamé par les joueurs de Block Blast, qui ne l'ont pas.
+8. **Mesurer comme eux** : chaque réglage jugé sur la rétention J1/J7, le temps de jeu et la relance d'une partie, pas seulement sur le revenu du jour. Le suivi de G9 est la base ; il faudra l'envoyer à un outil d'analyse et rendre les seuils **réglables à distance** (Firebase Remote Config ou Supabase) pour tester deux groupes de joueurs.
 
 ### 8.3 À ne pas faire
 
 | Idée tirée de Block Blast | Pourquoi non |
 |---|---|
-| Tirage « mortel » déclenché quand une pub chère est prête ou près du record | Trompe le joueur sur ce qui le fait perdre ; contraire à l'esprit des règles Google Play et AdMob (pas de jeu rendu impossible pour forcer la pub, `docs/strategies-pub.md` section 3) ; risque de scandale public, comme en octobre 2026. Notre difficulté ne lit **jamais** l'état des pubs. |
-| Punir le joueur rapide près de son record | Punit le bon joueur au moment où il prend le plus de plaisir. On peut monter la difficulté avec la maîtrise, pas viser le record pour le faire tomber. |
+| Lot « mortel » volontaire (après le record, quand une pub chère est prête, au moment choisi par un modèle) | Trompe le joueur sur ce qui le fait perdre ; contraire à l'esprit des règles Google Play et AdMob (pas de jeu rendu impossible pour forcer la pub, `docs/strategies-pub.md` section 3) ; scandale public en octobre 2026. **Notre générateur ne lit jamais l'état des pubs, et ne produit jamais un lot impossible.** |
+| Difficulté ou nombre de pubs réglés selon la valeur publicitaire estimée du joueur (pays, téléphone…) | Même grief ; demande un profilage soumis au consentement (RGPD) ; hors de portée d'un petit jeu. La médiation choisit déjà la pub la mieux payée. |
+| Punir le joueur rapide près de son record | Punit le bon joueur au moment où il s'amuse le plus. On peut monter la difficulté avec la maîtrise, pas viser le record pour le faire tomber. |
+| Règles de jeu téléchargées en code (JavaScript chiffré) après l'installation | Google Play interdit à une application de télécharger du code exécutable hors de Play ; c'est aussi ce qui a permis la fuite. Nous ne téléchargerons que des **réglages** (JSON lu sans confiance), jamais du code. |
 | Pub imposée après un refus de « Continuer » | Plainte n°1 ; casse la confiance dans les pubs choisies, celles qui rapportent le plus. |
-| Interstitiel pendant un niveau | Interdit par AdMob (interstitiel inattendu). |
-| Pubs d'acquisition qui montrent un autre jeu | Pratique trompeuse ; mauvaise rétention des joueurs ainsi recrutés. |
+| Interstitiel pendant une partie | Interdit par AdMob (interstitiel inattendu). |
+| Pubs d'acquisition qui montrent un autre jeu | Pratique trompeuse ; mauvaise rétention. Une accroche spectaculaire est permise si le jeu montré est le vrai. |
 | Reprendre le nom, le logo, les couleurs ou l'interface de Block Blast | Identité protégée ; on reprend des mécaniques de genre (grille, 3 pièces, lignes), pas l'apparence. |
 
 ### 8.4 Tickets proposés
@@ -163,36 +186,44 @@ Classées par priorité. Les références G9 renvoient à la PR #5 (difficulté 
 
 1. **Record au centre** (8.1.1, 8.2.1) — petit.
 2. **Difficulté dans les deux sens et garantie de jouabilité** (8.1.2, 8.1.3) — petit, suite de G9.
-3. **Build de test « 3 pièces renouvelées ensemble »** pour comparer avec le remplacement immédiat (8.1.5) — très petit (réglage).
+3. **Build de test « 3 pièces renouvelées ensemble »** (8.1.5) — très petit (réglage).
 4. **Retours d'effacement** (8.1.4) — moyen, à juger par Stelio.
-5. **Défi du jour** (8.1.7) — moyen.
-6. **Mode à objectifs avec image révélée** (8.1.6) — gros, après le choix du prototype.
+5. **Protection des nouveaux joueurs et reprise offerte au retour** (8.2.4, 8.2.5) — petit.
+6. **Aide à l'hésitation** (8.1.6) — petit.
+7. **Défi du jour** (8.1.8) — moyen.
+8. **Mode à objectifs avec image révélée et partage** (8.1.7) — gros, après le choix du prototype.
 
 ## Sources
 
-Lues le 9 novembre 2026 par recherche web (plusieurs sites ne s'ouvraient pas depuis la session : les informations viennent alors des extraits des moteurs de recherche, et sont marquées « allégué » ou « estimation » quand elles ne sont pas officielles).
+Lues le 9 novembre 2026. Dates de publication entre parenthèses.
 
-- Apple Newsroom, Block Blast!+ et Art of Fauna sur Apple Arcade (août 2026) : https://apple.com/newsroom/2026/08/apple-arcade-levels-up-with-block-blast-plus-and-art-of-fauna-cozy-puzzles-plus/
-- PocketGamer.biz, Block Blast retiré de Google Play (mai 2026) : https://www.pocketgamer.biz/hungry-studios-block-blast-no-longer-available-on-google-play/ ; et son retour : https://www.pocketgamer.biz/hungry-studios-block-blast-returns-to-google-play/
-- MobileGamer.biz, retrait de Google Play : https://mobilegamer.biz/block-blast-has-disappeared-from-googles-play-store/
-- Ayoships, décompilation (octobre 2026, allégué) : https://ayoships.com/breakdowns/block-blast
-- The Star, « Is Block Blast rigged? » (28 octobre 2026) : https://www.thestar.com.my/tech/tech-news/2026/10/28/is-block-blast-rigged-a-developer-decompiled-the-viral-game-to-find-out
-- Inc., même sujet : https://www.inc.com/jelinda-montes/is-block-blast-rigged-a-developer-decompiled-the-viral-game-to-find-out/91419957
-- MobileGamer.biz, la décompilation présentée comme allégation : https://mobilegamer.biz/this-creator-says-he-decompiled-block-blast-candy-crush-and-subway-surfers-to-reveal-their-monetisation-secrets/
+**Décompilation et réactions**
+
+- Ayo Omolewa (Ayoships), « How Block Blast harvests its players for ad money » (15 octobre 2026), source primaire, code cité : https://ayoships.com/breakdowns/block-blast
+- The Star / Inc., « Is Block Blast rigged? » (28 octobre 2026) : https://www.thestar.com.my/tech/tech-news/2026/10/28/is-block-blast-rigged-a-developer-decompiled-the-viral-game-to-find-out
+- MobileGamer.biz, la décompilation présentée comme allégation (octobre 2026) : https://mobilegamer.biz/this-creator-says-he-decompiled-block-blast-candy-crush-and-subway-surfers-to-reveal-their-monetisation-secrets/
+- Felix Braberg, Mobile Ad Revenue (octobre 2026) : https://felixbraberg.substack.com/p/block-blasts-1mday-ad-logic-just
 - Hacker News, discussion : https://news.ycombinator.com/item?id=50217946
 - Mezha, limites des conclusions : https://mezha.net/eng/news/mezha-d2153a8745538b800d77853d_how_block_blast/
-- Felix Braberg (Substack), analyse de la logique de pub : https://felixbraberg.substack.com/p/block-blasts-1mday-ad-logic-just
-- DEV Community, reprise de la décompilation : https://dev.to/om_shree_0709/reverse-engineering-block-blast-5eop
-- Business Wire, communiqué « 70M DAU, 10 000 expériences » (janvier 2026, déclaré) : https://www.businesswire.com/news/home/20260108572322/en/Block-Blast-Scales-to-70M-DAU-as-Hungry-Studio-Runs-Over-10000-Experiments-in-a-Single-Year
-- Baijing, interview de Jason Wang, Hungry Studio (2026, en chinois) : https://www.baijing.cn/article/id-50876
-- Global Games Forum, IA, tests A/B et joueurs fidèles : https://www.globalgamesforum.com/news/how-block-blast-shattered-records-with-ai-a-b-testing-and-a-bold-bet-on-long-term-players
+
+**Éditeur et partenaires (déclaré)**
+
+- Baijing, interview de Jason Wang, vice-président marque et marketing de Hungry Studio (fin 2024, en chinois) : https://www.baijing.cn/article/id-50876
+- Business Wire, « 70M DAU, 10 000 expériences » (janvier 2026) : https://www.businesswire.com/news/home/20260108572322/en/Block-Blast-Scales-to-70M-DAU-as-Hungry-Studio-Runs-Over-10000-Experiments-in-a-Single-Year
 - AdMob, étude de cas Hungry Studio : https://admob.google.co.in/home/resources/hungry-studio-boosts-user-retention-revenue-with-admob/
 - Digital Turbine, étude de cas DT Exchange : https://www.digitalturbine.com/case-studies/hungry-studio-hit-8-arpdau-in-one-month-with-dt-exchange/
-- Udonis, statistiques (données AppMagic) : https://www.blog.udonis.co/statistics/block-blast
-- Insightrackr, fiche Block Blast (pubs d'acquisition) : https://blog.insightrackr.com/en/docs/Block-Blast-Intelligence
-- Applixir, « The Block Blast playbook » : https://www.applixir.com/blog/the-block-blast-playbook-what-127m-in-ad-revenue-actually-bought/
-- Gamigion, analyse du revenu publicitaire : https://www.gamigion.com/?p=12954
-- MAF, étude de Block Blast : https://maf.ad/en/blog/block-blast/
+- Apple Newsroom, Block Blast!+ sur Apple Arcade (août 2026) : https://apple.com/newsroom/2026/08/apple-arcade-levels-up-with-block-blast-plus-and-art-of-fauna-cozy-puzzles-plus/
+
+**Analyses du marché et de la monétisation**
+
+- Applixir, « The Block Blast playbook » (2026, d'après Sensor Tower, *Gaming Deep Dive: Ad Monetization*, juin 2026) : https://www.applixir.com/blog/the-block-blast-playbook-what-127m-in-ad-revenue-actually-bought/
+- Udonis, statistiques (2026, données AppMagic) : https://www.blog.udonis.co/statistics/block-blast
+- Gamigion, revenu publicitaire (2025) : https://www.gamigion.com/?p=12954
+- Insightrackr, pubs d'acquisition : https://blog.insightrackr.com/en/docs/Block-Blast-Intelligence
+- PocketGamer.biz, retrait de Google Play (mai 2026) : https://www.pocketgamer.biz/hungry-studios-block-blast-no-longer-available-on-google-play/ ; retour : https://www.pocketgamer.biz/hungry-studios-block-blast-returns-to-google-play/
+- Baijing, retrait de Google Play et rumeur DMCA : https://www.baijing.cn/article/55485
+
+**Avis de joueurs**
+
 - Marlvel, synthèse des avis : https://marlvel.ai/apps/block-blast/reviews
-- Adlock, pubs après refus de « Continuer » : https://adlock.com/blog/remove-block-blast-ads
-- App Store, fiche Block Blast! : https://apps.apple.com/us/app/id1617391485
+- Adlock, pub après refus de « Continuer » : https://adlock.com/blog/remove-block-blast-ads
