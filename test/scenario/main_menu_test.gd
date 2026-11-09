@@ -1,5 +1,5 @@
 extends GdUnitTestSuite
-## The start menu (game/ui/main_menu.tscn): the prototypes, and the crash report after a crash.
+## The start menu (game/ui/main_menu.tscn): the play button, and the crash report after a crash.
 
 const MENU_SCENE: String = "res://game/ui/main_menu.tscn"
 const TEST_SAVES: String = "user://test_saves"
@@ -26,22 +26,13 @@ func _menu() -> GdUnitSceneRunner:
 	return runner
 
 
-func test_each_play_button_opens_its_prototype() -> void:
+func test_the_play_button_opens_the_game() -> void:
 	var runner: GdUnitSceneRunner = _menu()
 	await runner.simulate_frames(2)
 	var menu: MainMenu = runner.scene() as MainMenu
 	(runner.find_child("PlayButton") as Button).pressed.emit()
 	assert_str(menu.chosen_scene).is_equal(MainMenu.TILE_BLOCKS_SCENE)
-	var buttons: Dictionary[String, String] = {
-		"PlayPyramidButton": MainMenu.PYRAMID_SCENE,
-		"PlayTrayGridButton": MainMenu.TRAY_GRID_SCENE,
-		"PlayPairsButton": MainMenu.PAIRS_SCENE,
-		"PlayStampButton": MainMenu.STAMP_SCENE,
-	}
-	for button: String in buttons:
-		(runner.find_child(button) as Button).pressed.emit()
-		assert_str(menu.chosen_scene).is_equal(buttons[button])
-		assert_bool(ResourceLoader.exists(buttons[button])).is_true()
+	assert_bool(ResourceLoader.exists(MainMenu.TILE_BLOCKS_SCENE)).is_true()
 
 
 func test_the_menu_opens_on_the_crash_report_after_a_crash() -> void:

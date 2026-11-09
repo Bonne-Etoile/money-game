@@ -1,8 +1,0 @@
-[gd_scene format=3]
-
-[ext_resource type="Script" path="res://test/fixtures/tile_blocks_fixture.gd" id="1_fixture"]
-[ext_resource type="PackedScene" path="res://game/proto_pairs/pairs.tscn" id="2_scene"]
-
-[node name="PairsFixture" type="Node"]
-script = ExtResource("1_fixture")
-scene = ExtResource("2_scene")
