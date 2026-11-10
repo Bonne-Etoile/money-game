@@ -119,7 +119,7 @@ horizontal_alignment = 1
 [node name="Board" type="Control" parent="."]
 unique_name_in_owner = true
 layout_mode = 1
-anchors_preset = 5
+anchors_preset = 8
 anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
@@ -129,13 +129,14 @@ offset_top = -450.0
 offset_right = 328.0
 offset_bottom = 206.0
 grow_horizontal = 2
+grow_vertical = 2
 mouse_filter = 2
 script = ExtResource("4_board")
 
 [node name="Tray" type="Control" parent="."]
 unique_name_in_owner = true
 layout_mode = 1
-anchors_preset = 5
+anchors_preset = 8
 anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
@@ -145,12 +146,13 @@ offset_top = 226.0
 offset_right = 340.0
 offset_bottom = 476.0
 grow_horizontal = 2
+grow_vertical = 2
 script = ExtResource("5_tray")
 
 [node name="HintLabel" type="Label" parent="."]
 unique_name_in_owner = true
 layout_mode = 1
-anchors_preset = 5
+anchors_preset = 8
 anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
@@ -160,6 +162,7 @@ offset_top = 476.0
 offset_right = 340.0
 offset_bottom = 516.0
 grow_horizontal = 2
+grow_vertical = 2
 theme_override_colors/font_color = Color(1, 1, 1, 0.6)
 theme_override_font_sizes/font_size = 26
 text = "HINT_ROTATE"
@@ -167,7 +170,7 @@ horizontal_alignment = 1
 
 [node name="BonusBar" type="HBoxContainer" parent="."]
 layout_mode = 1
-anchors_preset = 5
+anchors_preset = 8
 anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
@@ -177,6 +180,7 @@ offset_top = 528.0
 offset_right = 340.0
 offset_bottom = 616.0
 grow_horizontal = 2
+grow_vertical = 2
 theme_override_constants/separation = 20
 
 [node name="NewHandButton" type="Button" parent="BonusBar"]
