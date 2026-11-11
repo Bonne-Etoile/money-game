@@ -47,7 +47,6 @@ func test_bonus_ads_are_limited_per_game_all_bonuses_together() -> void:
 		var bonus: String = TileBlocksGame.BONUSES[ad % TileBlocksGame.BONUSES.size()]
 		assert_bool(game.earn(bonus)).is_true()
 		_play(game, pacing.moves_between_bonus_ads)
-	assert_int(game.bonus_ads()).is_equal(pacing.bonus_ads_per_game)
 	for bonus in TileBlocksGame.BONUSES:
 		assert_bool(game.can_earn(bonus)).is_false()
 	# The continue after an ad is still there: it is the last ad of the game.

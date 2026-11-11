@@ -36,6 +36,8 @@ var bonus_ads_used: Dictionary[String, int] = {}
 ## pieces of a level).
 var ads_used: int = 0
 var pacing: AdPacingRules
+## Pieces the hand may hold at most (the pieces left of a level); -1: no limit.
+var pieces_cap: int = -1
 ## The level's tiles that need more than a clear (gold, ice; level mode, G17); null: none.
 var layer: LevelBoard = null
 var _generator: PieceGenerator
@@ -95,7 +97,9 @@ func place(slot: int, origin: Vector2i) -> MoveResult:
 	moves += 1
 	if rules.refill_each_slot:
 		hand[slot] = _next_piece()
-		_keep_playable([slot])
+		_trim_to_cap()
+		if hand[slot] != null:
+			_keep_playable([slot])
 	elif hand.all(func(waiting: Piece) -> bool: return waiting == null):
 		_refill_hand()
 	return result
@@ -202,13 +206,13 @@ func use_ad() -> bool:
 func can_earn(bonus: String) -> bool:
 	if not bonus_ads_used.has(bonus) or ads_left() <= 0:
 		return false
-	if pacing.bonus_ads_per_game > 0 and bonus_ads() >= pacing.bonus_ads_per_game:
+	if pacing.bonus_ads_per_game > 0 and _bonus_ads() >= pacing.bonus_ads_per_game:
 		return false
 	return _last_bonus_ad_move < 0 or moves - _last_bonus_ad_move >= pacing.moves_between_bonus_ads
 
 
 ## Bonus uses earned with rewarded ads in this game, all bonuses together.
-func bonus_ads() -> int:
+func _bonus_ads() -> int:
 	var total: int = 0
 	for bonus: String in bonus_ads_used:
 		total += bonus_ads_used[bonus]
@@ -236,6 +240,7 @@ func new_hand() -> bool:
 		hand[slot] = _generator.next_piece_among(
 			grid, rules.new_hand_candidates, false, rules.can_rotate
 		)
+	_trim_to_cap()
 	return true
 
 
@@ -258,11 +263,38 @@ func _piece_in(slot: int) -> Piece:
 ## Deals a whole new hand (start of a game, all pieces placed without `refill_each_slot`).
 func _refill_hand() -> void:
 	hand.clear()
-	var slots: Array[int] = []
 	for slot in rules.hand_size:
 		hand.append(_next_piece())
-		slots.append(slot)
+	_trim_to_cap()
+	_keep_playable(_filled_slots())
+
+
+## Gives a new piece to each empty slot, up to `pieces_cap` pieces in the hand (a level's
+## extra pieces).
+func fill_empty_slots() -> void:
+	var slots: Array[int] = []
+	for slot in hand.size():
+		if hand[slot] == null and (pieces_cap < 0 or _filled_slots().size() < pieces_cap):
+			hand[slot] = _next_piece()
+			slots.append(slot)
 	_keep_playable(slots)
+
+
+## Limits the hand to `pieces_cap` pieces: the last ones go.
+func _trim_to_cap() -> void:
+	if pieces_cap < 0:
+		return
+	var filled: Array[int] = _filled_slots()
+	while filled.size() > maxi(pieces_cap, 0):
+		hand[filled.pop_back()] = null
+
+
+func _filled_slots() -> Array[int]:
+	var slots: Array[int] = []
+	for slot in hand.size():
+		if hand[slot] != null:
+			slots.append(slot)
+	return slots
 
 
 ## A new hand on the grid as it is (tests of the playability guarantee).

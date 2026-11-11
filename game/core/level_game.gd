@@ -28,6 +28,8 @@ func _init(level: LevelDefinition, rules: TileBlocksRules, level_set: LevelSet) 
 	_extra_pieces = level_set.extra_pieces
 	_extra_ads = level_set.extra_pieces_ads
 	load_rows(level.rows)
+	# The hand never shows more pieces than the level has left.
+	game.pieces_cap = pieces_left
 	# The first hand is dealt on the level's grid, not on an empty one.
 	game.deal_hand()
 
@@ -62,10 +64,14 @@ func _load_cell(cell: Vector2i, code: String) -> void:
 func place(slot: int, origin: Vector2i) -> MoveResult:
 	if pieces_left <= 0 or is_won():
 		return null
+	# The piece placed is no longer left: the hand gets no new piece beyond what remains.
+	game.pieces_cap = pieces_left - 1
 	var result: MoveResult = game.place(slot, origin)
+	game.pieces_cap = pieces_left
 	if result == null:
 		return null
 	pieces_left -= 1
+	game.pieces_cap = pieces_left
 	for symbol in result.clear.group_symbols:
 		if symbol == definition.goal_symbol:
 			trios += 1
@@ -98,10 +104,9 @@ func is_lost() -> bool:
 	return not is_won() and (pieces_left <= 0 or game.is_over())
 
 
-## Whether a rewarded ad can give more pieces now: they ran out, pieces still fit, and the
-## attempt has ads left.
+## Whether a rewarded ad can give more pieces now: they ran out and the attempt has ads left.
 func can_add_pieces() -> bool:
-	if is_won() or pieces_left > 0 or game.is_over() or extras_used >= _extra_ads:
+	if is_won() or pieces_left > 0 or extras_used >= _extra_ads:
 		return false
 	return game.ads_left() > 0
 
@@ -112,6 +117,8 @@ func add_pieces() -> bool:
 		return false
 	extras_used += 1
 	pieces_left += _extra_pieces
+	game.pieces_cap = pieces_left
+	game.fill_empty_slots()
 	return true
 
 

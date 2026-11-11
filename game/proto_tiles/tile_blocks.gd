@@ -446,7 +446,8 @@ func _note_offers(over: bool) -> void:
 		if _can_continue_with_ad() and not has_comeback_gift():
 			GameState.record_offer(_continue_placement())
 		if (
-			game.charges(TileBlocksGame.BONUS_NEW_HAND) <= 0
+			_over_new_hand.visible
+			and game.charges(TileBlocksGame.BONUS_NEW_HAND) <= 0
 			and _can_buy(TileBlocksGame.BONUS_NEW_HAND)
 		):
 			GameState.record_offer(NEW_HAND_PLACEMENT)

@@ -111,7 +111,8 @@ func _show_end_panel() -> void:
 	else:
 		_end_title.text = "GAME_OVER"
 	_next_level.visible = won
-	_over_new_hand.visible = _over_new_hand.visible and not won
+	# New pieces make no sense once a level is over: its pieces are counted.
+	_over_new_hand.visible = false
 	_extra_pieces.visible = level.can_add_pieces() and _ads_open()
 	_extra_pieces.text = tr("BUTTON_EXTRA_PIECES_AD") % levels.extra_pieces
 	_extra_pieces.disabled = not Ads.is_rewarded_ready()
