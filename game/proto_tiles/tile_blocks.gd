@@ -36,6 +36,8 @@ var chase: RecordChase = RecordChase.new(0)
 var mirroring: bool = false
 ## Seconds since the player last did something (for the hint, G15).
 var idle_seconds: float = 0.0
+## The mirror's great move shown now (MirrorChance), or null.
+var mirror_chance: MirrorChance = null
 ## Made in _ready, not here: the level scene swaps this script for LevelScreen, and a node
 ## made by the first script would be left orphaned.
 var _drag: PieceDrag
@@ -43,6 +45,8 @@ var _drag: PieceDrag
 var _was_over: bool = false
 var _was_in_trouble: bool = false
 var _call_tween: Tween = null
+## The bonus buttons pulsing now.
+var _called: Array[Button] = []
 ## Whether the hint was looked for since the player last did something.
 var _hint_looked_for: bool = false
 ## The score the last refresh showed, to notice the moment the record is beaten.
@@ -141,6 +145,7 @@ func start(random_seed: int) -> void:
 	mirroring = false
 	_was_over = false
 	_was_in_trouble = false
+	mirror_chance = null
 	refresh()
 
 
@@ -185,8 +190,12 @@ func refresh() -> void:
 		game.charges(TileBlocksGame.BONUS_NEW_HAND) > 0 or _can_buy(TileBlocksGame.BONUS_NEW_HAND)
 	)
 	_show_end_panel()
+	var had_chance: bool = mirror_chance != null
+	_show_mirror_chance(over)
 	_note_offers(over)
-	_call_for_bonuses(game.is_in_trouble())
+	if mirror_chance != null and not had_chance and _mirror_costs_ad():
+		GameState.record_offer(MIRROR_PLACEMENT)
+	_call_for_bonuses(game.is_in_trouble(), mirror_chance != null)
 
 
 ## A new game for `random_seed` (the level screen makes a level instead).
@@ -450,26 +459,63 @@ func _note_offers(over: bool) -> void:
 	_was_in_trouble = in_trouble
 
 
-## While the player is in trouble, the bonus buttons pulse to call for attention.
-func _call_for_bonuses(in_trouble: bool) -> void:
-	if in_trouble == (_call_tween != null):
+## The mirror's great move (MirrorChance): when the mirror can be used (a free use, or a
+## rewarded ad ready), its move shows on the grid and the mirror button pulses.
+func _show_mirror_chance(over: bool) -> void:
+	var shown: bool = mirror_chance != null
+	mirror_chance = null
+	var usable: bool = (
+		mirroring
+		or game.charges(TileBlocksGame.BONUS_MIRROR) > 0
+		or (_can_buy(TileBlocksGame.BONUS_MIRROR) and Ads.is_rewarded_ready())
+	)
+	if not over and usable:
+		mirror_chance = MirrorChance.find(game)
+	if mirror_chance != null:
+		_hint_looked_for = true
+		_board.set_hint(mirror_chance.piece, mirror_chance.origin)
+	elif shown:
+		_board.clear_hint()
+
+
+## Whether the next use of the mirror costs a rewarded ad.
+func _mirror_costs_ad() -> bool:
+	return game.charges(TileBlocksGame.BONUS_MIRROR) <= 0 and _can_buy(TileBlocksGame.BONUS_MIRROR)
+
+
+## While the player is in trouble, the bonus buttons pulse to call for attention; the mirror
+## alone when it opens a great move.
+func _call_for_bonuses(in_trouble: bool, mirror_has_chance: bool) -> void:
+	var buttons: Array[Button] = []
+	if in_trouble:
+		buttons = [_new_hand, _mirror]
+	elif mirror_has_chance:
+		buttons = [_mirror]
+	if buttons == _called:
 		return
+	_called = buttons
 	if _call_tween != null:
 		_call_tween.kill()
 		_call_tween = null
 	for button: Button in [_new_hand, _mirror]:
 		button.modulate = Color.WHITE
-	if not in_trouble:
+	if buttons.is_empty():
 		return
 	_call_tween = create_tween().set_loops()
 	for color: Color in [CALL_COLOR, Color.WHITE]:
-		_call_tween.tween_property(_new_hand, "modulate", color, CALL_PULSE_SECONDS)
-		_call_tween.parallel().tween_property(_mirror, "modulate", color, CALL_PULSE_SECONDS)
+		_call_tween.tween_property(buttons[0], "modulate", color, CALL_PULSE_SECONDS)
+		for button: Button in buttons.slice(1):
+			_call_tween.parallel().tween_property(button, "modulate", color, CALL_PULSE_SECONDS)
 
 
 ## Whether the bonus buttons are calling for attention (tests).
 func is_calling_for_bonuses() -> bool:
 	return _call_tween != null
+
+
+## The bonus buttons pulsing now (tests).
+func called_buttons() -> Array[Button]:
+	return _called
 
 
 func _placement_of(bonus: String) -> String:

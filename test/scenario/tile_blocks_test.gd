@@ -324,3 +324,30 @@ func test_no_ad_is_offered_beyond_the_daily_limit() -> void:
 	assert_bool((runner.find_child("NewHandButton") as Button).disabled).is_true()
 	(runner.find_child("NewHandButton") as Button).pressed.emit()
 	assert_int(fake.shown).is_equal(0)
+
+
+func test_the_mirror_lights_up_when_its_flip_opens_a_great_move() -> void:
+	_fake_ads()
+	var runner: GdUnitSceneRunner = await _screen()
+	var screen: TileBlocksScreen = runner.scene() as TileBlocksScreen
+	var setup: TileBlocksGame = MirrorChanceSetup.z_hole_game()
+	screen.game.grid = setup.grid
+	(runner.find_child("Board") as BoardView).grid = setup.grid
+	# Pieces of one cell beside the S: they fit, so the player is not in trouble.
+	screen.game.hand.assign([setup.hand[0], _single(0), _single(1)])
+	screen.game.bonus_charges[TileBlocksGame.BONUS_MIRROR] = 0
+	screen.refresh()
+	assert_object(screen.mirror_chance).is_not_null()
+	assert_bool((runner.find_child("Board") as BoardView).has_hint()).is_true()
+	var mirror: Button = runner.find_child("MirrorButton") as Button
+	assert_that(screen.called_buttons()).is_equal([mirror] as Array[Button])
+	var offers: Dictionary[String, int] = GameState.progress.stats.ad_offers
+	assert_int(offers[TileBlocksScreen.MIRROR_PLACEMENT]).is_equal(1)
+	screen.refresh()
+	assert_int(offers[TileBlocksScreen.MIRROR_PLACEMENT]).is_equal(1)
+	# Without a way to use the mirror (no use left, no ad to buy one), nothing shows.
+	screen.game.ads_used = screen.rules.ad_pacing.ads_per_game
+	screen.refresh()
+	assert_object(screen.mirror_chance).is_null()
+	assert_bool((runner.find_child("Board") as BoardView).has_hint()).is_false()
+	assert_bool(screen.is_calling_for_bonuses()).is_false()

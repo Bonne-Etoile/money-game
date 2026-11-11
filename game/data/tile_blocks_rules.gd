@@ -32,6 +32,12 @@ extends Resource
 ## Pieces of the hand that still fit, at most, for the player to be "in trouble": the bonus
 ## buttons call for attention (the moment an ad is worth the most to the player).
 @export var trouble_fitting_pieces: int = 1
+## The mirror's great move (MirrorChance): from this share of the grid filled (percent), when
+## a piece of the hand, flipped, clears at least `mirror_chance_min_clears` lines and groups
+## at once (more than unflipped), the mirror button lights up and the move shows on the grid.
+## 0 clears turns it off.
+@export var mirror_chance_fill_percent: int = 50
+@export var mirror_chance_min_clears: int = 2
 ## Seconds without a move after which a placement that clears something shows as a hint on the
 ## grid (G15), when there is one; 0 turns hints off.
 @export var hint_after_seconds: float = 10.0

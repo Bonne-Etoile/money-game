@@ -76,6 +76,8 @@ screenshots:
 		LOCALE=fr OUT=$(SCREENSHOT_DIR)/tile_blocks_clear.png
 	$(MAKE) screenshot SCENE=res://test/fixtures/tile_blocks_hint_fixture.tscn FRAMES=10 \
 		LOCALE=fr OUT=$(SCREENSHOT_DIR)/tile_blocks_hint.png
+	$(MAKE) screenshot SCENE=res://test/fixtures/tile_blocks_mirror_fixture.tscn FRAMES=10 \
+		LOCALE=fr OUT=$(SCREENSHOT_DIR)/tile_blocks_mirror.png
 	$(MAKE) screenshot SCENE=res://test/fixtures/tile_blocks_daily_fixture.tscn FRAMES=10 \
 		LOCALE=fr OUT=$(SCREENSHOT_DIR)/tile_blocks_daily.png
 	$(MAKE) screenshot SCENE=res://test/fixtures/level_fixture.tscn FRAMES=10 LOCALE=fr \
