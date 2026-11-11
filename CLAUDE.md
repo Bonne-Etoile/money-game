@@ -17,6 +17,7 @@ Jeu mobile Android (portrait, iOS mis de côté), gratuit et financé par la pub
 - `docs/strategies-pub.md` : monétisation par la pub (formats, règles AdMob et Google Play à ne jamais franchir, leviers pour faire regarder des pubs, genre et technologie recommandés).
 - `docs/etude-concurrence.md` : concurrence et tendances des classiques de réflexion (blocs, mahjong, flèches, tri, vis).
 - `docs/etude-block-blast.md` : étude détaillée de Block Blast (gameplay, difficulté, pubs) et recommandations pour notre jeu.
+- `docs/reglages-recommandes.md` : valeurs recommandées des réglages (nombre et moments des pubs récompensées, reprise, bonus, difficulté), avec les repères de Block Blast et du marché, et ce qu'il faut mesurer pour les ajuster.
 
 ## Stack
 
