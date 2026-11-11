@@ -188,6 +188,12 @@ Chaque ticket : objectif, périmètre, critères d'acceptation, dépendances. Un
 - **Critères** : comme G17.
 - **Dépend de** : G17 et le test de Stelio.
 
+### G18. Dosage des pubs récompensées et autres réglages (2026-11-11) — décision requise
+
+- **Demande de Stelio (2026-11-11)** : « Est-ce qu'il y a des réglages que l'on peut tirer des essais de Block Blast ? Concernant le nombre de pubs que l'on peut proposer aux joueurs avant qu'ils se lassent ? », puis « La fréquence des pubs, c'est un début. Étudie les autres réglages possibles. »
+- **Fait** : étude et valeurs recommandées dans `docs/reglages-recommandes.md` (aucun code changé).
+- **À valider par Stelio** avant de coder (section 9 du document) : (1) plafonds de pubs récompensées (4 par partie, 5 pièces entre deux pubs de bonus, 15 par jour, pas de pub pendant les parties de débutant) ; (2) reprise offerte seulement à partir de 40 % du record ; (3) difficulté relative au record, après mesure ; (4) `comeback_days` 3 → 2 et `beginner_games` 2 → 3 ; (5) configuration à distance et envoi des mesures avant la sortie.
+
 ### G4. …
 
 - **Objectif** :
