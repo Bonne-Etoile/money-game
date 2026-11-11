@@ -4,7 +4,7 @@ extends RefCounted
 ## code, so a shared save would be an attack vector). Older versions are migrated when read;
 ## every change of the format bumps VERSION, adds a step to `migrate` and a test.
 
-const VERSION: int = 4
+const VERSION: int = 5
 
 var progress: GameProgress = GameProgress.new()
 ## When it was saved (Unix time, seconds).
@@ -61,6 +61,14 @@ static func migrate(data: Dictionary, version: int) -> Dictionary:
 			var progress: Dictionary = JsonRead.dictionary(migrated, "progress")
 			var stats: Dictionary = JsonRead.dictionary(progress, "stats")
 			stats["levels_won"] = 0
+			progress["stats"] = stats
+			migrated["progress"] = progress
+		elif version == 4:
+			# Version 5 counts the rewarded ads watched each day (the daily limit): none before.
+			var progress: Dictionary = JsonRead.dictionary(migrated, "progress")
+			var stats: Dictionary = JsonRead.dictionary(progress, "stats")
+			stats["rewarded_day"] = 0
+			stats["rewarded_that_day"] = 0
 			progress["stats"] = stats
 			migrated["progress"] = progress
 		version += 1

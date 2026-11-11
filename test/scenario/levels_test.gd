@@ -77,6 +77,29 @@ func test_out_of_pieces_then_five_more_after_an_ad() -> void:
 	assert_bool((runner.find_child("GameOver") as Control).visible).is_false()
 
 
+func test_a_blocked_level_goes_on_after_an_ad() -> void:
+	var fake: FakeAdsBackend = FakeAdsBackend.new()
+	Ads.use_backend(fake)
+	var runner: GdUnitSceneRunner = await _level(0)
+	var screen: LevelScreen = runner.scene() as LevelScreen
+	for y in 8:
+		for x in 8:
+			screen.game.grid.set_symbol(Vector2i(x, y), (x + y) % 2)
+	screen.refresh()
+	assert_str((runner.find_child("GameOverTitle") as Label).text).is_equal("GAME_OVER")
+	assert_bool((runner.find_child("ExtraPiecesButton") as Button).visible).is_false()
+	var button: Button = runner.find_child("ContinueButton") as Button
+	assert_bool(button.visible).is_true()
+	assert_str(button.text).is_equal("BUTTON_CONTINUE_AD")
+	button.pressed.emit()
+	assert_int(fake.shown).is_equal(1)
+	assert_bool(screen.level.is_lost()).is_false()
+	assert_bool((runner.find_child("GameOver") as Control).visible).is_false()
+	var offers: Dictionary[String, int] = GameState.progress.stats.ad_offers
+	assert_int(offers[LevelScreen.LEVEL_CONTINUE_PLACEMENT]).is_equal(1)
+	assert_bool(offers.has(TileBlocksScreen.CONTINUE_PLACEMENT)).is_false()
+
+
 func test_try_again_restarts_the_level_with_the_same_pieces() -> void:
 	var runner: GdUnitSceneRunner = await _level(1)
 	var screen: LevelScreen = runner.scene() as LevelScreen

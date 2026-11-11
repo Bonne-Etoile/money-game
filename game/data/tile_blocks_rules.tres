@@ -4,6 +4,7 @@
 [ext_resource type="Resource" path="res://game/data/piece_shapes.tres" id="2_shapes"]
 [ext_resource type="Script" path="res://game/data/score_rules.gd" id="3_score"]
 [ext_resource type="Resource" path="res://game/data/difficulty_rules.tres" id="4_difficulty"]
+[ext_resource type="Resource" path="res://game/data/ad_pacing_rules.tres" id="5_pacing"]
 
 [sub_resource type="Resource" id="scoring"]
 script = ExtResource("3_score")
@@ -26,11 +27,11 @@ match_size = 3
 revives_per_game = 1
 revive_clear_lines = 3
 bonus_free_uses = 1
-bonus_ad_uses = 3
 new_hand_candidates = 3
 trouble_fitting_pieces = 1
 hint_after_seconds = 10.0
-comeback_days = 3
+comeback_days = 2
 shape_set = ExtResource("2_shapes")
 difficulty = ExtResource("4_difficulty")
 scoring = SubResource("scoring")
+ad_pacing = ExtResource("5_pacing")

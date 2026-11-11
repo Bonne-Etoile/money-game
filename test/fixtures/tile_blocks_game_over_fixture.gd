@@ -9,6 +9,8 @@ const SCENE: PackedScene = preload("res://game/proto_tiles/tile_blocks.tscn")
 func _ready() -> void:
 	var screen: TileBlocksScreen = SCENE.instantiate()
 	GameState.progress.stats.best_score = 400
+	# A player past their first games: the continue is offered (AdPacingRules).
+	GameState.progress.stats.games_played = 10
 	add_child(screen)
 	screen.start(1)
 	screen.game.scores.score = 280

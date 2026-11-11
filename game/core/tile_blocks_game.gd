@@ -8,7 +8,8 @@ extends RefCounted
 ## New pieces get harder as the player does well, easier when they struggle (DifficultyDirector),
 ## and a new hand never leaves the player without a move while the grid has room
 ## (DifficultyRules.playable_until_fill_percent). Bonuses (new pieces,
-## mirror) have a few free uses per game, then one more use per rewarded ad.
+## mirror) have a few free uses per game, then one more use per rewarded ad. Rewarded ads are
+## limited per game (AdPacingRules): in all, for bonuses, and spaced out by pieces placed.
 
 ## Replaces every piece of the hand by one with room (TileBlocksGame.new_hand).
 const BONUS_NEW_HAND: String = "new_hand"
@@ -31,14 +32,21 @@ var difficulty: DifficultyDirector = null
 var bonus_charges: Dictionary[String, int] = {}
 ## Uses of each bonus earned with a rewarded ad in this game.
 var bonus_ads_used: Dictionary[String, int] = {}
+## Rewarded ads that gave something in this game, all kinds together (continue, bonuses, extra
+## pieces of a level).
+var ads_used: int = 0
+var pacing: AdPacingRules
 ## The level's tiles that need more than a clear (gold, ice; level mode, G17); null: none.
 var layer: LevelBoard = null
 var _generator: PieceGenerator
+## Pieces placed when a bonus was last earned with an ad (-1: none yet in this game).
+var _last_bonus_ad_move: int = -1
 
 
 ## `stats`: the player's past games, for the starting difficulty (null: a new player).
 func _init(game_rules: TileBlocksRules, random_seed: int, stats: PlayerStats = null) -> void:
 	rules = game_rules
+	pacing = rules.ad_pacing if rules.ad_pacing != null else AdPacingRules.new()
 	grid = TileGrid.new(rules.grid_size)
 	scores = ScoreKeeper.new(rules.scoring)
 	if rules.difficulty != null:
@@ -119,18 +127,25 @@ func _fits_somehow(piece: Piece) -> bool:
 	return false
 
 
-## True when the game is over and a revive is left.
+## True when the game is over and a revive is left (free, or after an ad).
 func can_revive() -> bool:
 	return revives_used < rules.revives_per_game and is_over()
 
 
+## True when a revive is left and this game may still show a rewarded ad for it.
+func can_revive_with_ad() -> bool:
+	return can_revive() and ads_left() > 0
+
+
 ## Goes on with a lost game: clears a cross of `rules.revive_clear_lines` rows and columns in
-## the middle of the grid, without points, so that every piece of the hand fits again. False
-## when no revive is allowed.
-func revive() -> bool:
-	if not can_revive():
+## the middle of the grid, without points, so that every piece of the hand fits again.
+## `with_ad`: the revive was paid by a rewarded ad (it counts). False when not allowed.
+func revive(with_ad: bool = false) -> bool:
+	if not (can_revive_with_ad() if with_ad else can_revive()):
 		return false
 	revives_used += 1
+	if with_ad:
+		ads_used += 1
 	var lines: int = mini(rules.revive_clear_lines, grid.size)
 	var first: int = (grid.size - lines) >> 1
 	var cells: Array[Vector2i] = []
@@ -166,18 +181,48 @@ func charges(bonus: String) -> int:
 	return bonus_charges.get(bonus, 0)
 
 
-## Whether a rewarded ad can still earn a use of `bonus` in this game.
+## Rewarded ads this game may still show (AdPacingRules.ads_per_game; 0 there: no limit).
+func ads_left() -> int:
+	if pacing.ads_per_game <= 0:
+		return 1
+	return maxi(pacing.ads_per_game - ads_used, 0)
+
+
+## A rewarded ad of another kind (extra pieces of a level) was watched: it counts. False when
+## this game may show no more.
+func use_ad() -> bool:
+	if ads_left() <= 0:
+		return false
+	ads_used += 1
+	return true
+
+
+## Whether a rewarded ad can earn a use of `bonus` now: ads left in this game, bonus ads left,
+## and enough pieces placed since the last one (AdPacingRules).
 func can_earn(bonus: String) -> bool:
-	var used: int = bonus_ads_used.get(bonus, -1)
-	return used >= 0 and used < rules.bonus_ad_uses
+	if not bonus_ads_used.has(bonus) or ads_left() <= 0:
+		return false
+	if pacing.bonus_ads_per_game > 0 and bonus_ads() >= pacing.bonus_ads_per_game:
+		return false
+	return _last_bonus_ad_move < 0 or moves - _last_bonus_ad_move >= pacing.moves_between_bonus_ads
 
 
-## A use of `bonus` earned by watching a rewarded ad; false when no more can be earned.
+## Bonus uses earned with rewarded ads in this game, all bonuses together.
+func bonus_ads() -> int:
+	var total: int = 0
+	for bonus: String in bonus_ads_used:
+		total += bonus_ads_used[bonus]
+	return total
+
+
+## A use of `bonus` earned by watching a rewarded ad; false when no more can be earned now.
 func earn(bonus: String) -> bool:
 	if not can_earn(bonus):
 		return false
 	bonus_ads_used[bonus] += 1
 	bonus_charges[bonus] += 1
+	ads_used += 1
+	_last_bonus_ad_move = moves
 	return true
 
 

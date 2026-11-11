@@ -4,7 +4,7 @@
 
 [resource]
 script = ExtResource("1_rules")
-beginner_games = 2
+beginner_games = 3
 points_per_level = 200
 average_points_per_start_level = 400
 max_start_level = 2

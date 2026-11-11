@@ -188,13 +188,10 @@ func test_bonuses_have_free_uses_then_one_more_per_ad() -> void:
 	for _use in RULES.bonus_free_uses:
 		assert_bool(game.new_hand()).is_true()
 	assert_bool(game.new_hand()).is_false()
-	for _ad in RULES.bonus_ad_uses:
-		assert_bool(game.earn(bonus)).is_true()
-		assert_bool(game.new_hand()).is_true()
-	# An ad more earns nothing in this game: the button stops offering one.
-	assert_bool(game.can_earn(bonus)).is_false()
-	assert_bool(game.earn(bonus)).is_false()
+	assert_bool(game.earn(bonus)).is_true()
+	assert_bool(game.new_hand()).is_true()
 	assert_int(game.charges(bonus)).is_equal(0)
+	assert_int(game.ads_used).is_equal(1)
 
 
 func test_new_pieces_replace_the_whole_hand() -> void:

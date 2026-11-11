@@ -108,6 +108,35 @@ func test_the_level_is_lost_when_the_pieces_run_out_then_more_can_be_given() -> 
 	assert_bool(level.can_add_pieces()).is_false()
 
 
+func test_a_blocked_level_goes_on_once_after_an_ad() -> void:
+	var level: LevelGame = _level([], LevelDefinition.Goal.SCORE, 100000)
+	assert_bool(level.can_revive()).is_false()
+	for y in level.game.grid.size:
+		for x in level.game.grid.size:
+			level.game.grid.set_symbol(Vector2i(x, y), (x + y) % 2)
+	assert_bool(level.is_lost()).is_true()
+	assert_bool(level.can_add_pieces()).is_false()
+	assert_bool(level.can_revive()).is_true()
+	assert_bool(level.revive()).is_true()
+	assert_bool(level.is_lost()).is_false()
+	assert_int(level.game.ads_used).is_equal(1)
+	for y in level.game.grid.size:
+		for x in level.game.grid.size:
+			level.game.grid.set_symbol(Vector2i(x, y), (x + y) % 2)
+	assert_bool(level.can_revive()).is_false()
+
+
+func test_the_ads_of_an_attempt_count_together() -> void:
+	var level: LevelGame = _level([], LevelDefinition.Goal.SCORE, 100000)
+	var limit: int = level.game.pacing.ads_per_game
+	level.game.ads_used = limit - 1
+	level.pieces_left = 0
+	assert_bool(level.add_pieces()).is_true()
+	level.pieces_left = 0
+	assert_bool(level.can_add_pieces()).is_false()
+	assert_bool(level.add_pieces()).is_false()
+
+
 func test_levels_won_are_saved_and_a_version_3_save_is_migrated() -> void:
 	var stats: PlayerStats = PlayerStats.new()
 	stats.win_level(2)

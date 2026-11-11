@@ -21,6 +21,7 @@ Tout ce qui est fait « au mieux » pour avancer et doit être repris, vérifié
 - [ ] APK signé avec la clé de débogage de Godot (`make android`) : créer la clé d'envoi Google Play (hors du dépôt, mot de passe en variable d'environnement), passer le préréglage Android en AAB (`gradle_build/export_format=1`) et exporter en release.
 - [ ] Pas d'icône du jeu (`application/config/icon` vide) : l'APK de test (G3) a l'icône de Godot. Faire l'icône (et l'icône adaptative Android, préréglage `launcher_icons/…`) avant le test fermé.
 - [ ] APK de test en *debug* (174 Mo, symboles et armv7 compris) : la version Google Play sera un AAB *release*, bien plus léger ; vérifier sa taille (objectif < 100 Mo).
+- [ ] Plafonds de pubs récompensées (G18, `game/data/ad_pacing_rules.tres`) écrits dans le jeu : les rendre réglables à distance (Firebase Remote Config ou Supabase) et envoyer les mesures de `docs/reglages-recommandes.md` (section 8) avant la sortie.
 - [ ] Identifiant du paquet `com.bonneetoile.blocktiles` (préréglage Android) : provisoire, à confirmer avec le vrai nom du jeu avant le premier envoi sur Google Play (il ne peut plus changer ensuite).
 
 ## Relectures et vérifications

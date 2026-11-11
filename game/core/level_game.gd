@@ -3,7 +3,9 @@ extends RefCounted
 ## A level of the level mode (G17): the rules of the endless game (TileBlocksGame, pure chance:
 ## no adaptive difficulty), a starting grid with gold, ice and stones (LevelBoard), a goal and
 ## a limited number of pieces. Won when the goal is reached; lost when the pieces run out or no
-## piece fits. A rewarded ad can give `LevelSet.extra_pieces` more pieces when they run out.
+## piece fits. A rewarded ad can give `LevelSet.extra_pieces` more pieces when they run out,
+## or clear a cross of the grid when no piece fits (once per attempt). All the attempt's ads
+## count together (AdPacingRules.ads_per_game).
 
 var definition: LevelDefinition
 var game: TileBlocksGame
@@ -20,7 +22,6 @@ func _init(level: LevelDefinition, rules: TileBlocksRules, level_set: LevelSet) 
 	definition = level
 	var level_rules: TileBlocksRules = rules.duplicate()
 	level_rules.difficulty = null
-	level_rules.revives_per_game = 0
 	game = TileBlocksGame.new(level_rules, level.random_seed)
 	game.layer = LevelBoard.new()
 	pieces_left = level.pieces
@@ -100,13 +101,27 @@ func is_lost() -> bool:
 ## Whether a rewarded ad can give more pieces now: they ran out, pieces still fit, and the
 ## attempt has ads left.
 func can_add_pieces() -> bool:
-	return not is_won() and pieces_left <= 0 and not game.is_over() and extras_used < _extra_ads
+	if is_won() or pieces_left > 0 or game.is_over() or extras_used >= _extra_ads:
+		return false
+	return game.ads_left() > 0
 
 
 ## More pieces (after a rewarded ad); false when not allowed.
 func add_pieces() -> bool:
-	if not can_add_pieces():
+	if not can_add_pieces() or not game.use_ad():
 		return false
 	extras_used += 1
 	pieces_left += _extra_pieces
 	return true
+
+
+## Whether a rewarded ad can clear a cross of the grid now: pieces are left but none fits, and
+## the attempt has its revive and ads left.
+func can_revive() -> bool:
+	return not is_won() and pieces_left > 0 and game.can_revive_with_ad()
+
+
+## Clears a cross of the grid (after a rewarded ad, TileBlocksGame.revive); false when not
+## allowed.
+func revive() -> bool:
+	return can_revive() and game.revive(true)

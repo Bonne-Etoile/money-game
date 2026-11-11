@@ -188,11 +188,13 @@ Chaque ticket : objectif, périmètre, critères d'acceptation, dépendances. Un
 - **Critères** : comme G17.
 - **Dépend de** : G17 et le test de Stelio.
 
-### G18. Dosage des pubs récompensées et autres réglages (2026-11-11) — décision requise
+### G18. Dosage des pubs récompensées et autres réglages (2026-11-11) — à tester (branche `claude/project-thread-9qnqot`)
 
 - **Demande de Stelio (2026-11-11)** : « Est-ce qu'il y a des réglages que l'on peut tirer des essais de Block Blast ? Concernant le nombre de pubs que l'on peut proposer aux joueurs avant qu'ils se lassent ? », puis « La fréquence des pubs, c'est un début. Étudie les autres réglages possibles. »
 - **Fait** : étude et valeurs recommandées dans `docs/reglages-recommandes.md` (aucun code changé).
-- **À valider par Stelio** avant de coder (section 9 du document) : (1) plafonds de pubs récompensées (4 par partie, 5 pièces entre deux pubs de bonus, 15 par jour, pas de pub pendant les parties de débutant) ; (2) reprise offerte seulement à partir de 40 % du record ; (3) difficulté relative au record, après mesure ; (4) `comeback_days` 3 → 2 et `beginner_games` 2 → 3 ; (5) configuration à distance et envoi des mesures avant la sortie.
+- **Accord de Stelio (2026-11-11)** : « ok pour tout ». Propositions de la section 9 du document : (1) plafonds de pubs récompensées (4 par partie, 5 pièces entre deux pubs de bonus, 15 par jour, pas de pub pendant les parties de débutant) ; (2) reprise offerte seulement à partir de 40 % du record ; (3) difficulté relative au record, après mesure ; (4) `comeback_days` 3 → 2 et `beginner_games` 2 → 3 ; (5) configuration à distance et envoi des mesures avant la sortie.
+
+- **Fait (2026-11-11)** : (1) plafonds dans `game/data/ad_pacing_rules.tres` (`AdPacing`, `TileBlocksGame`), pubs du jour dans la sauvegarde (version 5, migration testée) ; (2) reprise à partir de 40 % du record ; (4) `comeback_days` = 2, `beginner_games` = 3 ; et la reprise en mode niveaux quand la grille est bloquée. **Reste** : (3) difficulté relative au record, après mesure du record moyen sur le test fermé ; (5) configuration à distance et envoi des mesures, avant la sortie (`docs/avant-la-sortie.md`). **À tester par Stelio** : les 3 premières parties sans aucune pub se jouent-elles bien ? « Continuer » manque-t-il quand on perd loin du record ? La reprise en niveau aide-t-elle ?
 
 ### G4. …
 

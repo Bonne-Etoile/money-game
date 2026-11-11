@@ -26,8 +26,6 @@ extends Resource
 ## Uses of each bonus (new pieces, mirror) given free at the start of a game: the player
 ## tries them, then may want them again for an ad (docs/strategies-pub.md).
 @export var bonus_free_uses: int = 1
-## Uses of each bonus a game can earn by watching a rewarded ad (one use per ad).
-@export var bonus_ad_uses: int = 3
 ## Pieces drawn for each slot when the "new pieces" bonus is used: the one with the most room
 ## is given, so the bonus really helps.
 @export var new_hand_candidates: int = 3
@@ -39,8 +37,10 @@ extends Resource
 @export var hint_after_seconds: float = 10.0
 ## Days away after which the first continue of the day is free (the comeback gift, G14); 0
 ## turns it off.
-@export var comeback_days: int = 3
+@export var comeback_days: int = 2
 @export var shape_set: PieceShapeSet
 ## Adaptive difficulty; none: every piece is drawn by pure chance.
 @export var difficulty: DifficultyRules
 @export var scoring: ScoreRules
+## How often rewarded ads may be offered; none: the defaults of AdPacingRules.
+@export var ad_pacing: AdPacingRules

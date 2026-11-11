@@ -5,9 +5,14 @@ extends GdUnitTestSuite
 
 const SCENE: String = "res://game/proto_tiles/tile_blocks.tscn"
 
+## Games played by the player of these tests: past a new player's games without ads, and
+## past those where a continue is always offered.
+const PLAYED: int = 10
+
 
 func before_test() -> void:
 	GameState.reset()
+	GameState.progress.stats.games_played = PLAYED
 
 
 func after_test() -> void:
@@ -270,5 +275,52 @@ func test_a_game_left_for_a_new_one_counts_as_played() -> void:
 	screen.game.place(0, Vector2i(0, 0))
 	screen.start(2)
 	screen.start(3)
-	assert_int(GameState.progress.stats.games_played).is_equal(1)
+	assert_int(GameState.progress.stats.games_played).is_equal(PLAYED + 1)
 	assert_int(GameState.progress.stats.total_moves).is_equal(1)
+
+
+func test_a_new_player_is_offered_no_ad_but_free_bonuses() -> void:
+	var fake: FakeAdsBackend = _fake_ads()
+	GameState.progress.stats.games_played = 0
+	var runner: GdUnitSceneRunner = await _screen()
+	var screen: TileBlocksScreen = runner.scene() as TileBlocksScreen
+	var button: Button = runner.find_child("NewHandButton") as Button
+	button.pressed.emit()
+	assert_int(fake.shown).is_equal(0)
+	assert_str(button.text).is_equal(tr("BONUS_NEW_HAND") % 0)
+	assert_bool(button.disabled).is_true()
+	button.pressed.emit()
+	assert_int(fake.shown).is_equal(0)
+	_lose(screen)
+	assert_bool((runner.find_child("GameOver") as Control).visible).is_true()
+	assert_bool((runner.find_child("ContinueButton") as Button).visible).is_false()
+	assert_bool(GameState.progress.stats.ad_offers.is_empty()).is_true()
+
+
+func test_the_continue_is_offered_only_close_enough_to_the_record() -> void:
+	_fake_ads()
+	GameState.progress.stats.best_score = 1000
+	var runner: GdUnitSceneRunner = await _screen()
+	var screen: TileBlocksScreen = runner.scene() as TileBlocksScreen
+	var button: Button = runner.find_child("ContinueButton") as Button
+	screen.game.scores.score = 100
+	_lose(screen)
+	assert_bool(button.visible).is_false()
+	screen.game.scores.score = 1000 * screen.rules.ad_pacing.revive_min_record_percent / 100
+	screen.refresh()
+	assert_bool(button.visible).is_true()
+
+
+func test_no_ad_is_offered_beyond_the_daily_limit() -> void:
+	var fake: FakeAdsBackend = _fake_ads()
+	GameState.day_override = 400
+	var runner: GdUnitSceneRunner = await _screen()
+	var screen: TileBlocksScreen = runner.scene() as TileBlocksScreen
+	for _ad in screen.rules.ad_pacing.rewarded_per_day:
+		GameState.progress.stats.count_rewarded(400)
+	screen.game.bonus_charges[TileBlocksGame.BONUS_NEW_HAND] = 0
+	_lose(screen)
+	assert_bool((runner.find_child("ContinueButton") as Button).visible).is_false()
+	assert_bool((runner.find_child("NewHandButton") as Button).disabled).is_true()
+	(runner.find_child("NewHandButton") as Button).pressed.emit()
+	assert_int(fake.shown).is_equal(0)

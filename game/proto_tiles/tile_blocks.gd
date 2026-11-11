@@ -4,7 +4,9 @@ extends Control
 ## pieces to drag onto the grid, the bonus buttons (new pieces, mirror: free uses, then one use
 ## per rewarded ad), and the game-over panel, which offers to go on after a rewarded ad. The
 ## rules are in TileBlocksGame (game/core/); this scene shows them, turns the player's drags
-## into moves and tells GameState what the player does (games, ad offers, bonuses).
+## into moves and tells GameState what the player does (games, ad offers, bonuses). Rewarded
+## ads are offered only within their limits (AdPacingRules): not in a new player's first games,
+## not beyond the daily limit, a continue only for a game worth going on.
 
 const MENU_SCENE: String = "res://game/ui/main_menu.tscn"
 ## What each rewarded ad is for (Ads.show_rewarded).
@@ -168,8 +170,8 @@ func refresh() -> void:
 	_best_score.text = tr("HUD_BEST") % GameState.progress.stats.best_score
 	_game_over.visible = over
 	_drag.locked = over
-	_continue.visible = game.can_revive()
 	var gift: bool = has_comeback_gift()
+	_continue.visible = game.can_revive() and (gift or _can_continue_with_ad())
 	_continue.text = "BUTTON_CONTINUE_FREE" if gift else "BUTTON_CONTINUE_AD"
 	_continue.disabled = not gift and not Ads.is_rewarded_ready()
 	_mark_ad(_continue, not gift)
@@ -270,8 +272,18 @@ func continue_game() -> void:
 		if game.revive():
 			GameState.use_comeback_gift()
 			refresh()
-	elif Ads.is_rewarded_ready():
-		Ads.show_rewarded(CONTINUE_PLACEMENT)
+	elif _can_continue_with_ad() and Ads.is_rewarded_ready():
+		Ads.show_rewarded(_continue_placement())
+
+
+## What the continue's rewarded ad is for (the level screen has its own).
+func _continue_placement() -> String:
+	return CONTINUE_PLACEMENT
+
+
+## The continue after its rewarded ad; false when not allowed.
+func _revive_with_ad() -> bool:
+	return game.revive(true)
 
 
 func back_to_menu() -> void:
@@ -375,9 +387,24 @@ func _apply_new_hand() -> void:
 		refresh()
 
 
-## Whether a use of `bonus` can still be bought with a rewarded ad in this game.
+## Whether a use of `bonus` can be bought with a rewarded ad now.
 func _can_buy(bonus: String) -> bool:
-	return game.can_earn(bonus)
+	return _ads_open() and game.can_earn(bonus)
+
+
+## Whether rewarded ads may be offered now (AdPacing): not in a new player's first games, not
+## beyond the daily limit.
+func _ads_open() -> bool:
+	return GameState.can_offer_rewarded(game.pacing, true)
+
+
+## Whether the continue can be bought with a rewarded ad: ads open, ads left in this game, and
+## a game worth going on (close enough to the record, or one of the player's first games).
+func _can_continue_with_ad() -> bool:
+	if not _ads_open() or not game.can_revive_with_ad():
+		return false
+	var played: int = GameState.progress.stats.games_played
+	return AdPacing.worth_reviving(game.pacing, game.score(), chase.record, played)
 
 
 ## A bonus button: its free uses left, or "(ad)" when a rewarded ad buys one (disabled until
@@ -407,8 +434,8 @@ static func _mark_ad(button: Button, costs_ad: bool) -> void:
 func _note_offers(over: bool) -> void:
 	var ad_ready: bool = Ads.is_rewarded_ready()
 	if over and not _was_over and ad_ready:
-		if game.can_revive() and not has_comeback_gift():
-			GameState.record_offer(CONTINUE_PLACEMENT)
+		if _can_continue_with_ad() and not has_comeback_gift():
+			GameState.record_offer(_continue_placement())
 		if (
 			game.charges(TileBlocksGame.BONUS_NEW_HAND) <= 0
 			and _can_buy(TileBlocksGame.BONUS_NEW_HAND)
@@ -458,7 +485,7 @@ func _on_rewarded_ad_ready_changed(_is_ready: bool) -> void:
 func _on_rewarded_ad_finished(placement: String, rewarded: bool) -> void:
 	if not rewarded or game == null:
 		return
-	if placement == CONTINUE_PLACEMENT and game.revive():
+	if placement == _continue_placement() and _revive_with_ad():
 		refresh()
 	elif placement == NEW_HAND_PLACEMENT and game.earn(TileBlocksGame.BONUS_NEW_HAND):
 		_apply_new_hand()
