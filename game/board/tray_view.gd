@@ -22,7 +22,11 @@ var board_cell: float = 64.0
 var hidden_slot: int = -1
 ## Whether each slot is drawn as a box, empty or not (prototype 2's small tray).
 var show_slots: bool = false
+## Seconds a new piece takes to grow into its slot (0: at once).
+var appear_seconds: float = 0.0
 var _pieces: Array[Piece] = []
+## Seconds left of each slot's growing in.
+var _appear_left: PackedFloat32Array = []
 var _dragging: bool = false
 ## The slot under the pointer since it was pressed (-1: none).
 var _pressed_slot: int = -1
@@ -31,11 +35,35 @@ var _press_point: Vector2 = Vector2.ZERO
 
 func _ready() -> void:
 	resized.connect(queue_redraw)
+	set_process(false)
 
 
 func set_pieces(pieces: Array[Piece]) -> void:
+	_appear_left.resize(pieces.size())
+	for slot in pieces.size():
+		var before: Piece = _pieces[slot] if slot < _pieces.size() else null
+		if pieces[slot] != null and pieces[slot] != before and appear_seconds > 0.0:
+			_appear_left[slot] = appear_seconds
+			set_process(true)
 	_pieces = pieces.duplicate()
 	queue_redraw()
+
+
+func _process(delta: float) -> void:
+	var growing: bool = false
+	for slot in _appear_left.size():
+		_appear_left[slot] = maxf(_appear_left[slot] - delta, 0.0)
+		growing = growing or _appear_left[slot] > 0.0
+	set_process(growing)
+	queue_redraw()
+
+
+## Size of the piece of `slot` while it grows in: overshoots a little, then settles at 1.
+func _appear_scale(slot: int) -> float:
+	if slot >= _appear_left.size() or _appear_left[slot] <= 0.0:
+		return 1.0
+	var progress: float = 1.0 - _appear_left[slot] / appear_seconds
+	return Tween.interpolate_value(0.0, 1.0, progress, 1.0, Tween.TRANS_BACK, Tween.EASE_OUT)
 
 
 func slot_count() -> int:
@@ -97,6 +125,7 @@ func _draw() -> void:
 		var piece: Piece = _pieces[slot]
 		if piece == null or slot == hidden_slot:
 			continue
-		var extent: Vector2 = Vector2(piece.extent()) * cell
+		var grown: float = cell * _appear_scale(slot)
+		var extent: Vector2 = Vector2(piece.extent()) * grown
 		var corner: Vector2 = slot_rect(slot).get_center() - extent / 2.0
-		PieceDrawing.draw_piece(self, piece, corner, cell, art)
+		PieceDrawing.draw_piece(self, piece, corner, grown, art)

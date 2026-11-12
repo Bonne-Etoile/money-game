@@ -23,6 +23,7 @@ GameState="*res://game/autoload/game_state.gd"
 Display="*res://game/autoload/display.gd"
 Options="*res://game/autoload/options.gd"
 Ads="*res://game/autoload/ads.gd"
+Music="*res://game/autoload/music.gd"
 
 [debug]
 
@@ -47,6 +48,10 @@ window/handheld/orientation=1
 [editor_plugins]
 
 enabled=PackedStringArray("res://addons/admob/plugin.cfg", "res://addons/gdUnit4/plugin.cfg")
+
+[gui]
+
+theme/custom="res://game/ui/game_theme.tres"
 
 [input]
 

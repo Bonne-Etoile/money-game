@@ -21,7 +21,6 @@ var chosen_level: int = -1
 
 
 func _ready() -> void:
-	(%Background as ColorRect).color = art.background
 	(%BackButton as Button).pressed.connect(back_to_menu)
 	var won: int = GameState.progress.stats.levels_won
 	_picture.art = art

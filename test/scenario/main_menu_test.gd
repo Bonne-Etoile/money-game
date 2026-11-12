@@ -19,6 +19,7 @@ func after_test() -> void:
 	GameState.reset()
 	Diagnostics.dismiss_crash_report()
 	Options.settings = GameSettings.new()
+	Music.apply_options()
 
 
 func _menu() -> GdUnitSceneRunner:
@@ -48,6 +49,26 @@ func test_the_option_buttons_switch_and_say_their_state() -> void:
 	vibration.pressed.emit()
 	assert_bool(Options.settings.vibration).is_false()
 	assert_str(vibration.text).is_equal("MENU_VIBRATION_OFF")
+
+
+func test_music_and_sounds_can_be_turned_off_and_on() -> void:
+	var runner: GdUnitSceneRunner = _menu()
+	await runner.simulate_frames(2)
+	var music: Button = runner.find_child("MusicButton") as Button
+	var sounds: Button = runner.find_child("SoundsButton") as Button
+	assert_bool(Music.is_playing()).is_true()
+	assert_str(music.text).is_equal("MENU_MUSIC_ON")
+	music.pressed.emit()
+	assert_str(music.text).is_equal("MENU_MUSIC_OFF")
+	assert_bool(AudioServer.is_bus_mute(AudioServer.get_bus_index(&"Music"))).is_true()
+	assert_bool(AudioServer.is_bus_mute(AudioServer.get_bus_index(&"Effects"))).is_false()
+	sounds.pressed.emit()
+	assert_str(sounds.text).is_equal("MENU_SOUNDS_OFF")
+	assert_bool(AudioServer.is_bus_mute(AudioServer.get_bus_index(&"Effects"))).is_true()
+	music.pressed.emit()
+	sounds.pressed.emit()
+	assert_bool(AudioServer.is_bus_mute(AudioServer.get_bus_index(&"Music"))).is_false()
+	assert_bool(AudioServer.is_bus_mute(AudioServer.get_bus_index(&"Effects"))).is_false()
 
 
 func test_the_menu_opens_on_the_crash_report_after_a_crash() -> void:

@@ -8,7 +8,9 @@ Tout ce qui est fait « au mieux » pour avancer et doit être repris, vérifié
 
 - [ ] Réglages de la difficulté adaptative et des bonus (G9 : 200 points par niveau, 1 à 4 pièces tirées, 1 utilisation gratuite et 3 par pub) : chiffres de départ, à régler avec les tests de Stelio puis les chiffres des joueurs.
 
-- [ ] Sons faits par le code (G13, `game/audio/sound_synth.gd`, `GameSounds`) : des notes simples en attendant de vrais sons (`docs/recettes/sons-et-musique.md`) ; à remplacer et à faire juger par Stelio.
+- [ ] Sons faits par le code (G13, enrichis en G20 : `game/audio/sound_synth.gd`, `GameSounds`) : à faire juger par Stelio, à remplacer s'ils ne plaisent pas (`docs/recettes/sons-et-musique.md`).
+- [ ] Musique composée par le code (G20, `assets/sounds/music_calm.ogg`, `tools/assets/compose_music.py`) : une seule boucle de 42 s ; à faire juger, et prévoir d'autres morceaux ou des silences pour ne pas lasser.
+- [ ] Effets visuels de G20 (`juice_rules.tres`, `tile_art.tres`) : chiffres de départ, à régler à l'œil ; vérifier la fluidité sur un petit téléphone (alléger les effets si besoin).
 - [ ] Mots d'encouragement, éclats, tremblement, vibration (G13, `game/data/juice_rules.tres`) : chiffres de départ, à régler à l'œil et au toucher.
 - [ ] Délai de l'aide à l'hésitation (G15, 10 s, `hint_after_seconds`) : à régler avec les tests.
 

@@ -28,6 +28,11 @@ MENU_REFILL_EACH,Pieces: one at a time,Pièces : une à la fois,"Start menu, t
 MENU_REFILL_TOGETHER,Pieces: three at a time,Pièces : trois à la fois,"Start menu, test option (tap to switch): three new pieces come only once the three are placed"
 MENU_VIBRATION_ON,Vibration: on,Vibration : oui,"Start menu option (tap to switch): short vibrations on clears, phones only"
 MENU_VIBRATION_OFF,Vibration: off,Vibration : non,Start menu option (tap to switch): no vibration
+MENU_MUSIC_ON,Music: on,Musique : oui,Start menu option (tap to switch): background music
+MENU_MUSIC_OFF,Music: off,Musique : non,Start menu option (tap to switch): no background music
+MENU_SOUNDS_ON,Sounds: on,Sons : oui,Start menu option (tap to switch): the game's sound effects
+MENU_SOUNDS_OFF,Sounds: off,Sons : non,Start menu option (tap to switch): no sound effects
+POINTS_GAINED,+%d,+%d,"Points of a move, rising from the placed piece (%d: the points)"
 PRAISE_1,Nice!,Bien !,"Word of praise rising over the grid after a good clear (2 clears at once, or a combo)"
 PRAISE_2,Great!,Super !,Word of praise after a better clear (stronger than PRAISE_1)
 PRAISE_3,Awesome!,Génial !,Word of praise after a great clear (stronger than PRAISE_2)

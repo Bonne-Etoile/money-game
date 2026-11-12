@@ -4,6 +4,7 @@
 [ext_resource type="Resource" path="res://game/data/levels.tres" id="2_levels"]
 [ext_resource type="Resource" path="res://game/data/tile_art.tres" id="3_art"]
 [ext_resource type="Script" path="res://game/levels/level_picture.gd" id="4_picture"]
+[ext_resource type="Script" path="res://game/board/game_background.gd" id="bg_script"]
 
 [node name="LevelMap" type="Control"]
 layout_mode = 3
@@ -16,7 +17,7 @@ script = ExtResource("1_map")
 levels = ExtResource("2_levels")
 art = ExtResource("3_art")
 
-[node name="Background" type="ColorRect" parent="."]
+[node name="Background" type="Control" parent="."]
 unique_name_in_owner = true
 layout_mode = 1
 anchors_preset = 15
@@ -25,6 +26,8 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
+script = ExtResource("bg_script")
+art = ExtResource("3_art")
 
 [node name="Page" type="VBoxContainer" parent="."]
 layout_mode = 1

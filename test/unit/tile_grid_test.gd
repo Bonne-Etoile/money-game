@@ -85,3 +85,16 @@ func test_fits_anywhere_looks_at_every_position() -> void:
 	_fill_row(grid, 2, last)
 	assert_bool(grid.fits_anywhere(_piece([Vector2i(0, 0)], [0]))).is_true()
 	assert_bool(grid.fits_anywhere(_piece([Vector2i(0, 0), Vector2i(1, 0)], [0, 1]))).is_false()
+
+
+func test_the_cells_a_move_would_clear_are_found_without_placing_it() -> void:
+	var grid: TileGrid = TileGrid.new(4)
+	_fill_row(grid, 2, [3])
+	var single: Piece = _piece([Vector2i.ZERO], [1])
+	var cells: Array[Vector2i] = grid.clears_if_placed(single, Vector2i(3, 2), 0)
+	assert_array(cells).contains_exactly_in_any_order(
+		[Vector2i(0, 2), Vector2i(1, 2), Vector2i(2, 2), Vector2i(3, 2)]
+	)
+	assert_bool(grid.is_empty_cell(Vector2i(3, 2))).is_true()
+	assert_array(grid.clears_if_placed(single, Vector2i(0, 0), 0)).is_empty()
+	assert_array(grid.clears_if_placed(single, Vector2i(0, 2), 0)).is_empty()

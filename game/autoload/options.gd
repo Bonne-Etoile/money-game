@@ -50,6 +50,16 @@ func set_vibration(enabled: bool) -> void:
 	_changed()
 
 
+func set_music(enabled: bool) -> void:
+	settings.music = enabled
+	_changed()
+
+
+func set_sounds(enabled: bool) -> void:
+	settings.sounds = enabled
+	_changed()
+
+
 func set_language(code: String) -> void:
 	settings.set_language(code)
 	TranslationServer.set_locale(settings.locale(OS.get_locale_language()))

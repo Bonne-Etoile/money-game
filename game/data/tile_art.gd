@@ -29,3 +29,23 @@ extends Resource
 @export var tray_scale: float = 0.55
 ## Seconds a cleared cell takes to fade out.
 @export var flash_seconds: float = 0.35
+## Screen background: a vertical gradient, with soft lights drifting up (GameBackground).
+@export var background_top: Color = Color(0.16, 0.13, 0.32)
+@export var background_bottom: Color = Color(0.05, 0.09, 0.2)
+@export var light_color: Color = Color(0.6, 0.75, 1.0, 0.07)
+@export var light_count: int = 14
+## Frame around the grid, and its width as a fraction of a cell.
+@export var frame_color: Color = Color(0.32, 0.36, 0.6)
+@export var frame_width: float = 0.18
+## Lighter top of each empty cell (its rim), drawn under the cell.
+@export var empty_cell_rim: Color = Color(0.22, 0.27, 0.4)
+## Shine on the top of a tile's face.
+@export var tile_gloss: Color = Color(1, 1, 1, 0.55)
+## How much a tile's side takes its symbol's colour (0: plain wood, 1: the symbol's colour).
+@export var side_tint: float = 0.55
+## Glow over the cells the dragged piece would clear if dropped there.
+@export var preview_glow: Color = Color(1, 0.95, 0.55, 0.55)
+## Shadow under the piece being dragged.
+@export var drag_shadow: Color = Color(0, 0, 0, 0.3)
+## Tint of the grid once the game is over.
+@export var game_over_tint: Color = Color(0.55, 0.55, 0.62)

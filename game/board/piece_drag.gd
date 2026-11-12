@@ -7,6 +7,10 @@ extends Node
 
 ## A piece was placed (`result` comes from the game; the board already flashed it).
 signal placed(result: MoveResult)
+## A piece was picked up from the tray.
+signal picked(slot: int)
+## A dragged piece went back to the tray (dropped off the grid or where it does not fit).
+signal returned
 
 var board: BoardView
 var tray: TrayView
@@ -18,9 +22,14 @@ var piece_in: Callable
 var can_place: Callable
 ## func(slot: int, origin: Vector2i) -> MoveResult (null when not allowed)
 var place: Callable
+## func(slot: int, origin: Vector2i) -> Array[Vector2i]: the cells the move would clear (they
+## glow on the board while the piece hovers there); not set: nothing glows.
+var clears_for: Callable
 ## Whether drags are refused (end of game, panel shown).
 var locked: bool = false
 var _slot: int = -1
+## Where the glowing cells were last worked out for (so they are not looked for each frame).
+var _preview_origin: Vector2i = Vector2i(-999, -999)
 
 
 func connect_views(board_view: BoardView, tray_view: TrayView, drag_layer: DragLayer) -> void:
@@ -56,6 +65,7 @@ func pointer_for(piece: Piece, origin: Vector2i) -> Vector2:
 func cancel() -> void:
 	_slot = -1
 	tray.hidden_slot = -1
+	_preview_origin = Vector2i(-999, -999)
 	tray.queue_redraw()
 	layer.hide_piece()
 	board.clear_ghost()
@@ -67,6 +77,7 @@ func _on_started(slot: int, pointer: Vector2) -> void:
 	_slot = slot
 	tray.hidden_slot = slot
 	tray.queue_redraw()
+	picked.emit(slot)
 	_on_moved(pointer)
 
 
@@ -80,8 +91,21 @@ func _on_moved(pointer: Vector2) -> void:
 	if _overlaps_board(piece, origin):
 		var valid: bool = can_place.call(_slot, origin)
 		board.set_ghost(piece, origin, valid)
+		_show_preview(origin, valid)
 	else:
 		board.clear_ghost()
+		_preview_origin = Vector2i(-999, -999)
+
+
+func _show_preview(origin: Vector2i, valid: bool) -> void:
+	if origin == _preview_origin or not clears_for.is_valid():
+		return
+	_preview_origin = origin
+	var cells: Array[Vector2i] = []
+	if valid:
+		var found: Array[Vector2i] = clears_for.call(_slot, origin)
+		cells = found
+	board.set_preview(cells)
 
 
 func _on_ended(pointer: Vector2) -> void:
@@ -93,11 +117,14 @@ func _on_ended(pointer: Vector2) -> void:
 	var over_board: bool = board.has_ghost()
 	cancel()
 	if not over_board:
+		returned.emit()
 		return
 	var result: MoveResult = place.call(slot, origin)
 	if result != null:
 		board.flash(result)
 		placed.emit(result)
+	else:
+		returned.emit()
 
 
 func _piece(slot: int) -> Piece:

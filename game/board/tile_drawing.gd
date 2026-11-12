@@ -11,7 +11,12 @@ const CORNER: float = 0.16
 ## Margin around the symbol, as a fraction of the face.
 const SYMBOL_MARGIN: float = 0.22
 
+## The shine on the face: its margin and height, as fractions of the face.
+const GLOSS_INSET: float = 0.08
+const GLOSS_HEIGHT: float = 0.16
+
 static var _box: StyleBoxFlat = StyleBoxFlat.new()
+static var _gloss: StyleBoxFlat = StyleBoxFlat.new()
 
 
 ## A tile in `rect`; `tint` multiplies every colour (ghosts, fading). A negative symbol is a
@@ -24,11 +29,35 @@ static func draw_tile(
 		var top: Rect2 = Rect2(rect.position, Vector2(rect.size.x, rect.size.y * (1.0 - SIDE)))
 		draw_box(canvas, top, art.stone_face * tint)
 		return
-	draw_box(canvas, rect, art.tile_side * tint)
+	var color: Color = art.symbol_colors[symbol % art.symbol_colors.size()]
+	var side: Color = art.tile_side.lerp(color.darkened(0.25), art.side_tint)
+	draw_box(canvas, rect, side * tint)
 	var face: Rect2 = Rect2(rect.position, Vector2(rect.size.x, rect.size.y * (1.0 - SIDE)))
 	draw_box(canvas, face, art.tile_face * tint)
-	var color: Color = art.symbol_colors[symbol % art.symbol_colors.size()] * tint
-	draw_symbol(canvas, face.grow(-face.size.x * SYMBOL_MARGIN), symbol, color)
+	draw_gloss(canvas, face, art.tile_gloss * tint)
+	var symbol_rect: Rect2 = face.grow(-face.size.x * SYMBOL_MARGIN)
+	# A darker copy under the symbol, slightly lower: it looks carved into the tile.
+	var carved: Color = Color(color.darkened(0.45), color.a * 0.5) * tint
+	draw_symbol(canvas, symbol_rect, symbol, carved, Vector2(0.0, face.size.y * 0.035))
+	draw_symbol(canvas, symbol_rect, symbol, color * tint)
+
+
+## A shine over the top of a tile's face: a band of light, rounded at the top only.
+static func draw_gloss(canvas: CanvasItem, face: Rect2, color: Color) -> void:
+	if color.a <= 0.0:
+		return
+	var inset: float = face.size.x * GLOSS_INSET
+	var band: Rect2 = Rect2(
+		face.position + Vector2(inset, inset * 0.6),
+		Vector2(face.size.x - 2.0 * inset, face.size.y * GLOSS_HEIGHT)
+	)
+	_gloss.bg_color = color
+	var radius: int = int(face.size.x * CORNER * 0.7)
+	_gloss.corner_radius_top_left = radius
+	_gloss.corner_radius_top_right = radius
+	_gloss.corner_radius_bottom_left = int(radius * 0.3)
+	_gloss.corner_radius_bottom_right = int(radius * 0.3)
+	_gloss.draw(canvas.get_canvas_item(), band)
 
 
 ## A rounded rectangle.
@@ -38,8 +67,11 @@ static func draw_box(canvas: CanvasItem, rect: Rect2, color: Color) -> void:
 	_box.draw(canvas.get_canvas_item(), rect)
 
 
-static func draw_symbol(canvas: CanvasItem, rect: Rect2, symbol: int, color: Color) -> void:
-	var center: Vector2 = rect.get_center()
+## A symbol in `rect`, moved by `offset` (its carved shadow).
+static func draw_symbol(
+	canvas: CanvasItem, rect: Rect2, symbol: int, color: Color, offset: Vector2 = Vector2.ZERO
+) -> void:
+	var center: Vector2 = rect.get_center() + offset
 	var radius: float = minf(rect.size.x, rect.size.y) / 2.0
 	match symbol % SYMBOL_SHAPES:
 		0:

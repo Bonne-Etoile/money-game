@@ -196,6 +196,21 @@ Chaque ticket : objectif, périmètre, critères d'acceptation, dépendances. Un
 
 - **Fait (2026-11-11)** : (1) plafonds dans `game/data/ad_pacing_rules.tres` (`AdPacing`, `TileBlocksGame`), pubs du jour dans la sauvegarde (version 5, migration testée) ; (2) reprise à partir de 40 % du record ; (4) `comeback_days` = 2, `beginner_games` = 3 ; et la reprise en mode niveaux quand la grille est bloquée. **Reste** : (3) difficulté relative au record, après mesure du record moyen sur le test fermé ; (5) configuration à distance et envoi des mesures, avant la sortie (`docs/avant-la-sortie.md`). **Ajout (2026-11-11, choix de Stelio « Montrer l'occasion »)** : le coup du miroir (`MirrorChance`) : le bouton Miroir clignote et le coup s'affiche quand un retournement ouvre un beau coup ; les pièces ne sont jamais truquées pour le provoquer. **Corrigé (retour de Stelio, 2026-11-11)** : en mode niveaux, la main montrait encore 3 pièces quand il n'en restait plus, et l'écran de fin proposait « Nouvelles pièces » ; la main ne montre plus que les pièces restantes, et le bouton est retiré de l'écran de fin des niveaux. **À tester par Stelio** : le coup du miroir se remarque-t-il, donne-t-il envie ? les 3 premières parties sans aucune pub se jouent-elles bien ? « Continuer » manque-t-il quand on perd loin du record ? La reprise en niveau aide-t-elle ?
 
+### G20. Un jeu plus vivant à l'œil et à l'oreille (2026-11-12) — à tester (branche `claude/project-thread-c7anvu`)
+
+- **Demande de Stelio (2026-11-12)** : « Le jeu est trop plat niveau graphique et sonore. Améliore ça. Inspire toi des effets graphiques de Block Blast. » Reprendre l'esprit des effets du genre (`docs/etude-block-blast.md`, § 3) sans copier les couleurs, les assets ni l'apparence de Block Blast.
+- **Fait** :
+  - **Écran** : fond en dégradé violet-bleu avec des lumières douces qui montent (`GameBackground`, aussi au menu et sur la carte des niveaux) ; grille dans un cadre arrondi, cases vides creusées ; tuiles en relief (tranche teintée de la couleur du symbole, reflet sur le dessus, symbole gravé) ; boutons arrondis en relief, bouton principal orange (thème `game/ui/game_theme.tres`, `PrimaryButton`) ; titre doré.
+  - **Glisser** : ombre sous la pièce tenue ; aperçu de la pièce elle-même sur la grille ; **les cases qui seraient effacées s'illuminent** avant de lâcher (`TileGrid.clears_if_placed`).
+  - **Poser** : les tuiles atterrissent en rebondissant ; les points du coup montent depuis la pièce (« +120 ») ; le score et le combo sautent ; les nouvelles pièces poussent dans le plateau.
+  - **Effacer** : les tuiles s'allument en blanc puis rétrécissent ; un trait de lumière balaie chaque ligne ou colonne ; un anneau part de la pièce ; éclats qui tournoient et étoiles scintillantes pour un coup fort ; mots d'encouragement qui rebondissent, plus gros et plus colorés à chaque palier (arc-en-ciel au dernier) ; grille vide : grand anneau et feu d'artifice.
+  - **Fin de partie** : la grille passe au gris, le panneau apparaît en fondu, petite phrase descendante.
+  - **Sons** (toujours faits par le code, `SoundSynth`) : toc de bois à la prise et à la rotation, claquement de tuile à la pose (hauteur qui varie un peu), petit rebond quand la pièce revient, arpège d'effacement qui **monte la gamme pentatonique** à chaque coup du combo (`combo_semitones`), étoiles sonores pour un coup fort, arpège long pour la grille vide, fanfare du record, souffles des bonus ; écho léger.
+  - **Musique** : une boucle calme de 42 s composée par le code (`tools/assets/compose_music.py` → `assets/sounds/music_calm.ogg`), jouée par l'autoload `Music` sur le bus `Music` ; boutons **Musique** et **Sons** dans le menu (réglages sauvegardés).
+- **Critères** : `make lint check test build` verts ; captures regardées ; tests unitaires (synthèse, aperçu d'effacement, hauteur du combo, réglages) et de scénario (aperçu, points, lumière, fin de partie, boutons du menu).
+- **À tester par Stelio** : le jeu paraît-il vivant sans être chargé ? les sons et la musique plaisent-ils (trop forts, trop aigus, lassants) ? l'aperçu des lignes aide-t-il ? fluidité sur son téléphone (beaucoup d'effets).
+- **Dépend de** : G13.
+
 ### G4. …
 
 - **Objectif** :

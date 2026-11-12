@@ -1,7 +1,7 @@
 class_name MainMenu
 extends Control
 ## The start menu: play (endless), the levels, the daily challenge, the options worth a button
-## (how the pieces come back, vibration), quit.
+## (how the pieces come back, vibration, music, sounds), quit.
 ## After a crash, it opens on the crash report, to copy and paste to Claude (Diagnostics).
 
 const TILE_BLOCKS_SCENE: String = "res://game/proto_tiles/tile_blocks.tscn"
@@ -20,6 +20,8 @@ var chosen_scene: String = ""
 @onready var _daily: Button = %DailyButton
 @onready var _refill: Button = %RefillButton
 @onready var _vibration: Button = %VibrationButton
+@onready var _music: Button = %MusicButton
+@onready var _sounds: Button = %SoundsButton
 @onready var _quit: Button = %QuitButton
 @onready var _crash: Control = %Crash
 @onready var _report_text: TextEdit = %ReportText
@@ -33,6 +35,8 @@ func _ready() -> void:
 	_daily.pressed.connect(play.bind(DAILY_SCENE))
 	_refill.pressed.connect(toggle_refill)
 	_vibration.pressed.connect(toggle_vibration)
+	_music.pressed.connect(toggle_music)
+	_sounds.pressed.connect(toggle_sounds)
 	_quit.pressed.connect(func() -> void: get_tree().quit())
 	_show_options()
 	_crash_copy.pressed.connect(copy_crash_report)
@@ -76,6 +80,16 @@ func toggle_vibration() -> void:
 	_show_options()
 
 
+func toggle_music() -> void:
+	Options.set_music(not Options.settings.music)
+	_show_options()
+
+
+func toggle_sounds() -> void:
+	Options.set_sounds(not Options.settings.sounds)
+	_show_options()
+
+
 func _show_options() -> void:
 	var streak: int = GameState.progress.stats.daily_streak_on(GameState.today())
 	_daily.text = tr("MENU_DAILY_STREAK") % streak if streak > 0 else tr("MENU_DAILY")
@@ -83,6 +97,8 @@ func _show_options() -> void:
 		"MENU_REFILL_TOGETHER" if Options.settings.refill_together else "MENU_REFILL_EACH"
 	)
 	_vibration.text = "MENU_VIBRATION_ON" if Options.settings.vibration else "MENU_VIBRATION_OFF"
+	_music.text = "MENU_MUSIC_ON" if Options.settings.music else "MENU_MUSIC_OFF"
+	_sounds.text = "MENU_SOUNDS_ON" if Options.settings.sounds else "MENU_SOUNDS_OFF"
 
 
 func copy_crash_report() -> void:

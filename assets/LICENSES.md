@@ -4,6 +4,7 @@ Chaque asset externe (modèle, texture, son, police, musique) est listé ici dè
 
 | Fichier | Source | Auteur | Licence | IA (outil, retouches) |
 |---|---|---|---|---|
+| `assets/sounds/music_calm.ogg` | composée par le code du projet (`tools/assets/compose_music.py`, sinusoïdes et bruit, aucun échantillon) | Claude pour le projet | propriété du projet | non (algorithme écrit à la main) |
 
 ## Code tiers
 

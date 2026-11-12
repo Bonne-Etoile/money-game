@@ -21,9 +21,9 @@ extends Resource
 @export var shake_pixels_per_clear: float = 4.0
 @export var shake_max_pixels: float = 16.0
 @export var shake_seconds: float = 0.25
-## The clear sound rises this much in pitch for each move of the combo, up to `max_pitch`.
-@export var combo_pitch_step: float = 0.08
-@export var max_pitch: float = 1.8
+## The clear sound climbs these steps (semitones, a major pentatonic scale: always in tune)
+## at each move of the combo, and stays on the last one (ClearPraise.combo_pitch).
+@export var combo_semitones: Array[int] = [0, 2, 4, 7, 9, 12, 14, 16]
 ## Vibration on a clear, in milliseconds, per point of strength of the move, up to
 ## `vibration_max_ms`.
 @export var vibration_ms_per_clear: int = 25
@@ -32,3 +32,32 @@ extends Resource
 @export var firework_bursts: int = 5
 @export var firework_fragments: int = 24
 @export var firework_interval: float = 0.18
+## Extra fragments per cleared cell for each point of strength of the move beyond the first.
+@export var fragments_per_strength: int = 1
+## A placed tile lands a little bigger and settles (pop), in this many seconds.
+@export var pop_scale: float = 1.18
+@export var pop_seconds: float = 0.2
+## Light sweeping along each cleared row or column.
+@export var beam_seconds: float = 0.4
+## Ring spreading from the placed piece on a clear, and from the centre on an empty grid; its
+## radius in cells.
+@export var ring_seconds: float = 0.45
+@export var ring_cells: float = 2.5
+## Sparkles thrown around on a strong move: from this strength, so many per point of strength.
+@export var sparkle_min_strength: int = 2
+@export var sparkles_per_strength: int = 6
+@export var sparkle_seconds: float = 0.8
+## The points of a move rising from the placed piece.
+@export var points_seconds: float = 0.8
+@export var points_rise_pixels: float = 70.0
+## Colour of each word of praise (PRAISE_1 first); the last ones cycle through the symbol
+## colours. The words grow by `praise_size_step` per level.
+@export var praise_colors: Array[Color] = []
+@export var praise_size_step: int = 8
+@export var rainbow_from_word: int = 4
+## The score label grows this much when points come in.
+@export var score_punch_scale: float = 1.25
+## Seconds a new piece in the tray takes to grow in.
+@export var tray_appear_seconds: float = 0.25
+## Seconds the grid takes to grey out at the end of a game.
+@export var game_over_fade_seconds: float = 0.6

@@ -28,7 +28,7 @@ Jeu mobile Android (portrait, iOS mis de côté), gratuit et financé par la pub
 
 ## Structure
 
-- `game/autoload/` : `Diagnostics` (journal de session, rapport de crash ; le premier autoload), `Events` (signaux globaux), `GameState` (état de la partie, seul à le modifier), `Display` (fenêtre, F11), `Options` (réglages du joueur).
+- `game/autoload/` : `Diagnostics` (journal de session, rapport de crash ; le premier autoload), `Events` (signaux globaux), `GameState` (état de la partie, seul à le modifier), `Display` (fenêtre, F11), `Options` (réglages du joueur), `Ads` (pubs), `Music` (musique de fond, coupe les bus `Music` et `Effects` selon les réglages).
 - `game/core/` : logique pure (`RefCounted`, sans nœud), testée unitairement.
 - `game/data/` : définitions du jeu en ressources typées `.tres` (et leurs classes).
 - `game/<fonctionnalité>/` : une scène et son script par fonctionnalité (`player/`, `ui/`, …), rangés par fonctionnalité, pas par type de fichier.
@@ -69,6 +69,7 @@ Jeu mobile Android (portrait, iOS mis de côté), gratuit et financé par la pub
 - **Modes de jeu** : infini (`game/proto_tiles/tile_blocks.tscn`, script `TileBlocksScreen`), défi du jour (`daily.tscn`, même scène avec `daily = true`, graine `DailyChallenge`) et niveaux (`game/levels/`, `LevelScreen` hérite de `TileBlocksScreen` ; logique `LevelGame` et `LevelBoard`). Un niveau de plus : une ligne dans `tools/generate_levels.py`, puis `python3 -I tools/generate_levels.py` et `make test` (le robot doit le gagner avec 3 ou 4 pièces d'avance).
 - **Dosage des pubs récompensées** (G18) : `AdPacingRules` (`game/data/ad_pacing_rules.tres`, branché sur `tile_blocks_rules.tres`) ; limites d'une partie dans `TileBlocksGame` (`can_earn`, `can_revive_with_ad`, `use_ad`), limites entre parties dans `AdPacing` (`game/core/`), appelé par `GameState.can_offer_rewarded`. Un emplacement de pub de plus : vérifier `_ads_open()` et compter la pub dans la partie (`use_ad`). Valeurs et raisons : `docs/reglages-recommandes.md`. Le coup du miroir : `MirrorChance` (montre une occasion venue d'elle-même ; ne jamais choisir les pièces pour vendre une pub).
 - **Record, retours d'effacement, aide** : `RecordChase`, `ClearPraise`, `MoveHint` dans `game/core/` ; effets dans `game/board/clear_effects.gd`, sons faits par le code dans `game/audio/` ; réglages dans `game/data/juice_rules.tres`.
+- **Apparence et son** (G20) : couleurs des tuiles, de la grille et du fond dans `game/data/tile_art.tres` (`TileDrawing`, `BoardView`, `GameBackground`) ; boutons par le thème global `game/ui/game_theme.tres` (variante `PrimaryButton` pour l'action principale). Un son de plus : une constante et sa recette dans `GameSounds.make_all()` (gamme de do majeur), une méthode `play_*`. La musique : `python3 -I tools/assets/compose_music.py assets/sounds/music_calm.ogg`.
 
 > **À compléter** au fil du jeu : une puce par système (joueur, interface, son, sauvegarde…) qui dit où il vit et comment l'étendre. C'est ce qui permet à une nouvelle session de reprendre sans relire tout le code.
 

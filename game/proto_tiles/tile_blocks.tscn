@@ -9,6 +9,7 @@
 [ext_resource type="Resource" path="res://game/data/juice_rules.tres" id="7_juice"]
 [ext_resource type="Script" path="res://game/board/clear_effects.gd" id="8_effects"]
 [ext_resource type="Script" path="res://game/audio/game_sounds.gd" id="9_sounds"]
+[ext_resource type="Script" path="res://game/board/game_background.gd" id="bg_script"]
 
 [sub_resource type="StyleBoxFlat" id="record_fill"]
 bg_color = Color(1, 0.85, 0.3, 1)
@@ -29,7 +30,7 @@ rules = ExtResource("2_rules")
 art = ExtResource("3_art")
 juice = ExtResource("7_juice")
 
-[node name="Background" type="ColorRect" parent="."]
+[node name="Background" type="Control" parent="."]
 unique_name_in_owner = true
 layout_mode = 1
 anchors_preset = 15
@@ -38,6 +39,8 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
+script = ExtResource("bg_script")
+art = ExtResource("3_art")
 
 [node name="TopBar" type="HBoxContainer" parent="."]
 layout_mode = 1
@@ -109,8 +112,8 @@ visible = false
 layout_mode = 1
 anchors_preset = 10
 anchor_right = 1.0
-offset_top = 142.0
-offset_bottom = 188.0
+offset_top = 134.0
+offset_bottom = 178.0
 grow_horizontal = 2
 theme_override_colors/font_color = Color(1, 0.85, 0.3, 1)
 theme_override_font_sizes/font_size = 36
@@ -274,6 +277,7 @@ horizontal_alignment = 1
 autowrap_mode = 3
 
 [node name="NextLevelButton" type="Button" parent="GameOver/Center/Page"]
+theme_type_variation = &"PrimaryButton"
 unique_name_in_owner = true
 visible = false
 custom_minimum_size = Vector2(400, 88)
@@ -303,6 +307,7 @@ layout_mode = 2
 theme_override_font_sizes/font_size = 36
 
 [node name="ReplayButton" type="Button" parent="GameOver/Center/Page"]
+theme_type_variation = &"PrimaryButton"
 unique_name_in_owner = true
 custom_minimum_size = Vector2(400, 88)
 layout_mode = 2

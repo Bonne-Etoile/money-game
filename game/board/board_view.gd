@@ -1,7 +1,11 @@
 class_name BoardView
 extends Control
-## Draws a TileGrid, the ghost of the piece being dragged, and the cleared cells fading out.
+## Draws a TileGrid in its frame, the ghost of the piece being dragged (and the cells it would
+## clear, glowing), the placed tiles landing, and the cleared cells flashing and shrinking away.
 ## Only draws: the rules live in game/core/.
+
+## Part of a clear's time the cleared tiles stay lit before they shrink away.
+const FLASH_LIT: float = 0.3
 
 var grid: TileGrid
 var art: TileArt
@@ -11,6 +15,14 @@ var layer: LevelBoard = null
 var ghost_origin: Vector2i = Vector2i.ZERO
 var _ghost: Piece
 var _ghost_valid: bool = false
+## Cells the ghost would clear (they glow), and the time that makes the glow breathe.
+var _preview: Array[Vector2i] = []
+var _glow_time: float = 0.0
+## Tiles just placed, landing (JuiceRules.pop_scale, pop_seconds).
+var _pop_cells: Array[Vector2i] = []
+var _pop_left: float = 0.0
+var _pop_seconds: float = 0.0
+var _pop_scale: float = 1.0
 ## A placement shown to a player who hesitates (G15), drawn as faint tiles.
 var _hint: Piece
 var _hint_origin: Vector2i = Vector2i.ZERO
@@ -62,6 +74,30 @@ func set_ghost(piece: Piece, origin: Vector2i, valid: bool) -> void:
 
 func clear_ghost() -> void:
 	_ghost = null
+	_preview.clear()
+	queue_redraw()
+
+
+## Cells the ghost would clear: they glow until the ghost moves or goes.
+func set_preview(cells: Array[Vector2i]) -> void:
+	_preview = cells.duplicate()
+	set_process(true)
+	queue_redraw()
+
+
+func preview_cells() -> Array[Vector2i]:
+	return _preview
+
+
+## The tiles of `cells` land a little bigger (`scale`) and settle within `seconds`.
+func pop(cells: Array[Vector2i], scale_from: float, seconds: float) -> void:
+	if seconds <= 0.0:
+		return
+	_pop_cells = cells.duplicate()
+	_pop_left = seconds
+	_pop_seconds = seconds
+	_pop_scale = scale_from
+	set_process(true)
 	queue_redraw()
 
 
@@ -124,9 +160,20 @@ func flash(result: MoveResult) -> void:
 func _process(delta: float) -> void:
 	_flash_left -= delta
 	_shake_left = maxf(_shake_left - delta, 0.0)
+	_pop_left = maxf(_pop_left - delta, 0.0)
+	_glow_time += delta
 	if _flash_left <= 0.0:
 		_flash_cells.clear()
-	set_process(not _flash_cells.is_empty() or _shake_left > 0.0)
+	if _pop_left <= 0.0:
+		_pop_cells.clear()
+	set_process(
+		(
+			not _flash_cells.is_empty()
+			or _shake_left > 0.0
+			or not _pop_cells.is_empty()
+			or not _preview.is_empty()
+		)
+	)
 	queue_redraw()
 
 
@@ -139,16 +186,28 @@ func _draw() -> void:
 		draw_set_transform(
 			Vector2(_shake_rng.randf_range(-1, 1), _shake_rng.randf_range(-1, 1)) * strength
 		)
-	draw_rect(Rect2(Vector2.ZERO, Vector2.ONE * side * grid.size), art.grid_background)
+	var whole: Rect2 = Rect2(Vector2.ZERO, Vector2.ONE * side * grid.size)
+	var frame: float = side * art.frame_width
+	TileDrawing.draw_box(self, whole.grow(frame), art.frame_color.darkened(0.35))
+	TileDrawing.draw_box(
+		self, whole.grow(frame * 0.8).grow_side(SIDE_BOTTOM, -frame * 0.2), art.frame_color
+	)
+	TileDrawing.draw_box(self, whole.grow(frame * 0.35), art.grid_background)
 	for y in grid.size:
 		for x in grid.size:
 			var cell: Vector2i = Vector2i(x, y)
 			var symbol: int = grid.symbol_at(cell)
+			var rect: Rect2 = cell_rect(cell)
 			if symbol == TileGrid.EMPTY:
-				TileDrawing.draw_box(self, cell_rect(cell), art.empty_cell)
-			else:
-				TileDrawing.draw_tile(self, cell_rect(cell), symbol, art)
+				TileDrawing.draw_box(self, rect, art.empty_cell_rim)
+				TileDrawing.draw_box(
+					self, rect.grow_side(SIDE_TOP, -rect.size.y * 0.06), art.empty_cell
+				)
+			elif not _pop_cells.has(cell):
+				TileDrawing.draw_tile(self, rect, symbol, art)
 				_draw_layer(cell)
+	_draw_preview()
+	_draw_pops()
 	_draw_hint()
 	_draw_flash()
 	_draw_ghost()
@@ -157,13 +216,21 @@ func _draw() -> void:
 func _draw_flash() -> void:
 	if _flash_cells.is_empty():
 		return
-	var fade: float = clampf(_flash_left / art.flash_seconds, 0.0, 1.0)
+	# First lit up (white-hot), then shrinking away while fading.
+	var elapsed: float = 1.0 - clampf(_flash_left / art.flash_seconds, 0.0, 1.0)
+	var lit: float = clampf(1.0 - elapsed / FLASH_LIT, 0.0, 1.0)
+	var shrink: float = clampf((elapsed - FLASH_LIT) / (1.0 - FLASH_LIT), 0.0, 1.0)
+	var scale_now: float = 1.0 + 0.12 * lit - shrink
 	for index in _flash_cells.size():
 		var rect: Rect2 = cell_rect(_flash_cells[index])
-		var tint: Color = Color(art.flash, fade)
-		TileDrawing.draw_tile(
-			self, rect.grow(rect.size.x * 0.1 * (1.0 - fade)), _flash_symbols[index], art, tint
+		var grown: Rect2 = Rect2(
+			rect.get_center() - rect.size * scale_now / 2.0, rect.size * scale_now
 		)
+		var tint: Color = Color.WHITE.lerp(art.flash, 1.0 - lit)
+		tint.a = 1.0 - shrink * shrink
+		TileDrawing.draw_tile(self, grown, _flash_symbols[index], art, tint)
+		if lit > 0.0:
+			TileDrawing.draw_box(self, grown, Color(1, 1, 1, lit * 0.8))
 
 
 ## Gold tiles get a golden frame; tiles under ice a pale blue sheet.
@@ -185,11 +252,49 @@ func _draw_hint() -> void:
 		TileDrawing.draw_tile(self, rect, _hint.symbols[index], art, art.hint_tint)
 
 
+## A valid ghost shows the piece's own tiles, see-through; an invalid one, red boxes.
 func _draw_ghost() -> void:
 	if _ghost == null:
 		return
-	var tint: Color = art.ghost_valid if _ghost_valid else art.ghost_invalid
-	for cell in _ghost.cells:
-		var target: Vector2i = ghost_origin + cell
-		if grid.has_cell(target):
-			TileDrawing.draw_box(self, cell_rect(target), tint)
+	for index in _ghost.cells.size():
+		var target: Vector2i = ghost_origin + _ghost.cells[index]
+		if not grid.has_cell(target):
+			continue
+		if _ghost_valid:
+			TileDrawing.draw_tile(
+				self, cell_rect(target), _ghost.symbols[index], art, art.ghost_valid
+			)
+		else:
+			TileDrawing.draw_box(self, cell_rect(target), art.ghost_invalid)
+
+
+## The cells the ghost would clear glow, breathing.
+func _draw_preview() -> void:
+	if _preview.is_empty():
+		return
+	var glow: Color = art.preview_glow
+	glow.a *= 0.75 + 0.25 * sin(_glow_time * TAU * 2.0)
+	for cell in _preview:
+		var rect: Rect2 = cell_rect(cell)
+		var symbol: int = grid.symbol_at(cell)
+		if symbol != TileGrid.EMPTY:
+			TileDrawing.draw_tile(self, rect, symbol, art)
+		TileDrawing.draw_box(self, rect.grow(rect.size.x * 0.04), glow)
+
+
+## Tiles just placed: drawn bigger, settling back with a little bounce.
+func _draw_pops() -> void:
+	if _pop_cells.is_empty():
+		return
+	var progress: float = 1.0 - _pop_left / _pop_seconds
+	var bounce: float = 1.0 + (_pop_scale - 1.0) * (1.0 - progress) * cos(progress * PI * 1.5)
+	for cell in _pop_cells:
+		var symbol: int = grid.symbol_at(cell)
+		if symbol == TileGrid.EMPTY:
+			continue
+		var rect: Rect2 = cell_rect(cell)
+		var size_now: Vector2 = rect.size * bounce
+		TileDrawing.draw_tile(
+			self, Rect2(rect.get_center() - size_now / 2.0, size_now), symbol, art
+		)
+		_draw_layer(cell)

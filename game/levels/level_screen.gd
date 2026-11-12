@@ -80,6 +80,10 @@ func _on_finished() -> void:
 		_effects.fireworks(art.symbol_colors)
 
 
+func _is_lost_end() -> bool:
+	return not level.is_won()
+
+
 func _top_text() -> String:
 	return tr("HUD_LEVEL_PIECES") % [level_index + 1, level.pieces_left]
 

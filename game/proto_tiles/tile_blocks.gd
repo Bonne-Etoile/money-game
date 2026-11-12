@@ -51,8 +51,11 @@ var _called: Array[Button] = []
 var _hint_looked_for: bool = false
 ## The score the last refresh showed, to notice the moment the record is beaten.
 var _shown_score: int = 0
+## The fade of the end of a game (panel, grey grid).
+var _mood_tween: Tween = null
+## The combo the last refresh showed, to make the label jump when it grows.
+var _shown_combo: int = 0
 
-@onready var _background: ColorRect = %Background
 @onready var _board: BoardView = %Board
 @onready var _tray: TrayView = %Tray
 @onready var _score: Label = %ScoreLabel
@@ -78,7 +81,6 @@ var _shown_score: int = 0
 
 func _ready() -> void:
 	_drag = PieceDrag.new()
-	_background.color = art.background
 	_board.art = art
 	_tray.art = art
 	(%DragLayer as DragLayer).art = art
@@ -87,11 +89,23 @@ func _ready() -> void:
 	_drag.piece_in = func(slot: int) -> Piece: return game.hand[slot]
 	_drag.can_place = func(slot: int, origin: Vector2i) -> bool: return game.can_place(slot, origin)
 	_drag.place = func(slot: int, origin: Vector2i) -> MoveResult: return _place_piece(slot, origin)
+	_drag.clears_for = func(slot: int, origin: Vector2i) -> Array[Vector2i]:
+		if not game.can_place(slot, origin):
+			return []
+		return game.grid.clears_if_placed(game.hand[slot], origin, game.rules.match_size)
 	_drag.placed.connect(_on_placed)
+	_drag.picked.connect(func(_slot: int) -> void: _sounds.play_pick())
+	_drag.returned.connect(_sounds.play_return)
 	_effects.rules = juice
+	_effects.rainbow = art.symbol_colors
+	_tray.appear_seconds = juice.tray_appear_seconds
 	add_child(_drag)
 	(%MenuButton as Button).pressed.connect(back_to_menu)
-	(%ReplayButton as Button).pressed.connect(func() -> void: start(_first_seed()))
+	(%ReplayButton as Button).pressed.connect(
+		func() -> void:
+			_sounds.play_button()
+			start(_first_seed())
+	)
 	(%GameOverMenuButton as Button).pressed.connect(back_to_menu)
 	_continue.pressed.connect(continue_game)
 	_new_hand.pressed.connect(use_new_hand)
@@ -139,6 +153,8 @@ func start(random_seed: int) -> void:
 	var stats: PlayerStats = GameState.progress.stats
 	chase = RecordChase.new(stats.daily_best_on(GameState.today()) if daily else stats.best_score)
 	_shown_score = 0
+	_shown_combo = 0
+	_clear_end_mood()
 	_reset_idle()
 	_board.grid = game.grid
 	_drag.cancel()
@@ -160,6 +176,9 @@ func refresh() -> void:
 	_level.text = _top_text()
 	_combo.text = tr("HUD_COMBO") % game.scores.combo
 	_combo.visible = game.scores.combo >= 2
+	if game.scores.combo > _shown_combo and _combo.visible:
+		_punch(_combo, juice.score_punch_scale)
+	_shown_combo = game.scores.combo
 	_show_record()
 	var over: bool = _is_finished()
 	if over:
@@ -192,10 +211,42 @@ func refresh() -> void:
 	_show_end_panel()
 	var had_chance: bool = mirror_chance != null
 	_show_mirror_chance(over)
+	_show_end_mood(over)
 	_note_offers(over)
 	if mirror_chance != null and not had_chance and _mirror_costs_ad():
 		GameState.record_offer(MIRROR_PLACEMENT)
 	_call_for_bonuses(game.is_in_trouble(), mirror_chance != null)
+
+
+## The end of a game, felt: the panel fades in; a lost game also greys the grid out and plays
+## a gentle falling phrase. Back to normal colours when the game goes on (continue, new game).
+func _show_end_mood(over: bool) -> void:
+	if over == _was_over:
+		return
+	_clear_end_mood()
+	if not over:
+		return
+	_mood_tween = create_tween().set_parallel()
+	_game_over.modulate.a = 0.0
+	_mood_tween.tween_property(_game_over, "modulate:a", 1.0, juice.game_over_fade_seconds * 0.5)
+	if _is_lost_end():
+		_sounds.play_game_over()
+		_mood_tween.tween_property(
+			_board, "modulate", art.game_over_tint, juice.game_over_fade_seconds
+		)
+
+
+func _clear_end_mood() -> void:
+	if _mood_tween != null:
+		_mood_tween.kill()
+		_mood_tween = null
+	_board.modulate = Color.WHITE
+	_game_over.modulate.a = 1.0
+
+
+## Whether the game ended lost (the level screen: a level can end won).
+func _is_lost_end() -> bool:
+	return true
 
 
 ## A new game for `random_seed` (the level screen makes a level instead).
@@ -316,6 +367,7 @@ func use_new_hand() -> void:
 ## The mirror bonus button: the next tap on a piece flips it (a free use, or one bought with a
 ## rewarded ad); pressed again, it cancels without using anything.
 func toggle_mirror() -> void:
+	_sounds.play_button()
 	if mirroring:
 		mirroring = false
 	elif game.charges(TileBlocksGame.BONUS_MIRROR) > 0:
@@ -328,19 +380,38 @@ func toggle_mirror() -> void:
 ## Turns a piece of the tray a quarter turn (a tap on it), or flips it in mirror mode.
 func rotate_piece(slot: int) -> void:
 	if game.rotate(slot):
+		_sounds.play_rotate()
 		refresh()
 
 
-## The feedback of a move (G13), stronger as the move is: sound rising with the combo,
-## fragments, a shake, a word of praise, a short vibration; then the screen shows the new state.
+## The feedback of a move (G13), stronger as the move is: the piece lands with a clack and
+## its points rise; a clear sweeps light along its lines, throws fragments and sparkles,
+## shakes the board, plays an arpeggio rising with the combo, shows a word of praise and
+## vibrates; then the screen shows the new state.
 func _on_placed(result: MoveResult) -> void:
 	_reset_idle()
 	_sounds.play_place()
+	_board.pop(result.placed, juice.pop_scale, juice.pop_seconds)
+	var piece_center: Vector2 = _center_of(result.placed)
+	if result.points > 0:
+		_effects.points(tr("POINTS_GAINED") % result.points, piece_center, CALL_COLOR)
+		_punch(_score, juice.score_punch_scale)
 	var strength: int = ClearPraise.strength(result, juice.empty_grid_strength)
 	if strength > 0:
-		var pitch: float = 1.0 + (result.combo - 1) * juice.combo_pitch_step
-		_sounds.play_clear(minf(pitch, juice.max_pitch))
-		_burst(result)
+		var strong: bool = strength >= juice.sparkle_min_strength
+		_sounds.play_clear(ClearPraise.combo_pitch(result.combo, juice.combo_semitones), strong)
+		_burst(result, strength)
+		_beams(result)
+		_effects.ring(
+			piece_center, _board.cell_size() * juice.ring_cells, CALL_COLOR, juice.ring_seconds
+		)
+		if strong:
+			_effects.sparkles(
+				piece_center,
+				juice.sparkles_per_strength * strength,
+				juice.fragment_speed,
+				art.symbol_colors
+			)
 		_board.shake(
 			minf(strength * juice.shake_pixels_per_clear, juice.shake_max_pixels),
 			juice.shake_seconds
@@ -352,30 +423,75 @@ func _on_placed(result: MoveResult) -> void:
 			)
 	if result.empty_grid:
 		_sounds.play_empty_grid()
+		var board_center: Vector2 = _board.global_position + _board.size / 2.0
+		_effects.ring(board_center, _board.size.x, Color.WHITE, juice.ring_seconds * 2.0)
+		_effects.fireworks(art.symbol_colors)
 	refresh()
 
 
-func _burst(result: MoveResult) -> void:
+func _burst(result: MoveResult, strength: int) -> void:
 	var centers: Array[Vector2] = []
 	var colors: Array[Color] = []
 	for index in result.clear.cells.size():
 		centers.append(_board.cell_center(result.clear.cells[index]))
 		var symbol: int = result.cleared_symbols[index]
-		colors.append(art.symbol_colors[symbol % art.symbol_colors.size()])
-	_effects.burst(centers, colors, juice.fragments_per_cell, juice.fragment_speed)
+		colors.append(
+			art.stone_face if symbol < 0 else art.symbol_colors[symbol % art.symbol_colors.size()]
+		)
+	var per_cell: int = juice.fragments_per_cell + juice.fragments_per_strength * (strength - 1)
+	_effects.burst(centers, colors, per_cell, juice.fragment_speed)
+
+
+## Light along each cleared row and column (a full one: every cell of it was cleared).
+func _beams(result: MoveResult) -> void:
+	var cleared: Dictionary[Vector2i, bool] = {}
+	for cell in result.clear.cells:
+		cleared[cell] = true
+	var lines: int = game.grid.size
+	var side: float = _board.cell_size()
+	for line in lines:
+		var row: bool = true
+		var column: bool = true
+		for step in lines:
+			row = row and cleared.has(Vector2i(step, line))
+			column = column and cleared.has(Vector2i(line, step))
+		if row:
+			var at: Vector2 = _board.global_position + Vector2(0.0, line * side)
+			_effects.beam(Rect2(at, Vector2(lines * side, side)), CALL_COLOR)
+		if column:
+			var at: Vector2 = _board.global_position + Vector2(line * side, 0.0)
+			_effects.beam(Rect2(at, Vector2(side, lines * side)), CALL_COLOR)
 
 
 func _praise(result: MoveResult, strength: int) -> void:
 	var text: String = ""
+	var word: int = ClearPraise.word(strength, juice.praise_thresholds)
 	if result.empty_grid:
 		text = tr("PRAISE_EMPTY_GRID") % rules.scoring.empty_grid_bonus
-	else:
-		var word: int = ClearPraise.word(strength, juice.praise_thresholds)
-		if word > 0:
-			text = tr("PRAISE_%d" % word)
+		word = juice.praise_thresholds.size()
+	elif word > 0:
+		text = tr("PRAISE_%d" % word)
 	if not text.is_empty():
 		var center: Vector2 = _board.global_position + _board.size / 2.0
-		_effects.praise(text, center, CALL_COLOR)
+		_effects.praise(text, center, word)
+
+
+## Centre of `cells` of the grid, in global coordinates.
+func _center_of(cells: Array[Vector2i]) -> Vector2:
+	var total: Vector2 = Vector2.ZERO
+	for cell in cells:
+		total += _board.cell_center(cell)
+	return total / maxf(cells.size(), 1.0)
+
+
+## Makes `control` jump: bigger, then back to its size.
+func _punch(control: Control, scale_to: float) -> void:
+	control.pivot_offset = control.size / 2.0
+	var tween: Tween = control.create_tween()
+	tween.tween_property(control, "scale", Vector2.ONE * scale_to, 0.08)
+	tween.tween_property(control, "scale", Vector2.ONE, 0.18).set_trans(Tween.TRANS_BACK).set_ease(
+		Tween.EASE_OUT
+	)
 
 
 func _on_piece_tapped(slot: int) -> void:
@@ -384,12 +500,14 @@ func _on_piece_tapped(slot: int) -> void:
 		rotate_piece(slot)
 	elif game.mirror(slot):
 		mirroring = false
+		_sounds.play_mirror()
 		GameState.record_bonus(TileBlocksGame.BONUS_MIRROR)
 		refresh()
 
 
 func _apply_new_hand() -> void:
 	if game.new_hand():
+		_sounds.play_new_hand()
 		_reset_idle()
 		_drag.cancel()
 		GameState.record_bonus(TileBlocksGame.BONUS_NEW_HAND)

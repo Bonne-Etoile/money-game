@@ -1,6 +1,8 @@
 [gd_scene format=3]
 
 [ext_resource type="Script" path="res://game/ui/main_menu.gd" id="1_menu"]
+[ext_resource type="Script" path="res://game/board/game_background.gd" id="bg_script"]
+[ext_resource type="Resource" path="res://game/data/tile_art.tres" id="bg_art"]
 
 [node name="MainMenu" type="Control"]
 layout_mode = 3
@@ -11,14 +13,16 @@ grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_menu")
 
-[node name="Background" type="ColorRect" parent="."]
+[node name="Background" type="Control" parent="."]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-color = Color(0.11, 0.14, 0.2, 1)
+mouse_filter = 2
+script = ExtResource("bg_script")
+art = ExtResource("bg_art")
 
 [node name="Main" type="CenterContainer" parent="."]
 unique_name_in_owner = true
@@ -34,12 +38,18 @@ layout_mode = 2
 theme_override_constants/separation = 24
 
 [node name="Title" type="Label" parent="Main/Page"]
+theme_override_colors/font_color = Color(1, 0.85, 0.35, 1)
+theme_override_colors/font_outline_color = Color(0.35, 0.15, 0.45, 1)
+theme_override_constants/outline_size = 14
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.35)
+theme_override_constants/shadow_offset_y = 6
 layout_mode = 2
 theme_override_font_sizes/font_size = 64
 text = "GAME_TITLE"
 horizontal_alignment = 1
 
 [node name="PlayButton" type="Button" parent="Main/Page"]
+theme_type_variation = &"PrimaryButton"
 unique_name_in_owner = true
 custom_minimum_size = Vector2(560, 88)
 layout_mode = 2
@@ -74,6 +84,24 @@ unique_name_in_owner = true
 custom_minimum_size = Vector2(560, 72)
 layout_mode = 2
 size_flags_horizontal = 4
+theme_override_font_sizes/font_size = 26
+
+[node name="SoundRow" type="HBoxContainer" parent="Main/Page"]
+custom_minimum_size = Vector2(560, 72)
+layout_mode = 2
+size_flags_horizontal = 4
+theme_override_constants/separation = 16
+
+[node name="MusicButton" type="Button" parent="Main/Page/SoundRow"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 26
+
+[node name="SoundsButton" type="Button" parent="Main/Page/SoundRow"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
 theme_override_font_sizes/font_size = 26
 
 [node name="QuitButton" type="Button" parent="Main/Page"]
