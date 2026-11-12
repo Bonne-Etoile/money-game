@@ -72,6 +72,9 @@ func _rules_for(variant: String) -> TileBlocksRules:
 			rules.difficulty = rules.difficulty.duplicate()
 			rules.difficulty.record_calm_percent = 30
 			rules.difficulty.record_percent_per_level = 15
+		"no_long_game":
+			rules.difficulty = rules.difficulty.duplicate()
+			rules.difficulty.long_game_moves = 0
 		"no_guarantee":
 			rules.difficulty = rules.difficulty.duplicate()
 			rules.difficulty.playable_until_fill_percent = 0

@@ -163,7 +163,7 @@ func revive(with_ad: bool = false) -> bool:
 
 ## The difficulty level now (0 without adaptive difficulty).
 func level() -> int:
-	return 0 if difficulty == null else difficulty.level(score(), scores.combo)
+	return 0 if difficulty == null else difficulty.level(score(), scores.combo, moves)
 
 
 ## Pieces of the hand that fit somewhere (in some turn).

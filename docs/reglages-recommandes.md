@@ -88,7 +88,7 @@ Block Blast règle sa difficulté **par rapport au record** du joueur : facile l
 |---|---|---|---|
 | Indice après hésitation | 10 s (`hint_after_seconds`) | **10 s** au début ; 15 s après les 10 premières parties (**code**) | Block Blast aide quand le joueur réfléchit longtemps ; le joueur confirmé veut moins d'aide (à confirmer par le test de Stelio, G15) |
 | Bonus de grille vide | 300 (`empty_grid_bonus`) | **300** | Assez gros pour fêter, pas assez pour fausser le record |
-| Bonus de combo et multi-effacement | +50 % chacun | **+50 %** | Block Blast récompense fortement les chaînes ; à garder |
+| Bonus de combo et multi-effacement | +50 % chacun | **+50 %**, combo plafonné à +300 % et 1 coup de grâce (G19, 2026-11-12) | Block Blast récompense fortement les chaînes (un guide cite un plafond ×4) ; sans plafond, les scores et les records s'emballaient |
 | Retours d'effacement | en place (G13) | idem ; prévoir une version allégée pour les petits téléphones | Block Blast a des effets allégés (`CTLowDeviceEffectTrait`) |
 
 ## 7. Ce qu'on ne copie pas

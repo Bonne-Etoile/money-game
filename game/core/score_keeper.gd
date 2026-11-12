@@ -32,7 +32,10 @@ func score_move(placed_cells: int, clear: GridClear) -> int:
 		combo += 1
 		_moves_without_clear = 0
 		var percent: int = 100 + (clear.count() - 1) * rules.multi_clear_bonus_percent
-		percent += (combo - 1) * rules.combo_bonus_percent
+		var steps: int = combo - 1
+		if rules.combo_bonus_max_steps > 0:
+			steps = mini(steps, rules.combo_bonus_max_steps)
+		percent += steps * rules.combo_bonus_percent
 		points += clear.cells.size() * rules.points_per_cell_cleared * percent / 100
 	score += points
 	return points

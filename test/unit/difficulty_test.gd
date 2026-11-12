@@ -141,3 +141,16 @@ func test_the_record_climb_can_be_turned_off() -> void:
 func test_the_daily_challenge_ignores_the_record() -> void:
 	var game: TileBlocksGame = TileBlocksGame.new(RULES, 3)
 	assert_int(game.difficulty.record).is_equal(0)
+
+
+func test_a_long_game_climbs_whatever_the_score() -> void:
+	var rules: DifficultyRules = RULES.difficulty.duplicate()
+	rules.long_game_moves = 100
+	rules.long_game_moves_per_level = 20
+	rules.combo_for_extra_level = 0
+	var director: DifficultyDirector = DifficultyDirector.new(rules, _seasoned(50000, 0))
+	assert_int(director.level(1000, 0, 99)).is_equal(0)
+	assert_int(director.level(1000, 0, 100)).is_equal(1)
+	assert_int(director.level(1000, 0, 140)).is_equal(3)
+	# The score gives more: it wins.
+	assert_int(director.level(40000, 0, 100)).is_equal(4)

@@ -50,12 +50,20 @@ func _poor_run(stats: PlayerStats) -> bool:
 	return true
 
 
-## The level for a game at `score` with `combo` moves in a row that cleared something.
-func level(score: int, combo: int) -> int:
-	var reached: int = start_level + _score_levels(score)
+## The level for a game at `score` after `moves` moves, with `combo` moves in a row that
+## cleared something.
+func level(score: int, combo: int, moves: int = 0) -> int:
+	var reached: int = start_level + maxi(_score_levels(score), _long_game_levels(moves))
 	if rules.combo_for_extra_level > 0 and combo >= rules.combo_for_extra_level:
 		reached += 1
 	return clampi(reached, min_level(), max_level())
+
+
+## Levels a long game adds (DifficultyRules.long_game_moves): its length stays bounded.
+func _long_game_levels(moves: int) -> int:
+	if rules.long_game_moves <= 0 or moves < rules.long_game_moves:
+		return 0
+	return 1 + (moves - rules.long_game_moves) / maxi(rules.long_game_moves_per_level, 1)
 
 
 ## Levels the score of the game adds: per `points_per_level`, or from the record once there is

@@ -17,6 +17,11 @@ extends Resource
 ## `points_per_level`: the start of a game stays calm whatever the record, the tension comes
 ## near it. 0 turns it off.
 @export var record_points_from: int = 1000
+## Moves of a game from which the difficulty climbs whatever the score (0: never): games keep
+## a bounded length even as the record grows. A level more every `long_game_moves_per_level`
+## moves beyond, when it is more than the score gives.
+@export var long_game_moves: int = 80
+@export var long_game_moves_per_level: int = 20
 ## Share of the record (percent) under which the score of the game does not raise the level.
 @export var record_calm_percent: int = 30
 ## From `record_calm_percent` on, a level more for each of these shares of the record

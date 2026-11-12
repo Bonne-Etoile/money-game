@@ -44,3 +44,15 @@ func test_the_combo_grows_and_survives_the_grace_moves() -> void:
 	assert_int(keeper.combo).is_equal(2)
 	keeper.score_move(1, GridClear.new())
 	assert_int(keeper.combo).is_equal(0)
+
+
+func test_the_combo_bonus_stops_growing_at_its_cap() -> void:
+	var rules: ScoreRules = _rules()
+	rules.combo_bonus_max_steps = 2
+	var keeper: ScoreKeeper = ScoreKeeper.new(rules)
+	for _move in 3:
+		keeper.score_move(1, _clear(3, 0, 1))
+	# Third move of the combo: +100 % (2 steps), the cap.
+	assert_int(keeper.score_move(1, _clear(3, 0, 1))).is_equal(1 + 60)
+	assert_int(keeper.combo).is_equal(4)
+	assert_int(keeper.score_move(1, _clear(3, 0, 1))).is_equal(1 + 60)
