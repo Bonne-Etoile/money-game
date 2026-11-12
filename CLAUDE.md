@@ -97,6 +97,7 @@ Jeu mobile Android (portrait, iOS mis de côté), gratuit et financé par la pub
 ## Pubs
 
 - **Aucune pub forcée pour le moment** (décision de Stelio, 2026-11-09) : seulement des pubs récompensées que le joueur choisit. Pas d'interstitiel ni de bannière tant qu'il ne revient pas sur ce choix.
+- **Pas de limite au nombre de pubs récompensées** (décision de Stelio, 2026-11-12 : « Il peut regarder autant de pub qu'il veut ») : tous les plafonds de `ad_pacing_rules.tres` sont à 0 (désactivés) ; le mécanisme reste, testé avec `test/fixtures/limited_ad_pacing.tres`. La reprise reste une par partie (règle du jeu, pas une limite de pub).
 
 ## Publication
 

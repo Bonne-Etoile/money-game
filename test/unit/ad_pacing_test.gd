@@ -2,7 +2,8 @@ extends GdUnitTestSuite
 ## When rewarded ads may be offered across games (game/core/ad_pacing.gd) and the count of ads
 ## watched per day (PlayerStats), with the settings of game/data/ad_pacing_rules.tres.
 
-const PACING: AdPacingRules = preload("res://game/data/ad_pacing_rules.tres")
+## The limits themselves (the game turns them all off since 2026-11-12, Stelio: no limit).
+const PACING: AdPacingRules = preload("res://test/fixtures/limited_ad_pacing.tres")
 
 
 func _player(games: int) -> PlayerStats:

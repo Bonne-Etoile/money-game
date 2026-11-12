@@ -8,6 +8,8 @@ const SCENE: String = "res://game/proto_tiles/tile_blocks.tscn"
 ## Games played by the player of these tests: past a new player's games without ads, and
 ## past those where a continue is always offered.
 const PLAYED: int = 10
+## The ad limits themselves (the game turns them all off since 2026-11-12, Stelio: no limit).
+const LIMITED: AdPacingRules = preload("res://test/fixtures/limited_ad_pacing.tres")
 
 
 func before_test() -> void:
@@ -177,6 +179,7 @@ func test_new_pieces_are_free_once_then_cost_a_watched_ad() -> void:
 	var fake: FakeAdsBackend = _fake_ads()
 	var runner: GdUnitSceneRunner = await _screen()
 	var screen: TileBlocksScreen = runner.scene() as TileBlocksScreen
+	screen.game.pacing = LIMITED
 	var button: Button = runner.find_child("NewHandButton") as Button
 	var first: Piece = screen.game.hand[0]
 	button.pressed.emit()
@@ -191,7 +194,7 @@ func test_new_pieces_are_free_once_then_cost_a_watched_ad() -> void:
 	assert_int(stats.bonuses_used[TileBlocksGame.BONUS_NEW_HAND]).is_equal(2)
 	assert_int(stats.ads_watched[TileBlocksScreen.NEW_HAND_PLACEMENT]).is_equal(1)
 	# Bonus ads are spaced out: the button says when the next one comes.
-	var wait: int = screen.rules.ad_pacing.moves_between_bonus_ads
+	var wait: int = screen.game.pacing.moves_between_bonus_ads
 	assert_str(button.text).is_equal(tr("BONUS_NEW_HAND_WAIT") % wait)
 	assert_bool(button.disabled).is_true()
 
@@ -291,6 +294,8 @@ func test_a_new_player_is_offered_no_ad_but_free_bonuses() -> void:
 	GameState.progress.stats.games_played = 0
 	var runner: GdUnitSceneRunner = await _screen()
 	var screen: TileBlocksScreen = runner.scene() as TileBlocksScreen
+	screen.game.pacing = LIMITED
+	screen.refresh()
 	var button: Button = runner.find_child("NewHandButton") as Button
 	button.pressed.emit()
 	assert_int(fake.shown).is_equal(0)
@@ -323,7 +328,8 @@ func test_no_ad_is_offered_beyond_the_daily_limit() -> void:
 	GameState.day_override = 400
 	var runner: GdUnitSceneRunner = await _screen()
 	var screen: TileBlocksScreen = runner.scene() as TileBlocksScreen
-	for _ad in screen.rules.ad_pacing.rewarded_per_day:
+	screen.game.pacing = LIMITED
+	for _ad in screen.game.pacing.rewarded_per_day:
 		GameState.progress.stats.count_rewarded(400)
 	screen.game.bonus_charges[TileBlocksGame.BONUS_NEW_HAND] = 0
 	_lose(screen)
@@ -353,7 +359,8 @@ func test_the_mirror_lights_up_when_its_flip_opens_a_great_move() -> void:
 	screen.refresh()
 	assert_int(offers[TileBlocksScreen.MIRROR_PLACEMENT]).is_equal(1)
 	# Without a way to use the mirror (no use left, no ad to buy one), nothing shows.
-	screen.game.ads_used = screen.rules.ad_pacing.ads_per_game
+	screen.game.pacing = LIMITED
+	screen.game.ads_used = screen.game.pacing.ads_per_game
 	screen.refresh()
 	assert_object(screen.mirror_chance).is_null()
 	assert_bool((runner.find_child("Board") as BoardView).has_hint()).is_false()

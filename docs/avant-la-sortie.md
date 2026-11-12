@@ -6,7 +6,7 @@ Tout ce qui est fait « au mieux » pour avancer et doit être repris, vérifié
 
 - [ ] Nom du jeu : « Block Tiles » est un titre de travail (G0, `tools/new-game.sh`) ; choisir le vrai nom (recherche de marque, Google Play) et relancer `tools/new-game.sh` depuis l'ancien nom.
 
-- [ ] Réglages de la difficulté adaptative et des bonus (G9 : 200 points par niveau, G19 : calme sous 30 % du record puis +1 tous les 15 %, +1 tous les 20 coups après 80 coups, combo plafonné à ×4, 1 à 4 pièces tirées, 1 utilisation gratuite et 3 par pub) : chiffres de départ, à régler avec les tests de Stelio puis les chiffres des joueurs.
+- [ ] Réglages de la difficulté adaptative et des bonus (G9 : 200 points par niveau, G19 : 1 200 points par niveau sans record de 5 000, sinon calme sous 20 % du record puis +1 tous les 15 %, +1 tous les 20 coups après 80 coups, combo plafonné à ×4, 1 à 4 pièces tirées, 1 utilisation gratuite et 3 par pub) : chiffres de départ, à régler avec les tests de Stelio puis les chiffres des joueurs.
 
 - [ ] Journal des parties (G19, `user://logs/games.jsonl`, `GameJournal`) : utile pour régler la difficulté pendant les tests ; avant la sortie, décider s'il reste (local) ou s'il est remplacé par un envoi de mesures avec consentement, et limiter sa taille (une ligne par partie, sans fin pour l'instant).
 - [ ] Rotation retirée en mode infini (G19, `endless_can_rotate`, choix de Stelio du 2026-11-12) : confirmer après essai que le jeu reste agréable.

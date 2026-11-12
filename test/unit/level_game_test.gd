@@ -149,6 +149,8 @@ func test_a_blocked_level_goes_on_once_after_an_ad() -> void:
 
 func test_the_ads_of_an_attempt_count_together() -> void:
 	var level: LevelGame = _level([], LevelDefinition.Goal.SCORE, 100000)
+	# The limit itself (the game turns it off since 2026-11-12, Stelio: no limit).
+	level.game.pacing = preload("res://test/fixtures/limited_ad_pacing.tres")
 	var limit: int = level.game.pacing.ads_per_game
 	level.game.ads_used = limit - 1
 	level.pieces_left = 0

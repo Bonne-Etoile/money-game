@@ -116,7 +116,7 @@ Les plafonds sont des points de départ. Il faut les mesurer dès le test fermé
 
 ## 9. Tickets proposés (à valider)
 
-1. **Dosage des pubs récompensées** : plafond de pubs de bonus par partie tous bonus confondus (3), espacement de 5 pièces, plafond de 15 par jour (compte par jour dans `PlayerStats`, migration de sauvegarde), pas de bouton de pub pendant les parties de débutant. Réglages dans un `.tres`. Petit à moyen.
+1. **Dosage des pubs récompensées** (désactivé le 2026-11-12 par décision de Stelio : pas de limite ; les réglages restent à 0) : plafond de pubs de bonus par partie tous bonus confondus (3), espacement de 5 pièces, plafond de 15 par jour (compte par jour dans `PlayerStats`, migration de sauvegarde), pas de bouton de pub pendant les parties de débutant. Réglages dans un `.tres`. Petit à moyen.
 2. **Reprise seulement si la partie en vaut la peine** : 40 % du record, toujours pendant les 5 premières parties. Petit.
 3. **Difficulté relative au record** : faite en avance (G19, 2026-11-12, accord de Stelio) ; seuils à régler avec le test fermé. Moyen.
 4. **Réglages sans code** : `comeback_days` 3 → 2, `beginner_games` 2 → 3. Très petit, mais changent l'équilibrage : à tester par Stelio.

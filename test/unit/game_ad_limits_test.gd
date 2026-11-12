@@ -3,10 +3,14 @@ extends GdUnitTestSuite
 ## bonuses, and spaced out by pieces placed.
 
 const RULES: TileBlocksRules = preload("res://game/data/tile_blocks_rules.tres")
+## The limits themselves (the game turns them all off since 2026-11-12, Stelio: no limit).
+const PACING: AdPacingRules = preload("res://test/fixtures/limited_ad_pacing.tres")
 
 
 func _game() -> TileBlocksGame:
-	return TileBlocksGame.new(RULES, 1)
+	var game: TileBlocksGame = TileBlocksGame.new(RULES, 1)
+	game.pacing = PACING
+	return game
 
 
 func _single(symbol: int) -> Piece:
@@ -29,7 +33,7 @@ func _play(game: TileBlocksGame, count: int) -> void:
 
 func test_bonus_ads_are_spaced_out_by_pieces_placed() -> void:
 	var game: TileBlocksGame = _game()
-	var pacing: AdPacingRules = RULES.ad_pacing
+	var pacing: AdPacingRules = PACING
 	assert_bool(game.earn(TileBlocksGame.BONUS_NEW_HAND)).is_true()
 	# Another bonus at once: no, whichever it is.
 	assert_bool(game.bonus_ad_wait(TileBlocksGame.BONUS_MIRROR) == 0).is_false()
@@ -42,7 +46,7 @@ func test_bonus_ads_are_spaced_out_by_pieces_placed() -> void:
 
 func test_bonus_ads_are_limited_per_game_all_bonuses_together() -> void:
 	var game: TileBlocksGame = _game()
-	var pacing: AdPacingRules = RULES.ad_pacing
+	var pacing: AdPacingRules = PACING
 	for ad in pacing.bonus_ads_per_game:
 		var bonus: String = TileBlocksGame.BONUSES[ad % TileBlocksGame.BONUSES.size()]
 		assert_bool(game.earn(bonus)).is_true()
@@ -60,7 +64,7 @@ func test_bonus_ads_are_limited_per_game_all_bonuses_together() -> void:
 
 func test_a_game_with_no_ads_left_has_no_continue_after_an_ad_but_a_free_one() -> void:
 	var game: TileBlocksGame = _game()
-	game.ads_used = RULES.ad_pacing.ads_per_game
+	game.ads_used = PACING.ads_per_game
 	_fill(game)
 	assert_bool(game.can_revive_with_ad()).is_false()
 	assert_bool(game.revive(true)).is_false()

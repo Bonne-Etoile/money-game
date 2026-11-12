@@ -80,7 +80,7 @@ func test_without_statistics_the_level_starts_at_zero() -> void:
 func test_a_run_of_poor_games_lowers_the_level() -> void:
 	var stats: PlayerStats = PlayerStats.new()
 	for _game in 4:
-		stats.finish_game(1200, 50)
+		stats.finish_game(DIFFICULTY.average_points_per_start_level * 3, 50)
 	assert_int(DifficultyDirector.new(DIFFICULTY, stats).start_level).is_greater(0)
 	stats.finish_game(100, 20)
 	assert_int(DifficultyDirector.new(DIFFICULTY, stats).start_level).is_greater_equal(0)
@@ -102,12 +102,12 @@ func test_the_level_rises_with_the_score_and_a_combo() -> void:
 
 func test_a_good_player_starts_higher_once_past_the_first_games() -> void:
 	var stats: PlayerStats = PlayerStats.new()
-	stats.finish_game(100000, 50)
+	stats.finish_game(4000, 50)
 	assert_int(DifficultyDirector.new(DIFFICULTY, stats).start_level).is_equal(
 		DIFFICULTY.help_level
 	)
 	for _game in DIFFICULTY.beginner_games:
-		stats.finish_game(100000, 50)
+		stats.finish_game(4000, 50)
 	var director: DifficultyDirector = DifficultyDirector.new(DIFFICULTY, stats)
 	assert_int(director.start_level).is_equal(DIFFICULTY.max_start_level)
 	assert_int(director.level(0, 0)).is_equal(DIFFICULTY.max_start_level)

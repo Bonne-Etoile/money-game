@@ -102,11 +102,12 @@ func test_without_a_record_the_score_raises_the_level_by_points() -> void:
 
 
 func test_far_under_the_record_the_level_stays_at_its_start() -> void:
-	var director: DifficultyDirector = DifficultyDirector.new(RULES.difficulty, _seasoned(5000, 0))
-	assert_int(director.record).is_equal(5000)
+	var director: DifficultyDirector = DifficultyDirector.new(RULES.difficulty, _seasoned(10000, 0))
+	assert_int(director.record).is_equal(10000)
+	var calm: int = 10000 * RULES.difficulty.record_calm_percent / 100
 	assert_int(director.level(0, 0)).is_equal(0)
-	assert_int(director.level(1000, 0)).is_equal(0)
-	assert_int(director.level(1499, 0)).is_equal(0)
+	assert_int(director.level(calm - 1, 0)).is_equal(0)
+	assert_int(director.level(calm, 0)).is_equal(1)
 
 
 func test_near_the_record_the_level_climbs_with_its_share() -> void:
@@ -122,12 +123,16 @@ func test_near_the_record_the_level_climbs_with_its_share() -> void:
 	assert_int(director.level(9000, 0)).is_equal(director.max_level())
 
 
-func test_the_record_climb_adds_to_the_starting_level() -> void:
-	var stats: PlayerStats = _seasoned(5000, 800)
-	var director: DifficultyDirector = DifficultyDirector.new(RULES.difficulty, stats)
-	assert_int(director.start_level).is_equal(2)
-	assert_int(director.level(1000, 0)).is_equal(2)
-	assert_int(director.level(1500, 0)).is_equal(3)
+func test_the_recent_games_give_a_head_start_only_without_a_record() -> void:
+	var without: DifficultyDirector = DifficultyDirector.new(
+		RULES.difficulty, _seasoned(4000, 4000)
+	)
+	assert_int(without.record).is_equal(0)
+	assert_int(without.start_level).is_equal(2)
+	var with_record: DifficultyDirector = DifficultyDirector.new(
+		RULES.difficulty, _seasoned(10000, 8000)
+	)
+	assert_int(with_record.start_level).is_equal(0)
 
 
 func test_the_record_climb_can_be_turned_off() -> void:
@@ -147,6 +152,8 @@ func test_a_long_game_climbs_whatever_the_score() -> void:
 	var rules: DifficultyRules = RULES.difficulty.duplicate()
 	rules.long_game_moves = 100
 	rules.long_game_moves_per_level = 20
+	rules.record_calm_percent = 30
+	rules.record_percent_per_level = 15
 	rules.combo_for_extra_level = 0
 	var director: DifficultyDirector = DifficultyDirector.new(rules, _seasoned(50000, 0))
 	assert_int(director.level(1000, 0, 99)).is_equal(0)

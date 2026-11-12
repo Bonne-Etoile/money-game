@@ -24,6 +24,9 @@ func _init(difficulty_rules: DifficultyRules, stats: PlayerStats) -> void:
 	if stats.games_played < rules.beginner_games or _poor_run(stats):
 		start_level = maxi(rules.help_level, min_level())
 		return
+	if record > 0:
+		# The climb follows the record from a calm start: no head start on top of it.
+		return
 	var per_level: int = maxi(rules.average_points_per_start_level, 1)
 	start_level = mini(stats.average_recent_score() / per_level, rules.max_start_level)
 
