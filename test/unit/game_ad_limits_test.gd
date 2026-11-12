@@ -32,10 +32,10 @@ func test_bonus_ads_are_spaced_out_by_pieces_placed() -> void:
 	var pacing: AdPacingRules = RULES.ad_pacing
 	assert_bool(game.earn(TileBlocksGame.BONUS_NEW_HAND)).is_true()
 	# Another bonus at once: no, whichever it is.
-	assert_bool(game.can_earn(TileBlocksGame.BONUS_MIRROR)).is_false()
+	assert_bool(game.bonus_ad_wait(TileBlocksGame.BONUS_MIRROR) == 0).is_false()
 	assert_bool(game.earn(TileBlocksGame.BONUS_MIRROR)).is_false()
 	_play(game, pacing.moves_between_bonus_ads - 1)
-	assert_bool(game.can_earn(TileBlocksGame.BONUS_MIRROR)).is_false()
+	assert_bool(game.bonus_ad_wait(TileBlocksGame.BONUS_MIRROR) == 0).is_false()
 	_play(game, 1)
 	assert_bool(game.earn(TileBlocksGame.BONUS_MIRROR)).is_true()
 
@@ -48,7 +48,8 @@ func test_bonus_ads_are_limited_per_game_all_bonuses_together() -> void:
 		assert_bool(game.earn(bonus)).is_true()
 		_play(game, pacing.moves_between_bonus_ads)
 	for bonus in TileBlocksGame.BONUSES:
-		assert_bool(game.can_earn(bonus)).is_false()
+		assert_bool(game.bonus_ad_wait(bonus) == 0).is_false()
+		assert_int(game.bonus_ad_wait(bonus)).is_equal(-1)
 	# The continue after an ad is still there: it is the last ad of the game.
 	_fill(game)
 	assert_bool(game.can_revive_with_ad()).is_true()

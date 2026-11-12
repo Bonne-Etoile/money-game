@@ -203,12 +203,24 @@ func use_ad() -> bool:
 
 ## Whether a rewarded ad can earn a use of `bonus` now: ads left in this game, bonus ads left,
 ## and enough pieces placed since the last one (AdPacingRules).
-func can_earn(bonus: String) -> bool:
+func _can_earn(bonus: String) -> bool:
 	if not bonus_ads_used.has(bonus) or ads_left() <= 0:
 		return false
 	if pacing.bonus_ads_per_game > 0 and _bonus_ads() >= pacing.bonus_ads_per_game:
 		return false
 	return _last_bonus_ad_move < 0 or moves - _last_bonus_ad_move >= pacing.moves_between_bonus_ads
+
+
+## Moves before a use of `bonus` can be earned with an ad (pacing.moves_between_bonus_ads):
+## 0 now, -1 not again in this game (no ad left for it).
+func bonus_ad_wait(bonus: String) -> int:
+	if _can_earn(bonus):
+		return 0
+	if not bonus_ads_used.has(bonus) or ads_left() <= 0:
+		return -1
+	if pacing.bonus_ads_per_game > 0 and _bonus_ads() >= pacing.bonus_ads_per_game:
+		return -1
+	return maxi(pacing.moves_between_bonus_ads - (moves - _last_bonus_ad_move), 1)
 
 
 ## Bonus uses earned with rewarded ads in this game, all bonuses together.
@@ -221,7 +233,7 @@ func _bonus_ads() -> int:
 
 ## A use of `bonus` earned by watching a rewarded ad; false when no more can be earned now.
 func earn(bonus: String) -> bool:
-	if not can_earn(bonus):
+	if not _can_earn(bonus):
 		return false
 	bonus_ads_used[bonus] += 1
 	bonus_charges[bonus] += 1

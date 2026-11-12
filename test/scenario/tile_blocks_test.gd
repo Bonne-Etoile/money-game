@@ -190,6 +190,10 @@ func test_new_pieces_are_free_once_then_cost_a_watched_ad() -> void:
 	var stats: PlayerStats = GameState.progress.stats
 	assert_int(stats.bonuses_used[TileBlocksGame.BONUS_NEW_HAND]).is_equal(2)
 	assert_int(stats.ads_watched[TileBlocksScreen.NEW_HAND_PLACEMENT]).is_equal(1)
+	# Bonus ads are spaced out: the button says when the next one comes.
+	var wait: int = screen.rules.ad_pacing.moves_between_bonus_ads
+	assert_str(button.text).is_equal(tr("BONUS_NEW_HAND_WAIT") % wait)
+	assert_bool(button.disabled).is_true()
 
 
 func test_an_ad_closed_early_gives_no_bonus() -> void:

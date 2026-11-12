@@ -640,7 +640,7 @@ func _apply_new_hand() -> void:
 
 ## Whether a use of `bonus` can be bought with a rewarded ad now.
 func _can_buy(bonus: String) -> bool:
-	return _ads_open() and game.can_earn(bonus)
+	return _ads_open() and game.bonus_ad_wait(bonus) == 0
 
 
 ## Whether rewarded ads may be offered now (AdPacing): not in a new player's first games, not
@@ -663,9 +663,14 @@ func _can_continue_with_ad() -> bool:
 func _show_bonus(button: Button, bonus: String, key: String) -> void:
 	var left: int = game.charges(bonus)
 	var costs_ad: bool = left <= 0 and _can_buy(bonus)
+	var wait: int = game.bonus_ad_wait(bonus) if left <= 0 and _ads_open() else 0
 	if costs_ad:
 		button.text = tr(key + "_AD")
 		button.disabled = not Ads.is_rewarded_ready()
+	elif wait > 0:
+		# Bonus ads are spaced out (AdPacingRules): say when it comes back, not just grey.
+		button.text = tr(key + "_WAIT") % wait
+		button.disabled = true
 	else:
 		button.text = tr(key) % left
 		button.disabled = left <= 0

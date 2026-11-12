@@ -6,6 +6,8 @@ extends Control
 
 ## Part of a clear's time the cleared tiles stay lit before they shrink away.
 const FLASH_LIT: float = 0.3
+## Width (pixels) under which a shrinking cleared tile is no longer drawn.
+const MIN_FLASH_SIZE: float = 4.0
 ## The edge of the cells a move would clear: its width as a fraction of a cell, how many
 ## times a second it pulses, and between which strengths.
 const PREVIEW_EDGE: float = 0.06
@@ -279,6 +281,9 @@ func _draw_flash() -> void:
 		var grown: Rect2 = Rect2(
 			rect.get_center() - rect.size * scale_now / 2.0, rect.size * scale_now
 		)
+		# Nearly gone: a symbol this small cannot be triangulated (errors in the log).
+		if grown.size.x < MIN_FLASH_SIZE:
+			continue
 		var tint: Color = Color.WHITE.lerp(art.flash, 1.0 - lit)
 		tint.a = 1.0 - shrink * shrink
 		TileDrawing.draw_tile(self, grown, _flash_symbols[index], art, tint)
