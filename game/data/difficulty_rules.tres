@@ -6,6 +6,9 @@
 script = ExtResource("1_rules")
 beginner_games = 3
 points_per_level = 200
+record_points_from = 1000
+record_calm_percent = 70
+record_percent_per_level = 10
 average_points_per_start_level = 400
 max_start_level = 2
 combo_for_extra_level = 3

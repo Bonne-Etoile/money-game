@@ -76,7 +76,7 @@ Block Blast règle sa difficulté **par rapport au record** du joueur : facile l
 | Réglage | Actuel | Recommandé | Où | Pourquoi |
 |---|---|---|---|---|
 | Parties de débutant | 2 (`beginner_games`), aidées (`help_level` = −1) | **3** | réglage | Block Blast soigne longtemps le début (pièces plus petites, premier score réglé) ; une partie de plus pour accrocher |
-| Montée en cours de partie | +1 niveau tous les 200 points (`points_per_level`), 6 niveaux | **mesurer d'abord** le record moyen ; si la plupart des parties dépassent 1 000 points, la difficulté est au maximum bien avant le record | mesure, puis réglage ou **code** | Au-delà de 1 000 points, plus rien ne monte : la tension « près du record » disparaît. Piste : un niveau de plus tous les 20 % du record au lieu de tous les 200 points |
+| Montée en cours de partie | +1 niveau tous les 200 points (`points_per_level`), 6 niveaux | **mesurer d'abord** le record moyen ; si la plupart des parties dépassent 1 000 points, la difficulté est au maximum bien avant le record | mesure, puis réglage ou **code** | Au-delà de 1 000 points, plus rien ne monte : la tension « près du record » disparaît. Piste : un niveau de plus tous les 20 % du record au lieu de tous les 200 points. **Fait (G19, 2026-11-12)** : rien sous 70 % du record, puis +1 tous les 10 % |
 | Aide après des défaites | 2 parties sous la moyenne (`poor_games_for_help`) | **2** | existe | Exactement la règle que Block Blast fait tourner en direct |
 | Garantie de jouabilité | jusqu'à 70 % de grille remplie (`playable_until_fill_percent`) | **70** | existe | Au-delà, perdre est juste ; ne jamais fabriquer un lot impossible |
 | Pièces tirées par niveau | 1, 2, 2, 3, 3, 4 | idem | existe | À revoir seulement si les parties sont trop longues |
@@ -118,7 +118,7 @@ Les plafonds sont des points de départ. Il faut les mesurer dès le test fermé
 
 1. **Dosage des pubs récompensées** : plafond de pubs de bonus par partie tous bonus confondus (3), espacement de 5 pièces, plafond de 15 par jour (compte par jour dans `PlayerStats`, migration de sauvegarde), pas de bouton de pub pendant les parties de débutant. Réglages dans un `.tres`. Petit à moyen.
 2. **Reprise seulement si la partie en vaut la peine** : 40 % du record, toujours pendant les 5 premières parties. Petit.
-3. **Difficulté relative au record** : après mesure du record moyen sur le test fermé. Moyen.
+3. **Difficulté relative au record** : faite en avance (G19, 2026-11-12, accord de Stelio) ; seuils à régler avec le test fermé. Moyen.
 4. **Réglages sans code** : `comeback_days` 3 → 2, `beginner_games` 2 → 3. Très petit, mais changent l'équilibrage : à tester par Stelio.
 5. **Configuration à distance des plafonds** et **envoi des mesures** : avant la sortie (dépend du choix Firebase ou Supabase).
 

@@ -2,19 +2,25 @@ class_name DifficultyDirector
 extends RefCounted
 ## The adaptive difficulty (DifficultyRules), in both directions: a level from how well the
 ## player did in their recent games (PlayerStats) and how well the game under way goes (its
-## score, its combo). Level 0 is pure chance. Above 0, several pieces are drawn for each new one
-## and the one with the least room is given; below 0 (a new player, or a run of poor games),
-## the one with the most room (PieceGenerator.next_piece_among).
+## score, its combo). Once the player has a record, the score raises the level only from a
+## share of it on: calm at the start, tension near the record. Level 0 is pure chance. Above 0,
+## several pieces are drawn for each new one and the one with the least room is given; below 0
+## (a new player, or a run of poor games), the one with the most room
+## (PieceGenerator.next_piece_among).
 
 var rules: DifficultyRules
 ## Level at the start of the game, from the player's recent games.
 var start_level: int = 0
+## The player's record before this game (0: none, or too low to follow it).
+var record: int = 0
 
 
 func _init(difficulty_rules: DifficultyRules, stats: PlayerStats) -> void:
 	rules = difficulty_rules
 	if stats == null:
 		return
+	if rules.record_points_from > 0 and stats.best_score >= rules.record_points_from:
+		record = stats.best_score
 	if stats.games_played < rules.beginner_games or _poor_run(stats):
 		start_level = maxi(rules.help_level, min_level())
 		return
@@ -46,10 +52,21 @@ func _poor_run(stats: PlayerStats) -> bool:
 
 ## The level for a game at `score` with `combo` moves in a row that cleared something.
 func level(score: int, combo: int) -> int:
-	var reached: int = start_level + score / maxi(rules.points_per_level, 1)
+	var reached: int = start_level + _score_levels(score)
 	if rules.combo_for_extra_level > 0 and combo >= rules.combo_for_extra_level:
 		reached += 1
 	return clampi(reached, min_level(), max_level())
+
+
+## Levels the score of the game adds: per `points_per_level`, or from the record once there is
+## one (DifficultyRules.record_calm_percent, record_percent_per_level).
+func _score_levels(score: int) -> int:
+	if record <= 0:
+		return score / maxi(rules.points_per_level, 1)
+	var above_calm: int = score * 100 - record * rules.record_calm_percent
+	if above_calm < 0:
+		return 0
+	return 1 + above_calm / maxi(record * rules.record_percent_per_level, 1)
 
 
 ## Pieces to draw at `at_level` for each new piece (at least 1).

@@ -6,7 +6,7 @@ Tout ce qui est fait « au mieux » pour avancer et doit être repris, vérifié
 
 - [ ] Nom du jeu : « Block Tiles » est un titre de travail (G0, `tools/new-game.sh`) ; choisir le vrai nom (recherche de marque, Google Play) et relancer `tools/new-game.sh` depuis l'ancien nom.
 
-- [ ] Réglages de la difficulté adaptative et des bonus (G9 : 200 points par niveau, 1 à 4 pièces tirées, 1 utilisation gratuite et 3 par pub) : chiffres de départ, à régler avec les tests de Stelio puis les chiffres des joueurs.
+- [ ] Réglages de la difficulté adaptative et des bonus (G9 : 200 points par niveau, G19 : calme sous 70 % du record puis +1 tous les 10 %, 1 à 4 pièces tirées, 1 utilisation gratuite et 3 par pub) : chiffres de départ, à régler avec les tests de Stelio puis les chiffres des joueurs.
 
 - [ ] Sons faits par le code (G13, `game/audio/sound_synth.gd`, `GameSounds`) : des notes simples en attendant de vrais sons (`docs/recettes/sons-et-musique.md`) ; à remplacer et à faire juger par Stelio.
 - [ ] Mots d'encouragement, éclats, tremblement, vibration (G13, `game/data/juice_rules.tres`) : chiffres de départ, à régler à l'œil et au toucher.

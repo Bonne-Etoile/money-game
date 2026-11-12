@@ -10,8 +10,18 @@ extends Resource
 ## Games played before the player's past games raise the starting level (the score of the game
 ## under way always does): a new player first gets the hang of it, helped (`help_level`).
 @export var beginner_games: int = 3
-## Points scored in the game under way that raise the difficulty a level.
+## Points scored in the game under way that raise the difficulty a level (until the player has
+## a record of `record_points_from`; afterwards the climb follows the record, below).
 @export var points_per_level: int = 200
+## Record (best score before the game) from which the difficulty follows it instead of
+## `points_per_level`: the start of a game stays calm whatever the record, the tension comes
+## near it. 0 turns it off.
+@export var record_points_from: int = 1000
+## Share of the record (percent) under which the score of the game does not raise the level.
+@export var record_calm_percent: int = 70
+## From `record_calm_percent` on, a level more for each of these shares of the record
+## (percent): with 70 and 10, +1 at 70 %, +2 at 80 %, +3 at 90 %, +4 at the record.
+@export var record_percent_per_level: int = 10
 ## A level more at the start of a game for each of these points in the player's average score
 ## of their recent games (PlayerStats), up to `max_start_level`.
 @export var average_points_per_start_level: int = 400
