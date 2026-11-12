@@ -90,6 +90,8 @@ screenshots:
 		LOCALE=fr OUT=$(SCREENSHOT_DIR)/level_blocked.png
 	$(MAKE) screenshot SCENE=res://test/fixtures/level_no_pieces_fixture.tscn FRAMES=10 \
 		LOCALE=fr OUT=$(SCREENSHOT_DIR)/level_no_pieces.png
+	$(MAKE) screenshot SCENE=res://test/fixtures/menu_settings_fixture.tscn FRAMES=10 \
+		LOCALE=fr OUT=$(SCREENSHOT_DIR)/main_menu_settings.png
 	for locale in en fr; do \
 		$(MAKE) screenshot SCENE=res://game/ui/main_menu.tscn FRAMES=10 LOCALE=$$locale \
 			OUT=$(SCREENSHOT_DIR)/main_menu_$$locale.png || exit 1; \

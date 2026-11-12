@@ -118,6 +118,16 @@ func find_clears(match_size: int) -> GridClear:
 	return clear
 
 
+## The cells that placing `piece` at `origin` would clear, without placing it (they glow
+## while the piece hovers there); empty when it does not fit there.
+func clears_if_placed(piece: Piece, origin: Vector2i, match_size: int) -> Array[Vector2i]:
+	if not can_place(piece, origin):
+		return []
+	var trial: TileGrid = copy()
+	trial.place(piece, origin)
+	return trial.find_clears(match_size).cells
+
+
 func remove(cells: Array[Vector2i]) -> void:
 	for cell in cells:
 		set_symbol(cell, EMPTY)

@@ -7,3 +7,6 @@ extends Resource
 ## attempt at a level.
 @export var extra_pieces: int = 5
 @export var extra_pieces_ads: int = 2
+## Stars of a won level (shown on its end card): one for winning, one more for each of these
+## numbers of pieces still left at the end.
+@export var star_pieces: Array[int] = [1, 3]

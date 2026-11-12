@@ -190,3 +190,167 @@ func test_the_daily_challenge_deals_the_same_pieces_and_keeps_the_best_of_the_da
 	assert_int(GameState.progress.stats.daily_best_on(700)).is_equal(250)
 	assert_int(GameState.progress.stats.daily_streak_on(700)).is_equal(1)
 	assert_int(screen.chase.record).is_equal(250)
+
+
+func test_a_hovering_piece_lights_the_cells_it_would_clear() -> void:
+	var runner: GdUnitSceneRunner = await _screen()
+	var screen: TileBlocksScreen = runner.scene() as TileBlocksScreen
+	var board: BoardView = runner.find_child("Board") as BoardView
+	for x in 7:
+		screen.game.grid.set_symbol(Vector2i(x, 5), x % 2)
+	screen.game.hand[0] = _single(3)
+	screen.refresh()
+	var tray: TrayView = runner.find_child("Tray") as TrayView
+	runner.set_mouse_position(TileBlocksDriver.on_screen(runner, tray.slot_center(0)))
+	runner.simulate_mouse_button_press(MOUSE_BUTTON_LEFT)
+	await runner.await_input_processed()
+	runner.simulate_mouse_move(
+		TileBlocksDriver.on_screen(runner, screen.pointer_for(0, Vector2i(7, 5)))
+	)
+	await runner.await_input_processed()
+	assert_int(board.preview_cells().size()).is_equal(8)
+	assert_array(board.preview_cells()).contains([Vector2i(0, 5), Vector2i(7, 5)])
+	# Elsewhere, nothing would clear: nothing glows.
+	runner.simulate_mouse_move(
+		TileBlocksDriver.on_screen(runner, screen.pointer_for(0, Vector2i(7, 0)))
+	)
+	await runner.await_input_processed()
+	assert_array(board.preview_cells()).is_empty()
+	runner.simulate_mouse_button_release(MOUSE_BUTTON_LEFT)
+	await runner.await_input_processed()
+	assert_array(board.preview_cells()).is_empty()
+
+
+func test_a_placed_piece_clacks_and_its_points_rise() -> void:
+	var runner: GdUnitSceneRunner = await _screen()
+	var screen: TileBlocksScreen = runner.scene() as TileBlocksScreen
+	var sounds: GameSounds = runner.find_child("Sounds") as GameSounds
+	var effects: ClearEffects = runner.find_child("Effects") as ClearEffects
+	screen.game.hand[0] = _single(1)
+	screen.refresh()
+	await _drag(runner, 0, Vector2i(0, 0))
+	assert_str(String(sounds.last_played)).is_equal(String(GameSounds.PLACE))
+	assert_array(effects.points_texts()).contains([tr("POINTS_GAINED") % screen.game.score()])
+	assert_int(effects.light_count()).is_equal(0)
+
+
+func test_a_cleared_row_is_swept_by_light_with_a_chime() -> void:
+	var runner: GdUnitSceneRunner = await _screen()
+	var screen: TileBlocksScreen = runner.scene() as TileBlocksScreen
+	var sounds: GameSounds = runner.find_child("Sounds") as GameSounds
+	var effects: ClearEffects = runner.find_child("Effects") as ClearEffects
+	for x in 7:
+		screen.game.grid.set_symbol(Vector2i(x, 5), x % 2)
+	screen.game.grid.set_symbol(Vector2i(0, 0), 4)
+	screen.game.hand[0] = _single(3)
+	screen.refresh()
+	await _drag(runner, 0, Vector2i(7, 5))
+	assert_int(screen.game.grid.filled_count()).is_equal(1)
+	assert_str(String(sounds.last_played)).is_equal(String(GameSounds.CLEAR))
+	# The beam along the row and the ring from the piece.
+	assert_int(effects.light_count()).is_equal(2)
+
+
+func test_a_lost_game_greys_the_grid_with_a_falling_phrase() -> void:
+	var runner: GdUnitSceneRunner = await _screen()
+	var screen: TileBlocksScreen = runner.scene() as TileBlocksScreen
+	var sounds: GameSounds = runner.find_child("Sounds") as GameSounds
+	var board: BoardView = runner.find_child("Board") as BoardView
+	_lose(screen)
+	assert_str(String(sounds.last_played)).is_equal(String(GameSounds.GAME_OVER))
+	for _frame in 120:
+		if board.modulate.is_equal_approx(screen.art.game_over_tint):
+			break
+		await runner.simulate_frames(1, 50)
+	assert_bool(board.modulate.is_equal_approx(screen.art.game_over_tint)).is_true()
+	screen.start(2)
+	assert_bool(board.modulate.is_equal_approx(Color.WHITE)).is_true()
+
+
+func test_the_points_of_a_move_show_as_one_number() -> void:
+	var runner: GdUnitSceneRunner = await _screen()
+	var screen: TileBlocksScreen = runner.scene() as TileBlocksScreen
+	var effects: ClearEffects = runner.find_child("Effects") as ClearEffects
+	# The last tile of a row empties the grid: the points of the move and the bonus, together.
+	for x in 7:
+		screen.game.grid.set_symbol(Vector2i(x, 2), x % 2)
+	screen.game.hand[0] = _single(3)
+	screen.game.hand[1] = _single(1)
+	screen.refresh()
+	await _drag(runner, 0, Vector2i(7, 2))
+	assert_int(screen.game.grid.filled_count()).is_equal(0)
+	assert_array(effects.points_texts()).is_equal([tr("POINTS_GAINED") % screen.game.score()])
+	assert_array(effects.praise_texts()).is_equal([tr("PRAISE_EMPTY_GRID")])
+	assert_bool(effects.has_wave()).is_true()
+	# The next move's points take the place of the ones still on screen.
+	var before: int = screen.game.score()
+	await _drag(runner, 1, Vector2i(0, 0))
+	assert_array(effects.points_texts()).is_equal(
+		[tr("POINTS_GAINED") % (screen.game.score() - before)]
+	)
+
+
+func test_the_end_card_opens_on_a_clean_grid() -> void:
+	GameState.progress.stats.best_score = 400
+	var runner: GdUnitSceneRunner = await _screen()
+	var screen: TileBlocksScreen = runner.scene() as TileBlocksScreen
+	var effects: ClearEffects = runner.find_child("Effects") as ClearEffects
+	for x in 7:
+		screen.game.grid.set_symbol(Vector2i(x, 5), x % 2)
+	screen.game.grid.set_symbol(Vector2i(0, 0), 4)
+	screen.game.hand[0] = _single(3)
+	screen.refresh()
+	await _drag(runner, 0, Vector2i(7, 5))
+	assert_int(effects.fragment_count()).is_greater(0)
+	assert_bool((runner.find_child("ComboChip") as Control).visible).is_false()
+	_lose(screen)
+	# Nothing left flying under the card, and the score counts up to its value.
+	assert_int(effects.fragment_count()).is_equal(0)
+	assert_int(effects.light_count()).is_equal(0)
+	assert_array(effects.points_texts()).is_empty()
+	var final_score: Label = runner.find_child("FinalScoreLabel") as Label
+	for _frame in 120:
+		if final_score.text == str(screen.game.score()):
+			break
+		await runner.simulate_frames(1, 50)
+	assert_str(final_score.text).is_equal(str(screen.game.score()))
+	assert_float((runner.find_child("Card") as Control).scale.x).is_equal_approx(1.0, 0.2)
+
+
+func test_a_beaten_record_shows_a_banner_and_a_golden_score() -> void:
+	GameState.progress.stats.best_score = 10
+	var runner: GdUnitSceneRunner = await _screen()
+	var screen: TileBlocksScreen = runner.scene() as TileBlocksScreen
+	var effects: ClearEffects = runner.find_child("Effects") as ClearEffects
+	var score: Label = runner.find_child("ScoreLabel") as Label
+	screen.game.scores.score = 5
+	screen.refresh()
+	assert_array(effects.banner_texts()).is_empty()
+	screen.game.scores.score = 11
+	screen.refresh()
+	assert_array(effects.banner_texts()).is_equal([tr("NEW_RECORD")])
+	assert_that(score.get_theme_color("font_color")).is_equal(screen.art.gold_light)
+	# Said once: more points do not bring another banner.
+	screen.game.scores.score = 20
+	screen.refresh()
+	assert_int(effects.banner_texts().size()).is_equal(1)
+
+
+func test_bonus_buttons_in_trouble_turn_to_the_calling_look() -> void:
+	var runner: GdUnitSceneRunner = await _screen()
+	var screen: TileBlocksScreen = runner.scene() as TileBlocksScreen
+	var new_hand: Button = runner.find_child("NewHandButton") as Button
+	assert_str(String(new_hand.theme_type_variation)).is_equal(String(TileBlocksScreen.BONUS_STYLE))
+	var size: int = screen.game.grid.size
+	for y in size:
+		for x in size:
+			if (x * 5 + y * 3) % 11 != 0:
+				screen.game.grid.set_symbol(Vector2i(x, y), (x * 3 + y * 2) % 5)
+	screen.refresh()
+	if screen.is_calling_for_bonuses():
+		assert_str(String(new_hand.theme_type_variation)).is_equal(
+			String(TileBlocksScreen.CALL_STYLE)
+		)
+		assert_bool(new_hand.modulate.is_equal_approx(Color.WHITE)).is_true()
+	screen.start(2)
+	assert_str(String(new_hand.theme_type_variation)).is_equal(String(TileBlocksScreen.BONUS_STYLE))

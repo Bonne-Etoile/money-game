@@ -119,3 +119,25 @@ func test_try_again_restarts_the_level_with_the_same_pieces() -> void:
 		assert_that(screen.game.hand[slot].cells).is_equal(first_hand[slot].cells)
 	# A level is not a game of the endless mode.
 	assert_int(GameState.progress.stats.games_played).is_equal(0)
+
+
+func test_a_won_level_shows_its_stars_and_the_map_marks_the_levels() -> void:
+	var runner: GdUnitSceneRunner = await _level(2)
+	var screen: LevelScreen = runner.scene() as LevelScreen
+	assert_bool(LevelRobot.play(screen.level)).is_true()
+	screen.refresh()
+	var stars: EndStars = runner.find_child("Stars") as EndStars
+	assert_bool(stars.visible).is_true()
+	assert_int(stars.earned()).is_equal(screen.level.stars(screen.levels.star_pieces))
+	assert_int(stars.earned()).is_between(1, 3)
+	GameState.progress.stats.levels_won = 2
+	var map_runner: GdUnitSceneRunner = scene_runner(MAP_SCENE)
+	var map: LevelMap = map_runner.scene() as LevelMap
+	map.opens_level = false
+	await map_runner.simulate_frames(2)
+	var won: LevelTileButton = map.level_button(1) as LevelTileButton
+	var next: LevelTileButton = map.level_button(2) as LevelTileButton
+	assert_bool(won.won).is_true()
+	assert_bool(next.won).is_false()
+	assert_bool(next.current).is_true()
+	assert_bool((map.level_button(3) as LevelTileButton).current).is_false()

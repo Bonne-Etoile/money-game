@@ -11,6 +11,8 @@ func test_defaults() -> void:
 	assert_str(settings.language).is_empty()
 	assert_bool(settings.refill_together).is_false()
 	assert_bool(settings.vibration).is_true()
+	assert_bool(settings.music).is_true()
+	assert_bool(settings.sounds).is_true()
 
 
 func test_round_trip_through_json() -> void:
@@ -22,6 +24,8 @@ func test_round_trip_through_json() -> void:
 	settings.set_language("fr")
 	settings.refill_together = true
 	settings.vibration = false
+	settings.music = false
+	settings.sounds = false
 	var copy: GameSettings = GameSettings.from_json(settings.to_json())
 	assert_float(copy.mouse_sensitivity).is_equal(1.75)
 	assert_bool(copy.invert_y).is_true()
@@ -30,6 +34,14 @@ func test_round_trip_through_json() -> void:
 	assert_str(copy.language).is_equal("fr")
 	assert_bool(copy.refill_together).is_true()
 	assert_bool(copy.vibration).is_false()
+	assert_bool(copy.music).is_false()
+	assert_bool(copy.sounds).is_false()
+
+
+func test_options_saved_before_music_existed_keep_it_on() -> void:
+	var old: GameSettings = GameSettings.from_json('{"version": 1, "vibration": false}')
+	assert_bool(old.music).is_true()
+	assert_bool(old.sounds).is_true()
 
 
 func test_values_stay_in_their_range() -> void:
