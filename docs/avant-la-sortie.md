@@ -9,7 +9,7 @@ Tout ce qui est fait « au mieux » pour avancer et doit être repris, vérifié
 - [ ] Réglages de la difficulté adaptative et des bonus (G9 : 200 points par niveau, G19 : calme sous 70 % du record puis +1 tous les 10 %, 1 à 4 pièces tirées, 1 utilisation gratuite et 3 par pub) : chiffres de départ, à régler avec les tests de Stelio puis les chiffres des joueurs.
 
 - [ ] Journal des parties (G19, `user://logs/games.jsonl`, `GameJournal`) : utile pour régler la difficulté pendant les tests ; avant la sortie, décider s'il reste (local) ou s'il est remplacé par un envoi de mesures avec consentement, et limiter sa taille (une ligne par partie, sans fin pour l'instant).
-- [ ] Rotation retirée en mode infini (G19, `endless_can_rotate`) : à confirmer par Stelio après essai.
+- [ ] Rotation retirée en mode infini (G19, `endless_can_rotate`, choix de Stelio du 2026-11-12) : confirmer après essai que le jeu reste agréable.
 
 - [ ] Sons faits par le code (G13, enrichis en G20 : `game/audio/sound_synth.gd`, `GameSounds`) : à faire juger par Stelio, à remplacer s'ils ne plaisent pas (`docs/recettes/sons-et-musique.md`).
 - [ ] Musique composée par le code (G20, `assets/sounds/music_calm.ogg`, `tools/assets/compose_music.py`) : une seule boucle de 42 s ; à faire juger, et prévoir d'autres morceaux ou des silences pour ne pas lasser.
