@@ -19,6 +19,7 @@ func after_test() -> void:
 	GameState.reset()
 	Diagnostics.dismiss_crash_report()
 	Options.settings = GameSettings.new()
+	Music.apply_options()
 
 
 func _menu() -> GdUnitSceneRunner:
@@ -50,6 +51,26 @@ func test_the_option_buttons_switch_and_say_their_state() -> void:
 	assert_str(vibration.text).is_equal("MENU_VIBRATION_OFF")
 
 
+func test_music_and_sounds_can_be_turned_off_and_on() -> void:
+	var runner: GdUnitSceneRunner = _menu()
+	await runner.simulate_frames(2)
+	var music: Button = runner.find_child("MusicButton") as Button
+	var sounds: Button = runner.find_child("SoundsButton") as Button
+	assert_bool(Music.is_playing()).is_true()
+	assert_str(music.text).is_equal("MENU_MUSIC_ON")
+	music.pressed.emit()
+	assert_str(music.text).is_equal("MENU_MUSIC_OFF")
+	assert_bool(AudioServer.is_bus_mute(AudioServer.get_bus_index(&"Music"))).is_true()
+	assert_bool(AudioServer.is_bus_mute(AudioServer.get_bus_index(&"Effects"))).is_false()
+	sounds.pressed.emit()
+	assert_str(sounds.text).is_equal("MENU_SOUNDS_OFF")
+	assert_bool(AudioServer.is_bus_mute(AudioServer.get_bus_index(&"Effects"))).is_true()
+	music.pressed.emit()
+	sounds.pressed.emit()
+	assert_bool(AudioServer.is_bus_mute(AudioServer.get_bus_index(&"Music"))).is_false()
+	assert_bool(AudioServer.is_bus_mute(AudioServer.get_bus_index(&"Effects"))).is_false()
+
+
 func test_the_menu_opens_on_the_crash_report_after_a_crash() -> void:
 	Diagnostics.crash_report = "My Game - crash report\nSCRIPT ERROR: boom"
 	var runner: GdUnitSceneRunner = _menu()
@@ -59,3 +80,16 @@ func test_the_menu_opens_on_the_crash_report_after_a_crash() -> void:
 	(runner.find_child("CrashCloseButton") as Button).pressed.emit()
 	assert_bool((runner.find_child("Main") as Control).visible).is_true()
 	assert_str(Diagnostics.crash_report).is_empty()
+
+
+func test_the_gear_opens_the_settings_over_the_menu() -> void:
+	var runner: GdUnitSceneRunner = _menu()
+	await runner.simulate_frames(2)
+	var settings: Control = runner.find_child("Settings") as Control
+	assert_bool(settings.visible).is_false()
+	(runner.find_child("SettingsButton") as Button).pressed.emit()
+	assert_bool(settings.visible).is_true()
+	assert_bool((runner.find_child("MusicButton") as Button).is_visible_in_tree()).is_true()
+	(runner.find_child("SettingsCloseButton") as Button).pressed.emit()
+	assert_bool(settings.visible).is_false()
+	assert_bool((runner.find_child("Main") as Control).visible).is_true()

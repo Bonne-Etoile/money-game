@@ -7,6 +7,10 @@ const SCENE: PackedScene = preload("res://game/proto_tiles/tile_blocks.tscn")
 
 
 func _ready() -> void:
+	# A rewarded ad is ready, and the player is past the first games without ads.
+	Ads.use_backend(FakeAdsBackend.new())
+	GameState.progress.stats.games_played = 50
+	GameState.progress.stats.best_score = 900
 	var screen: TileBlocksScreen = SCENE.instantiate()
 	add_child(screen)
 	screen.start(1)

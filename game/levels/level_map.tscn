@@ -4,6 +4,9 @@
 [ext_resource type="Resource" path="res://game/data/levels.tres" id="2_levels"]
 [ext_resource type="Resource" path="res://game/data/tile_art.tres" id="3_art"]
 [ext_resource type="Script" path="res://game/levels/level_picture.gd" id="4_picture"]
+[ext_resource type="Script" path="res://game/board/game_background.gd" id="bg_script"]
+[ext_resource type="Script" path="res://game/ui/icon_button.gd" id="5_icon_button"]
+[ext_resource type="FontVariation" path="res://game/ui/display_font.tres" id="6_display"]
 
 [node name="LevelMap" type="Control"]
 layout_mode = 3
@@ -16,7 +19,7 @@ script = ExtResource("1_map")
 levels = ExtResource("2_levels")
 art = ExtResource("3_art")
 
-[node name="Background" type="ColorRect" parent="."]
+[node name="Background" type="Control" parent="."]
 unique_name_in_owner = true
 layout_mode = 1
 anchors_preset = 15
@@ -25,6 +28,37 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
+script = ExtResource("bg_script")
+art = ExtResource("3_art")
+
+[node name="Title" type="Label" parent="."]
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_top = 24.0
+offset_bottom = 96.0
+grow_horizontal = 2
+theme_override_colors/font_color = Color(1, 0.906, 0.627, 1)
+theme_override_colors/font_outline_color = Color(0.227, 0.102, 0.039, 1)
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.4)
+theme_override_constants/outline_size = 10
+theme_override_constants/shadow_offset_y = 5
+theme_override_fonts/font = ExtResource("6_display")
+theme_override_font_sizes/font_size = 52
+text = "LEVELS_TITLE"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="BackButton" type="Button" parent="."]
+unique_name_in_owner = true
+layout_mode = 0
+offset_left = 24.0
+offset_top = 24.0
+offset_right = 96.0
+offset_bottom = 96.0
+theme_type_variation = &"RoundButton"
+script = ExtResource("5_icon_button")
+glyph = &"back"
 
 [node name="Page" type="VBoxContainer" parent="."]
 layout_mode = 1
@@ -32,54 +66,35 @@ anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 offset_left = 24.0
-offset_top = 24.0
+offset_top = 120.0
 offset_right = -24.0
-offset_bottom = -24.0
+offset_bottom = -32.0
 grow_horizontal = 2
 grow_vertical = 2
-theme_override_constants/separation = 24
-
-[node name="Top" type="HBoxContainer" parent="Page"]
-layout_mode = 2
-theme_override_constants/separation = 16
-
-[node name="BackButton" type="Button" parent="Page/Top"]
-unique_name_in_owner = true
-custom_minimum_size = Vector2(160, 72)
-layout_mode = 2
-theme_override_font_sizes/font_size = 28
-text = "BUTTON_MENU"
-
-[node name="Title" type="Label" parent="Page/Top"]
-layout_mode = 2
-size_flags_horizontal = 3
-theme_override_font_sizes/font_size = 44
-text = "LEVELS_TITLE"
-horizontal_alignment = 1
-vertical_alignment = 1
+theme_override_constants/separation = 20
 
 [node name="Picture" type="Control" parent="Page"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(0, 480)
+custom_minimum_size = Vector2(0, 430)
 layout_mode = 2
+size_flags_vertical = 3
 mouse_filter = 2
 script = ExtResource("4_picture")
 
 [node name="PictureHint" type="Label" parent="Page"]
 layout_mode = 2
 theme_override_colors/font_color = Color(1, 1, 1, 0.6)
-theme_override_font_sizes/font_size = 24
+theme_override_font_sizes/font_size = 22
 text = "LEVELS_PICTURE_HINT"
 horizontal_alignment = 1
 autowrap_mode = 3
 
 [node name="Center" type="CenterContainer" parent="Page"]
 layout_mode = 2
-size_flags_vertical = 3
 
 [node name="LevelButtons" type="GridContainer" parent="Page/Center"]
 unique_name_in_owner = true
 layout_mode = 2
-theme_override_constants/h_separation = 16
-theme_override_constants/v_separation = 16
-columns = 4
+theme_override_constants/h_separation = 12
+theme_override_constants/v_separation = 14
+columns = 5

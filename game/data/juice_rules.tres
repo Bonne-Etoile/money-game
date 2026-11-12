@@ -4,20 +4,4 @@
 
 [resource]
 script = ExtResource("1_rules")
-praise_thresholds = Array[int]([2, 3, 5, 7])
-empty_grid_strength = 4
-praise_seconds = 0.9
-praise_rise_pixels = 90.0
-fragments_per_cell = 4
-fragment_seconds = 0.6
-fragment_speed = 380.0
-shake_pixels_per_clear = 4.0
-shake_max_pixels = 16.0
-shake_seconds = 0.25
-combo_pitch_step = 0.08
-max_pitch = 1.8
-vibration_ms_per_clear = 25
-vibration_max_ms = 80
-firework_bursts = 5
-firework_fragments = 24
-firework_interval = 0.18
+praise_ribbons = Array[Color]([Color(0.043, 0.071, 0.133, 0.82), Color(0.122, 0.353, 0.275, 0.92), Color(0.659, 0.196, 0.125, 0.94), Color(0.659, 0.196, 0.125, 0.96)])

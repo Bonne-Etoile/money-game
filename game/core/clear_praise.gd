@@ -24,3 +24,12 @@ static func word(move_strength: int, thresholds: Array[int]) -> int:
 		if move_strength >= threshold:
 			reached += 1
 	return reached
+
+
+## How much higher the clear sound plays at move `combo` of a combo (1: the first move):
+## it climbs the steps of `semitones` (a scale), and stays on the last one.
+static func combo_pitch(combo: int, semitones: Array[int]) -> float:
+	if semitones.is_empty():
+		return 1.0
+	var step: int = semitones[clampi(combo - 1, 0, semitones.size() - 1)]
+	return pow(2.0, step / 12.0)

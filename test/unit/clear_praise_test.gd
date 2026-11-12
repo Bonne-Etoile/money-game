@@ -56,3 +56,13 @@ func test_a_clear_that_leaves_tiles_earns_no_bonus() -> void:
 	game.grid.set_symbol(Vector2i(0, 5), 3)
 	game.hand[0] = Piece.new([Vector2i.ZERO], PackedInt32Array([4]))
 	assert_bool(game.place(0, Vector2i(7, 0)).empty_grid).is_false()
+
+
+func test_the_clear_sound_climbs_the_scale_with_the_combo_and_stays_on_top() -> void:
+	var steps: Array[int] = [0, 2, 4, 7, 12]
+	assert_float(ClearPraise.combo_pitch(1, steps)).is_equal_approx(1.0, 0.0001)
+	assert_float(ClearPraise.combo_pitch(4, steps)).is_equal_approx(pow(2.0, 7.0 / 12.0), 0.0001)
+	assert_float(ClearPraise.combo_pitch(5, steps)).is_equal_approx(2.0, 0.0001)
+	assert_float(ClearPraise.combo_pitch(30, steps)).is_equal_approx(2.0, 0.0001)
+	assert_float(ClearPraise.combo_pitch(0, steps)).is_equal_approx(1.0, 0.0001)
+	assert_float(ClearPraise.combo_pitch(3, [])).is_equal(1.0)

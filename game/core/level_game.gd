@@ -100,6 +100,18 @@ func is_won() -> bool:
 	return progress() >= target()
 
 
+## Stars earned by a won level (0 when not won): one, plus one for each number of
+## `thresholds` (LevelSet.star_pieces) the pieces left reach.
+func stars(thresholds: Array[int]) -> int:
+	if not is_won():
+		return 0
+	var earned: int = 1
+	for threshold in thresholds:
+		if pieces_left >= threshold:
+			earned += 1
+	return earned
+
+
 func is_lost() -> bool:
 	return not is_won() and (pieces_left <= 0 or game.is_over())
 

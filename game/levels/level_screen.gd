@@ -77,7 +77,22 @@ func _on_finished() -> void:
 		_won_noted = true
 		GameState.record_level_won(level_index)
 		_sounds.play_record()
-		_effects.fireworks(art.symbol_colors)
+
+
+func _is_lost_end() -> bool:
+	return not level.is_won()
+
+
+## A won level opens its card with stars popping in and fireworks behind it.
+func _on_end_shown() -> void:
+	if level.is_won():
+		_stars.show_stars(level.stars(levels.star_pieces), juice.star_interval)
+		_end_effects.fireworks()
+
+
+## The level and the pieces left matter to the player: shown plainly.
+func _top_is_test_display() -> bool:
+	return false
 
 
 func _top_text() -> String:
@@ -93,9 +108,12 @@ func _show_record() -> void:
 	elif goal.goal == LevelDefinition.Goal.SCORE:
 		text = text % goal.goal_count
 	_record.text = (
-		text + "  " + tr("GOAL_PROGRESS") % [mini(level.progress(), level.target()), level.target()]
+		text + " " + tr("GOAL_PROGRESS") % [mini(level.progress(), level.target()), level.target()]
 	)
 	_record_progress.visible = true
+	_record_chip.visible = true
+	_record_icon.visible = false
+	_record_marker.visible = false
 	_record_progress.value = (
 		100.0 * mini(level.progress(), level.target()) / maxi(level.target(), 1)
 	)
@@ -111,6 +129,7 @@ func _show_end_panel() -> void:
 	else:
 		_end_title.text = "GAME_OVER"
 	_next_level.visible = won
+	_stars.visible = won
 	# New pieces make no sense once a level is over: its pieces are counted.
 	_over_new_hand.visible = false
 	_extra_pieces.visible = level.can_add_pieces() and _ads_open()
@@ -118,7 +137,7 @@ func _show_end_panel() -> void:
 	_extra_pieces.disabled = not Ads.is_rewarded_ready()
 	_mark_ad(_extra_pieces, true)
 	_best_score.visible = false
-	(%ReplayButton as Button).text = "BUTTON_RETRY"
+	_replay.text = "BUTTON_RETRY"
 
 
 ## A continue in a level always costs a rewarded ad: no comeback gift here.

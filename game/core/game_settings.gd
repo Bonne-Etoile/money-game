@@ -2,7 +2,7 @@ class_name GameSettings
 extends RefCounted
 ## The player's options besides the volumes (AudioSettings) and the window (WindowSettings):
 ## mouse sensitivity, vertical axis, field of view, vertical sync, language, how the pieces
-## come back (test build of G12) and vibration. Saved by the
+## come back (test build of G12), vibration, music and sounds. Saved by the
 ## exported game in user://options.json. Versioned JSON, never a Godot resource.
 
 const VERSION: int = 1
@@ -23,6 +23,9 @@ var language: String = ""
 var refill_together: bool = false
 ## Short vibrations on clears (phones only).
 var vibration: bool = true
+## Background music, and the game's sounds (each mutes its own bus).
+var music: bool = true
+var sounds: bool = true
 
 
 func set_mouse_sensitivity(value: float) -> void:
@@ -56,6 +59,8 @@ func to_dict() -> Dictionary:
 		"language": language,
 		"refill_together": refill_together,
 		"vibration": vibration,
+		"music": music,
+		"sounds": sounds,
 	}
 
 
@@ -71,6 +76,8 @@ static func from_dict(data: Dictionary) -> GameSettings:
 	settings.set_language(JsonRead.text(data, "language"))
 	settings.refill_together = data.get("refill_together") == true
 	settings.vibration = data.get("vibration") != false
+	settings.music = data.get("music") != false
+	settings.sounds = data.get("sounds") != false
 	return settings
 
 
