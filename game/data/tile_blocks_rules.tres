@@ -12,7 +12,8 @@ points_per_cell_placed = 1
 points_per_cell_cleared = 10
 multi_clear_bonus_percent = 50
 combo_bonus_percent = 50
-combo_grace_moves = 2
+combo_bonus_max_steps = 6
+combo_grace_moves = 1
 empty_grid_bonus = 300
 
 [resource]
@@ -23,6 +24,8 @@ hand_size = 3
 refill_each_slot = true
 shape_keys = Array[String](["i4h", "o2", "t4b", "s4h", "z4h", "j4c", "j4d"])
 can_rotate = true
+endless_can_rotate = false
+turned_shape_keys = Array[String](["i4h", "i4v", "o2", "t4a", "t4b", "t4c", "t4d", "l4a", "l4b", "l4c", "l4d", "j4a", "j4b", "j4c", "j4d", "s4h", "s4v", "z4h", "z4v"])
 match_size = 3
 revives_per_game = 1
 revive_clear_lines = 3

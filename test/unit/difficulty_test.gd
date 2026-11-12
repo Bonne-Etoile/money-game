@@ -83,3 +83,81 @@ func test_a_new_piece_after_a_move_keeps_the_game_playable() -> void:
 		game.hand.assign([_single(4), blocker, blocker])
 		game.place(0, Vector2i(0, 0))
 		assert_bool(game.is_over()).override_failure_message("seed %d" % random_seed).is_false()
+
+
+## A player past their first games, with `best` as record and `average` as recent scores.
+func _seasoned(best: int, average: int) -> PlayerStats:
+	var stats: PlayerStats = PlayerStats.new()
+	for _game in 5:
+		stats.finish_game(average, 20)
+	stats.note_score(best)
+	return stats
+
+
+func test_without_a_record_the_score_raises_the_level_by_points() -> void:
+	var director: DifficultyDirector = DifficultyDirector.new(RULES.difficulty, _seasoned(600, 0))
+	assert_int(director.record).is_equal(0)
+	assert_int(director.level(0, 0)).is_equal(0)
+	assert_int(director.level(RULES.difficulty.points_per_level * 2, 0)).is_equal(2)
+
+
+func test_far_under_the_record_the_level_stays_at_its_start() -> void:
+	var director: DifficultyDirector = DifficultyDirector.new(RULES.difficulty, _seasoned(10000, 0))
+	assert_int(director.record).is_equal(10000)
+	var calm: int = 10000 * RULES.difficulty.record_calm_percent / 100
+	assert_int(director.level(0, 0)).is_equal(0)
+	assert_int(director.level(calm - 1, 0)).is_equal(0)
+	assert_int(director.level(calm, 0)).is_equal(1)
+
+
+func test_near_the_record_the_level_climbs_with_its_share() -> void:
+	var rules: DifficultyRules = RULES.difficulty.duplicate()
+	rules.record_calm_percent = 70
+	rules.record_percent_per_level = 10
+	rules.combo_for_extra_level = 0
+	var director: DifficultyDirector = DifficultyDirector.new(rules, _seasoned(5000, 0))
+	assert_int(director.level(3500, 0)).is_equal(1)
+	assert_int(director.level(4000, 0)).is_equal(2)
+	assert_int(director.level(4500, 0)).is_equal(3)
+	assert_int(director.level(5000, 0)).is_equal(4)
+	assert_int(director.level(9000, 0)).is_equal(director.max_level())
+
+
+func test_the_recent_games_give_a_head_start_only_without_a_record() -> void:
+	var without: DifficultyDirector = DifficultyDirector.new(
+		RULES.difficulty, _seasoned(4000, 4000)
+	)
+	assert_int(without.record).is_equal(0)
+	assert_int(without.start_level).is_equal(2)
+	var with_record: DifficultyDirector = DifficultyDirector.new(
+		RULES.difficulty, _seasoned(10000, 8000)
+	)
+	assert_int(with_record.start_level).is_equal(0)
+
+
+func test_the_record_climb_can_be_turned_off() -> void:
+	var rules: DifficultyRules = RULES.difficulty.duplicate()
+	rules.record_points_from = 0
+	var director: DifficultyDirector = DifficultyDirector.new(rules, _seasoned(5000, 0))
+	assert_int(director.record).is_equal(0)
+	assert_int(director.level(rules.points_per_level, 0)).is_equal(1)
+
+
+func test_the_daily_challenge_ignores_the_record() -> void:
+	var game: TileBlocksGame = TileBlocksGame.new(RULES, 3)
+	assert_int(game.difficulty.record).is_equal(0)
+
+
+func test_a_long_game_climbs_whatever_the_score() -> void:
+	var rules: DifficultyRules = RULES.difficulty.duplicate()
+	rules.long_game_moves = 100
+	rules.long_game_moves_per_level = 20
+	rules.record_calm_percent = 30
+	rules.record_percent_per_level = 15
+	rules.combo_for_extra_level = 0
+	var director: DifficultyDirector = DifficultyDirector.new(rules, _seasoned(50000, 0))
+	assert_int(director.level(1000, 0, 99)).is_equal(0)
+	assert_int(director.level(1000, 0, 100)).is_equal(1)
+	assert_int(director.level(1000, 0, 140)).is_equal(3)
+	# The score gives more: it wins.
+	assert_int(director.level(40000, 0, 100)).is_equal(4)

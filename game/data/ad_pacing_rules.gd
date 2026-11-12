@@ -3,7 +3,8 @@ extends Resource
 ## How often rewarded ads may be offered (ad_pacing_rules.tres, read by AdPacing and
 ## TileBlocksGame): a few, at the moments they are worth the most, so that the player does not
 ## tire of them (docs/reglages-recommandes.md, Stelio's go of 2026-11-11). Only rewarded ads,
-## chosen by the player: no forced ad (decision of 2026-11-09). 0 turns a limit off.
+## chosen by the player: no forced ad (decision of 2026-11-09). 0 turns a limit off: all are
+## off since Stelio's decision of 2026-11-12 ("pas de limite de pub"), the settings stay.
 
 ## Rewarded ads, all kinds together (continue, bonuses, extra pieces), in one game or one
 ## attempt at a level.

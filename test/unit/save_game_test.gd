@@ -78,6 +78,18 @@ func test_a_version_1_save_is_migrated_with_empty_statistics() -> void:
 	assert_bool(JsonRead.dictionary(migrated, "progress").has("stats")).is_true()
 
 
+func test_a_version_5_save_starts_its_records_again() -> void:
+	var stats: PlayerStats = PlayerStats.new()
+	stats.finish_game(69993, 120)
+	stats.daily_best = 5000
+	var old: Dictionary = {"version": 5, "progress": {"money": 0, "stats": stats.to_dict()}}
+	var save: SaveGame = SaveGame.from_json(JSON.stringify(old))
+	assert_int(save.progress.stats.best_score).is_equal(0)
+	assert_int(save.progress.stats.daily_best).is_equal(0)
+	assert_bool(save.progress.stats.recent_scores.is_empty()).is_true()
+	assert_int(save.progress.stats.games_played).is_equal(1)
+
+
 func test_statistics_are_saved_with_the_progress() -> void:
 	var save: SaveGame = _save(0, 1)
 	save.progress.stats.finish_game(80, 4)

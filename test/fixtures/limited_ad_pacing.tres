@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="AdPacingRules" format=3]
+
+[ext_resource type="Script" path="res://game/data/ad_pacing_rules.gd" id="1_pacing"]
+
+[resource]
+script = ExtResource("1_pacing")
+ads_per_game = 4
+bonus_ads_per_game = 3
+moves_between_bonus_ads = 5
+rewarded_per_day = 15
+games_without_ads = 3
+revive_min_record_percent = 40
+revive_always_games = 5

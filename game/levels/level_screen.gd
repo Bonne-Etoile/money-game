@@ -180,9 +180,10 @@ func _on_rewarded_ad_finished(placement: String, rewarded: bool) -> void:
 	super._on_rewarded_ad_finished(placement, rewarded)
 
 
-## A level does not count as a game of the endless mode.
+## A level does not count as a game of the endless mode (nor goes to the games journal).
 func _finish_game() -> void:
 	game = null
+	journal = null
 
 
 ## Each level always deals the same pieces.

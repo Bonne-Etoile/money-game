@@ -178,7 +178,9 @@ func test_the_daily_challenge_deals_the_same_pieces_and_keeps_the_best_of_the_da
 	var runner: GdUnitSceneRunner = scene_runner("res://game/proto_tiles/daily.tscn")
 	await runner.simulate_frames(2)
 	var screen: TileBlocksScreen = runner.scene() as TileBlocksScreen
-	var expected: TileBlocksGame = TileBlocksGame.new(screen.rules, DailyChallenge.seed_for(700))
+	var expected: TileBlocksGame = TileBlocksGame.new(
+		screen.rules.for_endless(), DailyChallenge.seed_for(700)
+	)
 	for slot in expected.hand.size():
 		assert_that(screen.game.hand[slot].cells).is_equal(expected.hand[slot].cells)
 	assert_str((runner.find_child("LevelLabel") as Label).text).is_equal(tr("HUD_DAILY"))

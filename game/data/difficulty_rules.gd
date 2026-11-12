@@ -10,11 +10,27 @@ extends Resource
 ## Games played before the player's past games raise the starting level (the score of the game
 ## under way always does): a new player first gets the hang of it, helped (`help_level`).
 @export var beginner_games: int = 3
-## Points scored in the game under way that raise the difficulty a level.
-@export var points_per_level: int = 200
+## Points scored in the game under way that raise the difficulty a level (until the player has
+## a record of `record_points_from`; afterwards the climb follows the record, below).
+@export var points_per_level: int = 1200
+## Record (best score before the game) from which the difficulty follows it instead of
+## `points_per_level`: the start of a game stays calm whatever the record, the tension comes
+## near it. 0 turns it off.
+@export var record_points_from: int = 5000
+## Moves of a game from which the difficulty climbs whatever the score (0: never): games keep
+## a bounded length even as the record grows. A level more every `long_game_moves_per_level`
+## moves beyond, when it is more than the score gives.
+@export var long_game_moves: int = 80
+@export var long_game_moves_per_level: int = 20
+## Share of the record (percent) under which the score of the game does not raise the level.
+@export var record_calm_percent: int = 20
+## From `record_calm_percent` on, a level more for each of these shares of the record
+## (percent): with 20 and 15, +1 at 20 %, +2 at 35 %, +3 at 50 %, +4 at 65 %, +5 at 80 %.
+## No head start from the recent games then (`max_start_level` only applies without one).
+@export var record_percent_per_level: int = 15
 ## A level more at the start of a game for each of these points in the player's average score
 ## of their recent games (PlayerStats), up to `max_start_level`.
-@export var average_points_per_start_level: int = 400
+@export var average_points_per_start_level: int = 1500
 @export var max_start_level: int = 2
 ## Combo (moves in a row that cleared something) from which the player chains easily: a level
 ## more while it lasts. 0 turns it off.

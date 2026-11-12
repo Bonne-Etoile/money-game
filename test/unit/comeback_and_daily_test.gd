@@ -85,7 +85,8 @@ func test_a_version_2_save_is_migrated_with_no_days() -> void:
 	}
 	var save: SaveGame = SaveGame.from_dict(old)
 	assert_int(save.progress.stats.sessions).is_equal(4)
-	assert_int(save.progress.stats.best_score).is_equal(900)
+	# Records start again at version 6 (the combo bonus got a cap).
+	assert_int(save.progress.stats.best_score).is_equal(0)
 	assert_int(save.progress.stats.last_session_day).is_equal(0)
 	var migrated: Dictionary = SaveGame.migrate(old, 2)
 	var stats: Dictionary = JsonRead.dictionary(JsonRead.dictionary(migrated, "progress"), "stats")

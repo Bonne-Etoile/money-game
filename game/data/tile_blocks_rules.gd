@@ -14,8 +14,14 @@ extends Resource
 ## Shapes offered (keys of `shape_set`), all equally often; empty: every shape, by weight.
 ## The 7 Tetris shapes by default (Stelio, 2026-11-09), which the player can turn.
 @export var shape_keys: Array[String] = []
-## Whether the player can turn a piece a quarter turn by tapping it.
+## Whether the player can turn a piece a quarter turn by tapping it (the levels).
 @export var can_rotate: bool = true
+## Whether the player can turn pieces in the endless game and the daily challenge: without it,
+## pieces come in each of their turns (`turned_shape_keys`) and a game can be lost (Stelio,
+## 2026-11-12: "je n'ai pas réussi à perdre"; a robot that turns never lost).
+@export var endless_can_rotate: bool = false
+## Shapes offered when the player cannot turn pieces: each of their turns.
+@export var turned_shape_keys: Array[String] = []
 ## Identical symbols touching each other (sides only) that clear; 0 turns the rule off.
 @export var match_size: int = 3
 ## Times a lost game can go on, after a rewarded ad (TileBlocksGame.revive).
@@ -50,3 +56,14 @@ extends Resource
 @export var scoring: ScoreRules
 ## How often rewarded ads may be offered; none: the defaults of AdPacingRules.
 @export var ad_pacing: AdPacingRules
+
+
+## The rules of the endless game and the daily challenge (`endless_can_rotate`).
+func for_endless() -> TileBlocksRules:
+	if endless_can_rotate == can_rotate:
+		return self
+	var chosen: TileBlocksRules = duplicate()
+	chosen.can_rotate = endless_can_rotate
+	if not endless_can_rotate and not turned_shape_keys.is_empty():
+		chosen.shape_keys = turned_shape_keys.duplicate()
+	return chosen

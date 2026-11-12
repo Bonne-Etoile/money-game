@@ -9,6 +9,10 @@ extends Resource
 @export var multi_clear_bonus_percent: int = 50
 ## Extra percentage for each move of the combo beyond the first.
 @export var combo_bonus_percent: int = 50
+## Combo moves that raise the bonus: beyond, the bonus stays (0: no cap). Without a cap the
+## score speeds up all game long, and each record sets the bar much higher (Stelio's journal,
+## 2026-11-12: a combo of 59, more than 2 000 points a move by the end).
+@export var combo_bonus_max_steps: int = 0
 ## Moves without a clear that the combo survives (0: the first one ends it).
 @export var combo_grace_moves: int = 2
 ## Points for a move that leaves the grid empty ("grid cleared!").

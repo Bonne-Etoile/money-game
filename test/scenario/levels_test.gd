@@ -141,3 +141,15 @@ func test_a_won_level_shows_its_stars_and_the_map_marks_the_levels() -> void:
 	assert_bool(next.won).is_false()
 	assert_bool(next.current).is_true()
 	assert_bool((map.level_button(3) as LevelTileButton).current).is_false()
+
+
+func test_tapping_a_piece_turns_it_in_a_level() -> void:
+	var runner: GdUnitSceneRunner = await _level(0)
+	var screen: LevelScreen = runner.scene() as LevelScreen
+	screen.game.hand[0] = Piece.new(
+		[Vector2i(0, 0), Vector2i(1, 0)] as Array[Vector2i], PackedInt32Array([0, 1])
+	)
+	screen.refresh()
+	var tray: TrayView = runner.find_child("Tray") as TrayView
+	await Pointer.tap(runner, tray.slot_center(0))
+	assert_that(screen.game.hand[0].extent()).is_equal(Vector2i(1, 2))
