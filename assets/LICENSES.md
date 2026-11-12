@@ -5,6 +5,7 @@ Chaque asset externe (modèle, texture, son, police, musique) est listé ici dè
 | Fichier | Source | Auteur | Licence | IA (outil, retouches) |
 |---|---|---|---|---|
 | `assets/sounds/music_calm.ogg` | composée par le code du projet (`tools/assets/compose_music.py`, sinusoïdes et bruit, aucun échantillon) | Claude pour le projet | propriété du projet | non (algorithme écrit à la main) |
+| `assets/icon/*.png` (icône du jeu, icônes du lanceur Android) | dessinées par le code du projet (`tools/assets/make_icon.py`, Pillow et numpy, aucune image source) | Claude pour le projet | propriété du projet | non (dessin écrit à la main, aucun outil de génération d'images) |
 | `assets/fonts/Fredoka-Variable.ttf` | https://github.com/google/fonts/tree/main/ofl/fredoka (police variable, axes graisse et largeur) | The Fredoka Project Authors (https://github.com/hafontia/Fredoka-One) | SIL Open Font License 1.1 (`assets/fonts/OFL.txt`, à joindre au jeu) | non |
 
 ## Code tiers
