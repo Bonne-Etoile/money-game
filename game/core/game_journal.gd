@@ -12,7 +12,7 @@ var _moves: Array[Dictionary] = []
 var _events: Array[Dictionary] = []
 
 
-## `mode`: "endless", "daily" or "level"; `record`: the best score before this game;
+## `mode`: "endless" or "daily"; `record`: the best score before this game;
 ## `started`: when (local date and time, ISO 8601).
 func _init(mode: String, record: int, game: TileBlocksGame, started: String) -> void:
 	entry = {

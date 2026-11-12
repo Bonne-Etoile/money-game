@@ -105,8 +105,8 @@ func test_far_under_the_record_the_level_stays_at_its_start() -> void:
 	var director: DifficultyDirector = DifficultyDirector.new(RULES.difficulty, _seasoned(5000, 0))
 	assert_int(director.record).is_equal(5000)
 	assert_int(director.level(0, 0)).is_equal(0)
-	assert_int(director.level(3000, 0)).is_equal(0)
-	assert_int(director.level(3499, 0)).is_equal(0)
+	assert_int(director.level(1000, 0)).is_equal(0)
+	assert_int(director.level(1499, 0)).is_equal(0)
 
 
 func test_near_the_record_the_level_climbs_with_its_share() -> void:
@@ -127,7 +127,7 @@ func test_the_record_climb_adds_to_the_starting_level() -> void:
 	var director: DifficultyDirector = DifficultyDirector.new(RULES.difficulty, stats)
 	assert_int(director.start_level).is_equal(2)
 	assert_int(director.level(1000, 0)).is_equal(2)
-	assert_int(director.level(3500, 0)).is_equal(3)
+	assert_int(director.level(1500, 0)).is_equal(3)
 
 
 func test_the_record_climb_can_be_turned_off() -> void:

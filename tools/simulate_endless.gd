@@ -68,6 +68,10 @@ func _rules_for(variant: String) -> TileBlocksRules:
 			rules.symbol_count = 6
 		"big_shapes":
 			rules.shape_keys = _big_shapes()
+		"calm30":
+			rules.difficulty = rules.difficulty.duplicate()
+			rules.difficulty.record_calm_percent = 30
+			rules.difficulty.record_percent_per_level = 15
 		"no_guarantee":
 			rules.difficulty = rules.difficulty.duplicate()
 			rules.difficulty.playable_until_fill_percent = 0

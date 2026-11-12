@@ -10,13 +10,22 @@ func test_games_keep_the_best_and_the_recent_scores() -> void:
 	stats.finish_game(50, 0)
 	assert_int(stats.games_played).is_equal(0)
 	for score in PlayerStats.RECENT_GAMES + 2:
-		stats.finish_game(score * 10, 3)
+		stats.finish_game(score * 10, 5)
 	assert_int(stats.games_played).is_equal(PlayerStats.RECENT_GAMES + 2)
-	assert_int(stats.total_moves).is_equal((PlayerStats.RECENT_GAMES + 2) * 3)
+	assert_int(stats.total_moves).is_equal((PlayerStats.RECENT_GAMES + 2) * 5)
 	assert_int(stats.best_score).is_equal((PlayerStats.RECENT_GAMES + 1) * 10)
 	assert_int(stats.recent_scores.size()).is_equal(PlayerStats.RECENT_GAMES)
 	assert_int(stats.recent_scores[0]).is_equal(20)
 	assert_int(stats.average_recent_score()).is_equal(65)
+
+
+func test_a_game_left_at_once_is_not_a_recent_score() -> void:
+	var stats: PlayerStats = PlayerStats.new()
+	stats.finish_game(5000, 40)
+	stats.finish_game(4, PlayerStats.RECENT_MIN_MOVES - 1)
+	assert_int(stats.games_played).is_equal(2)
+	assert_int(stats.recent_scores.size()).is_equal(1)
+	assert_int(stats.average_recent_score()).is_equal(5000)
 
 
 func test_ads_offers_and_bonuses_are_counted_per_placement() -> void:

@@ -9,6 +9,9 @@ extends RefCounted
 
 ## Scores kept for the average of the recent games.
 const RECENT_GAMES: int = 10
+## Moves under which a game left at once (a restart) is not a recent score: it would read as
+## a poor game and wrongly help the player (Stelio's journal, 2026-11-12).
+const RECENT_MIN_MOVES: int = 5
 
 ## Times the game was started.
 var sessions: int = 0
@@ -104,13 +107,16 @@ func daily_streak_on(today: int) -> int:
 	return daily_streak if daily_day > 0 and today - daily_day <= 1 else 0
 
 
-## A game ended with `score` after `moves` moves (ignored without a move).
+## A game ended with `score` after `moves` moves (ignored without a move; not a recent score
+## under RECENT_MIN_MOVES).
 func finish_game(score: int, moves: int) -> void:
 	if moves <= 0:
 		return
 	games_played += 1
 	total_moves += moves
 	note_score(score)
+	if moves < RECENT_MIN_MOVES:
+		return
 	recent_scores.append(maxi(score, 0))
 	while recent_scores.size() > RECENT_GAMES:
 		recent_scores.remove_at(0)

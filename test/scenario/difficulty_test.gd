@@ -33,11 +33,11 @@ func test_the_difficulty_stays_calm_until_close_to_the_record() -> void:
 	var runner: GdUnitSceneRunner = await _screen()
 	var screen: TileBlocksScreen = runner.scene() as TileBlocksScreen
 	var label: Label = runner.find_child("LevelLabel") as Label
-	screen.game.scores.score = 3000
+	screen.game.scores.score = 1000
 	screen.refresh()
 	assert_int(screen.game.level()).is_equal(0)
 	assert_str(label.text).is_equal(tr("HUD_DIFFICULTY") % 0)
-	screen.game.scores.score = 4500
+	screen.game.scores.score = 3000
 	screen.refresh()
 	assert_int(screen.game.level()).is_equal(3)
 	assert_str(label.text).is_equal(tr("HUD_DIFFICULTY") % 3)

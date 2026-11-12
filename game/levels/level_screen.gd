@@ -68,10 +68,6 @@ func _place_piece(slot: int, origin: Vector2i) -> MoveResult:
 	return level.place(slot, origin)
 
 
-func _journal_mode() -> String:
-	return "level %d" % (level_index + 1)
-
-
 func _is_finished() -> bool:
 	return level.is_won() or level.is_lost()
 
@@ -184,9 +180,10 @@ func _on_rewarded_ad_finished(placement: String, rewarded: bool) -> void:
 	super._on_rewarded_ad_finished(placement, rewarded)
 
 
-## A level does not count as a game of the endless mode.
+## A level does not count as a game of the endless mode (nor goes to the games journal).
 func _finish_game() -> void:
 	game = null
+	journal = null
 
 
 ## Each level always deals the same pieces.
