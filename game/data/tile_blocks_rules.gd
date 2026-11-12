@@ -26,21 +26,27 @@ extends Resource
 ## Uses of each bonus (new pieces, mirror) given free at the start of a game: the player
 ## tries them, then may want them again for an ad (docs/strategies-pub.md).
 @export var bonus_free_uses: int = 1
-## Uses of each bonus a game can earn by watching a rewarded ad (one use per ad).
-@export var bonus_ad_uses: int = 3
 ## Pieces drawn for each slot when the "new pieces" bonus is used: the one with the most room
 ## is given, so the bonus really helps.
 @export var new_hand_candidates: int = 3
 ## Pieces of the hand that still fit, at most, for the player to be "in trouble": the bonus
 ## buttons call for attention (the moment an ad is worth the most to the player).
 @export var trouble_fitting_pieces: int = 1
+## The mirror's great move (MirrorChance): from this share of the grid filled (percent), when
+## a piece of the hand, flipped, clears at least `mirror_chance_min_clears` lines and groups
+## at once (more than unflipped), the mirror button lights up and the move shows on the grid.
+## 0 clears turns it off.
+@export var mirror_chance_fill_percent: int = 50
+@export var mirror_chance_min_clears: int = 2
 ## Seconds without a move after which a placement that clears something shows as a hint on the
 ## grid (G15), when there is one; 0 turns hints off.
 @export var hint_after_seconds: float = 10.0
 ## Days away after which the first continue of the day is free (the comeback gift, G14); 0
 ## turns it off.
-@export var comeback_days: int = 3
+@export var comeback_days: int = 2
 @export var shape_set: PieceShapeSet
 ## Adaptive difficulty; none: every piece is drawn by pure chance.
 @export var difficulty: DifficultyRules
 @export var scoring: ScoreRules
+## How often rewarded ads may be offered; none: the defaults of AdPacingRules.
+@export var ad_pacing: AdPacingRules

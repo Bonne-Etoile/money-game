@@ -9,7 +9,7 @@ extends Resource
 
 ## Games played before the player's past games raise the starting level (the score of the game
 ## under way always does): a new player first gets the hang of it, helped (`help_level`).
-@export var beginner_games: int = 2
+@export var beginner_games: int = 3
 ## Points scored in the game under way that raise the difficulty a level.
 @export var points_per_level: int = 200
 ## A level more at the start of a game for each of these points in the player's average score

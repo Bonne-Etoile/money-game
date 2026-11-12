@@ -134,7 +134,15 @@ func earn(amount: int) -> void:
 
 func _on_rewarded_ad_finished(placement: String, rewarded: bool) -> void:
 	progress.stats.record_ad(placement, rewarded)
+	if rewarded:
+		progress.stats.count_rewarded(today())
 	save_game()
+
+
+## Whether a rewarded ad may be offered now (AdPacing): `for_new_players`, the first games of a
+## new player count (not in the level mode).
+func can_offer_rewarded(rules: AdPacingRules, for_new_players: bool) -> bool:
+	return AdPacing.can_offer(rules, progress.stats, today(), for_new_players)
 
 
 func spend(amount: int) -> bool:

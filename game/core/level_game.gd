@@ -3,7 +3,9 @@ extends RefCounted
 ## A level of the level mode (G17): the rules of the endless game (TileBlocksGame, pure chance:
 ## no adaptive difficulty), a starting grid with gold, ice and stones (LevelBoard), a goal and
 ## a limited number of pieces. Won when the goal is reached; lost when the pieces run out or no
-## piece fits. A rewarded ad can give `LevelSet.extra_pieces` more pieces when they run out.
+## piece fits. A rewarded ad can give `LevelSet.extra_pieces` more pieces when they run out,
+## or clear a cross of the grid when no piece fits (once per attempt). All the attempt's ads
+## count together (AdPacingRules.ads_per_game).
 
 var definition: LevelDefinition
 var game: TileBlocksGame
@@ -20,13 +22,14 @@ func _init(level: LevelDefinition, rules: TileBlocksRules, level_set: LevelSet) 
 	definition = level
 	var level_rules: TileBlocksRules = rules.duplicate()
 	level_rules.difficulty = null
-	level_rules.revives_per_game = 0
 	game = TileBlocksGame.new(level_rules, level.random_seed)
 	game.layer = LevelBoard.new()
 	pieces_left = level.pieces
 	_extra_pieces = level_set.extra_pieces
 	_extra_ads = level_set.extra_pieces_ads
 	load_rows(level.rows)
+	# The hand never shows more pieces than the level has left.
+	game.pieces_cap = pieces_left
 	# The first hand is dealt on the level's grid, not on an empty one.
 	game.deal_hand()
 
@@ -61,10 +64,14 @@ func _load_cell(cell: Vector2i, code: String) -> void:
 func place(slot: int, origin: Vector2i) -> MoveResult:
 	if pieces_left <= 0 or is_won():
 		return null
+	# The piece placed is no longer left: the hand gets no new piece beyond what remains.
+	game.pieces_cap = pieces_left - 1
 	var result: MoveResult = game.place(slot, origin)
+	game.pieces_cap = pieces_left
 	if result == null:
 		return null
 	pieces_left -= 1
+	game.pieces_cap = pieces_left
 	for symbol in result.clear.group_symbols:
 		if symbol == definition.goal_symbol:
 			trios += 1
@@ -97,16 +104,31 @@ func is_lost() -> bool:
 	return not is_won() and (pieces_left <= 0 or game.is_over())
 
 
-## Whether a rewarded ad can give more pieces now: they ran out, pieces still fit, and the
-## attempt has ads left.
+## Whether a rewarded ad can give more pieces now: they ran out and the attempt has ads left.
 func can_add_pieces() -> bool:
-	return not is_won() and pieces_left <= 0 and not game.is_over() and extras_used < _extra_ads
+	if is_won() or pieces_left > 0 or extras_used >= _extra_ads:
+		return false
+	return game.ads_left() > 0
 
 
 ## More pieces (after a rewarded ad); false when not allowed.
 func add_pieces() -> bool:
-	if not can_add_pieces():
+	if not can_add_pieces() or not game.use_ad():
 		return false
 	extras_used += 1
 	pieces_left += _extra_pieces
+	game.pieces_cap = pieces_left
+	game.fill_empty_slots()
 	return true
+
+
+## Whether a rewarded ad can clear a cross of the grid now: pieces are left but none fits, and
+## the attempt has its revive and ads left.
+func can_revive() -> bool:
+	return not is_won() and pieces_left > 0 and game.can_revive_with_ad()
+
+
+## Clears a cross of the grid (after a rewarded ad, TileBlocksGame.revive); false when not
+## allowed.
+func revive() -> bool:
+	return can_revive() and game.revive(true)

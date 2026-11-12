@@ -3,10 +3,12 @@ extends TileBlocksScreen
 ## A level of the level mode (G17), on the screen of the endless game: the level's starting
 ## grid (gold, ice, stones drawn by the board), its goal with a bar in place of the record, the
 ## pieces left in the top bar, and an end panel that offers the next level, "+5 pieces" after a
-## rewarded ad when the pieces ran out, or to try again. The rules are in LevelGame.
+## rewarded ad when the pieces ran out, a continue after a rewarded ad when no piece fits, or
+## to try again. The rules are in LevelGame.
 
 const MAP_SCENE: String = "res://game/levels/level_map.tscn"
 const EXTRA_PIECES_PLACEMENT: String = "level_extra_pieces"
+const LEVEL_CONTINUE_PLACEMENT: String = "level_continue"
 const GOAL_KEYS: Dictionary[LevelDefinition.Goal, String] = {
 	LevelDefinition.Goal.SCORE: "GOAL_SCORE",
 	LevelDefinition.Goal.TRIOS: "GOAL_TRIOS",
@@ -42,7 +44,7 @@ func next_level() -> void:
 
 ## "+5 pieces": a rewarded ad, then more pieces (LevelSet.extra_pieces).
 func buy_extra_pieces() -> void:
-	if level.can_add_pieces() and Ads.is_rewarded_ready():
+	if level.can_add_pieces() and _ads_open() and Ads.is_rewarded_ready():
 		Ads.show_rewarded(EXTRA_PIECES_PLACEMENT)
 
 
@@ -109,14 +111,46 @@ func _show_end_panel() -> void:
 	else:
 		_end_title.text = "GAME_OVER"
 	_next_level.visible = won
-	_over_new_hand.visible = _over_new_hand.visible and not won
-	_extra_pieces.visible = level.can_add_pieces()
+	# New pieces make no sense once a level is over: its pieces are counted.
+	_over_new_hand.visible = false
+	_extra_pieces.visible = level.can_add_pieces() and _ads_open()
 	_extra_pieces.text = tr("BUTTON_EXTRA_PIECES_AD") % levels.extra_pieces
 	_extra_pieces.disabled = not Ads.is_rewarded_ready()
 	_mark_ad(_extra_pieces, true)
-	_continue.visible = false
 	_best_score.visible = false
 	(%ReplayButton as Button).text = "BUTTON_RETRY"
+
+
+## A continue in a level always costs a rewarded ad: no comeback gift here.
+func has_comeback_gift() -> bool:
+	return false
+
+
+## The continue of a level: when no piece fits but pieces are left (LevelGame.can_revive).
+func _can_continue_with_ad() -> bool:
+	return level != null and level.can_revive() and _ads_open()
+
+
+func _continue_placement() -> String:
+	return LEVEL_CONTINUE_PLACEMENT
+
+
+func _revive_with_ad() -> bool:
+	return level.revive()
+
+
+## In the level mode, a new player may see ads from the start: there are no free games to
+## learn with first (only the daily limit counts).
+func _ads_open() -> bool:
+	return GameState.can_offer_rewarded(game.pacing, false)
+
+
+## The ad offers of a level: "+5 pieces" too.
+func _note_offers(over: bool) -> void:
+	if over and not _was_over and Ads.is_rewarded_ready() and _ads_open():
+		if level.can_add_pieces():
+			GameState.record_offer(EXTRA_PIECES_PLACEMENT)
+	super._note_offers(over)
 
 
 func _on_rewarded_ad_finished(placement: String, rewarded: bool) -> void:

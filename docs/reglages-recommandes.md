@@ -2,7 +2,7 @@
 
 Demandé par Stelio le 11 novembre 2026 : quels réglages tirer de Block Blast, d'abord sur le nombre de pubs qu'on peut proposer avant que les joueurs se lassent, puis sur les autres réglages du jeu. Ce document part de `docs/etude-block-blast.md` (ce que fait Block Blast) et de `docs/strategies-pub.md` (règles et leviers), y ajoute les repères publics du marché, et donne pour chaque réglage : la valeur actuelle, ce qu'on sait ailleurs, la valeur de départ recommandée, et ce qu'il faut mesurer pour l'ajuster.
 
-Rien ici n'est encore dans le code : les lignes marquées **code** demandent un ticket (section 9), à valider par Stelio.
+**Accord de Stelio le 11 novembre 2026** (« ok pour tout ») : les tickets 1, 2 et 4 de la section 9 et la reprise en mode niveaux sont faits (G18, réglages dans `game/data/ad_pacing_rules.tres`). Restent le ticket 3 (après mesure) et le ticket 5 (avant la sortie).
 
 ## 1. En bref
 

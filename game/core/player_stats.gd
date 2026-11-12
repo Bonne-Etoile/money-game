@@ -41,6 +41,10 @@ var daily_best: int = 0
 var daily_streak: int = 0
 ## Levels of the level mode won (G17): level N is open once the N - 1 before it are won.
 var levels_won: int = 0
+## The day of the last rewarded ad watched to the end, and how many that day (the daily
+## limit, AdPacingRules.rewarded_per_day).
+var rewarded_day: int = 0
+var rewarded_that_day: int = 0
 
 
 ## A session starts on `today`: the first one of a day notes how long the player stayed away.
@@ -59,6 +63,19 @@ func has_comeback_gift(today: int, days: int) -> bool:
 
 func use_comeback_gift(today: int) -> void:
 	gift_used_day = today
+
+
+## A rewarded ad was watched to the end on `today`.
+func count_rewarded(today: int) -> void:
+	if today != rewarded_day:
+		rewarded_day = today
+		rewarded_that_day = 0
+	rewarded_that_day += 1
+
+
+## Rewarded ads watched to the end on `today`.
+func rewarded_on(today: int) -> int:
+	return rewarded_that_day if today == rewarded_day else 0
 
 
 ## A daily challenge game ended on `day` with `score`: the best of the day, and the streak of
@@ -152,6 +169,8 @@ func to_dict() -> Dictionary:
 		"daily_best": daily_best,
 		"daily_streak": daily_streak,
 		"levels_won": levels_won,
+		"rewarded_day": rewarded_day,
+		"rewarded_that_day": rewarded_that_day,
 	}
 
 
@@ -177,6 +196,8 @@ static func from_dict(data: Dictionary) -> PlayerStats:
 	stats.daily_best = maxi(JsonRead.integer(data, "daily_best"), 0)
 	stats.daily_streak = maxi(JsonRead.integer(data, "daily_streak"), 0)
 	stats.levels_won = maxi(JsonRead.integer(data, "levels_won"), 0)
+	stats.rewarded_day = maxi(JsonRead.integer(data, "rewarded_day"), 0)
+	stats.rewarded_that_day = maxi(JsonRead.integer(data, "rewarded_that_day"), 0)
 	return stats
 
 
