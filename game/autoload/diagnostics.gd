@@ -6,6 +6,11 @@ extends Node
 const LOG_PATH: String = "user://logs/session.log"
 ## Where the log of a crashed session is kept, until the next crash.
 const CRASHED_LOG_PATH: String = "user://logs/crashed_session.log"
+## Every game played, one JSON line each (GameJournal), to tune the difficulty from real games.
+const GAMES_PATH: String = "user://logs/games.jsonl"
+
+## Where games are journaled; empty: nowhere (only the exported game, or a test, sets it).
+var games_path: String = ""
 
 ## The previous session's crash report, or empty: it ended normally (or was dismissed).
 var crash_report: String = ""
@@ -16,6 +21,7 @@ var _log: SessionLog = null
 func _ready() -> void:
 	if OS.has_feature("template"):
 		start(LOG_PATH, CRASHED_LOG_PATH)
+		games_path = GAMES_PATH
 	get_tree().scene_changed.connect(_on_scene_changed)
 
 
@@ -75,6 +81,22 @@ func system_info() -> Dictionary:
 func note(text: String) -> void:
 	if _log != null:
 		_log.note(text)
+
+
+## Adds a finished game (GameJournal.finish) to the games journal, as one JSON line.
+func log_game(entry: Dictionary) -> void:
+	if games_path.is_empty():
+		return
+	DirAccess.make_dir_recursive_absolute(games_path.get_base_dir())
+	var mode: FileAccess.ModeFlags = (
+		FileAccess.READ_WRITE if FileAccess.file_exists(games_path) else FileAccess.WRITE
+	)
+	var file: FileAccess = FileAccess.open(games_path, mode)
+	if file == null:
+		return
+	file.seek_end()
+	file.store_line(JSON.stringify(entry))
+	file.close()
 
 
 ## Notes which scene opened: the report tells where the game was.

@@ -138,3 +138,10 @@ Les décisions 1 à 15 viennent du modèle (validées sur *River Cleaner: India*
 - **Pourquoi** : rien à acheter ni à déclarer (tout est fait par nous), en gamme de do majeur pour que musique et effets ne jurent jamais ; un thème global évite de régler chaque bouton.
 - **Plus tard** : de vrais sons et une ou deux autres musiques (`docs/recettes/sons-et-musique.md`), choisis à l'écoute par Stelio ; régler les volumes par curseur (`AudioSettings` existe déjà).
 
+## 22. Journal des parties en JSON Lines, robot de simulation pour régler la difficulté (2026-11-12, G19)
+
+- **Contexte** : Stelio (2026-11-12) n'arrive pas à perdre en mode infini et veut que ses parties soient enregistrées pour régler la difficulté.
+- **Choix** : `GameJournal` (`game/core/`) garde chaque coup d'une partie (temps, cases posées et effacées, points, combo, score, niveau de difficulté, remplissage de la grille, pièces qui rentrent) et les bonus utilisés ; à la fin de la partie (perdue, ou quittée), l'autoload `Diagnostics` l'ajoute comme **une ligne JSON** à `user://logs/games.jsonl`. Seul le jeu exporté écrit (`OS.has_feature("template")`), comme le journal de session ; les tests passent un chemin à `Diagnostics.games_path`. Rien ne quitte l'appareil : le joueur transmet le fichier lui-même. Pour comparer des règles sans joueur : `tools/simulate_endless.gd`, un robot glouton (`GridRobot`) qui joue des parties par variante.
+- **Pourquoi** : une ligne par partie s'ajoute sans relire le fichier et se lit ligne à ligne (Python, tableur) ; pas de format de sauvegarde à migrer (le champ `v` dit la version). Le robot a montré que la rotation libre rend la partie infinie (8 parties sur 8 à plus de 300 coups) : d'où `endless_can_rotate`.
+- **Plus tard** : avant la sortie, décider si le journal reste (local, sans données personnelles) ou part vers un service de mesures, avec consentement (`docs/avant-la-sortie.md`).
+

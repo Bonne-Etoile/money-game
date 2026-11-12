@@ -41,6 +41,8 @@ static var _has_rotated: bool = false
 var game: TileBlocksGame
 ## The race against the record of the game under way.
 var chase: RecordChase = RecordChase.new(0)
+## The game under way, move by move, written to Diagnostics' games journal when it ends.
+var journal: GameJournal = null
 ## Whether the next tap on a piece flips it (the mirror bonus) instead of turning it.
 var mirroring: bool = false
 ## Seconds since the player last did something (for the hint, G15).
@@ -50,6 +52,7 @@ var mirror_chance: MirrorChance = null
 ## Made in _ready, not here: the level scene swaps this script for LevelScreen, and a node
 ## made by the first script would be left orphaned.
 var _drag: PieceDrag
+var _journal_start_msec: int = 0
 ## What the last refresh showed, to notice when it changes (offers are counted once).
 var _was_over: bool = false
 var _was_in_trouble: bool = false
@@ -99,6 +102,12 @@ var _count_tween: Tween = null
 @onready var _sounds: GameSounds = %Sounds
 
 
+## The window closed during a game: it counts as played, and goes to the games journal.
+func _notification(what: int) -> void:
+	if what == NOTIFICATION_WM_CLOSE_REQUEST:
+		_finish_game()
+
+
 func _ready() -> void:
 	_drag = PieceDrag.new()
 	_board.art = art
@@ -108,7 +117,8 @@ func _ready() -> void:
 	_drag.connect_views(_board, _tray, %DragLayer as DragLayer)
 	_drag.piece_in = func(slot: int) -> Piece: return game.hand[slot]
 	_drag.can_place = func(slot: int, origin: Vector2i) -> bool: return game.can_place(slot, origin)
-	_drag.place = func(slot: int, origin: Vector2i) -> MoveResult: return _place_piece(slot, origin)
+	_drag.place = func(slot: int, origin: Vector2i) -> MoveResult:
+		return _journal_move(_place_piece(slot, origin))
 	_drag.clears_for = func(slot: int, origin: Vector2i) -> Array[Vector2i]:
 		if not game.can_place(slot, origin):
 			return []
@@ -174,6 +184,10 @@ func start(random_seed: int) -> void:
 	game = _make_game(random_seed)
 	var stats: PlayerStats = GameState.progress.stats
 	chase = RecordChase.new(stats.daily_best_on(GameState.today()) if daily else stats.best_score)
+	journal = GameJournal.new(
+		_journal_mode(), chase.record, game, Time.get_datetime_string_from_system(false, true)
+	)
+	_journal_start_msec = Time.get_ticks_msec()
 	_shown_score = 0
 	_shown_combo = 0
 	_clear_end_mood()
@@ -214,7 +228,7 @@ func refresh() -> void:
 		mirroring = false
 		_on_finished()
 	_hint.text = "HINT_MIRROR" if mirroring else "HINT_ROTATE"
-	_hint.visible = mirroring or not _has_rotated
+	_hint.visible = mirroring or (game.rules.can_rotate and not _has_rotated)
 	_show_bonus(_new_hand, TileBlocksGame.BONUS_NEW_HAND, "BONUS_NEW_HAND")
 	_show_bonus(_mirror, TileBlocksGame.BONUS_MIRROR, "BONUS_MIRROR")
 	if mirroring:
@@ -390,12 +404,14 @@ func _pop_record() -> void:
 	pop.tween_property(_record, "scale", Vector2.ONE, RECORD_POP_SECONDS)
 
 
-## The rules of a new game: the scene's, with the player's choice of how pieces come back.
+## The rules of a new game: the scene's for the endless game (TileBlocksRules.for_endless),
+## with the player's choice of how pieces come back.
 func _game_rules() -> TileBlocksRules:
+	var endless: TileBlocksRules = rules.for_endless()
 	var refill_each_slot: bool = not Options.settings.refill_together
-	if rules.refill_each_slot == refill_each_slot:
-		return rules
-	var chosen: TileBlocksRules = rules.duplicate()
+	if endless.refill_each_slot == refill_each_slot:
+		return endless
+	var chosen: TileBlocksRules = endless.duplicate()
 	chosen.refill_each_slot = refill_each_slot
 	return chosen
 
@@ -410,6 +426,7 @@ func continue_game() -> void:
 	if has_comeback_gift():
 		if game.revive():
 			GameState.use_comeback_gift()
+			_journal_event("revive_gift")
 			refresh()
 	elif _can_continue_with_ad() and Ads.is_rewarded_ready():
 		Ads.show_rewarded(_continue_placement())
@@ -605,6 +622,7 @@ func _on_piece_tapped(slot: int) -> void:
 		rotate_piece(slot)
 	elif game.mirror(slot):
 		mirroring = false
+		_journal_event("mirror")
 		_sounds.play_mirror()
 		GameState.record_bonus(TileBlocksGame.BONUS_MIRROR)
 		refresh()
@@ -612,6 +630,7 @@ func _on_piece_tapped(slot: int) -> void:
 
 func _apply_new_hand() -> void:
 	if game.new_hand():
+		_journal_event("new_hand")
 		_sounds.play_new_hand()
 		_reset_idle()
 		_drag.cancel()
@@ -765,6 +784,7 @@ func _on_rewarded_ad_finished(placement: String, rewarded: bool) -> void:
 	if not rewarded or game == null:
 		return
 	if placement == _continue_placement() and _revive_with_ad():
+		_journal_event("revive_ad")
 		refresh()
 	elif placement == NEW_HAND_PLACEMENT and game.earn(TileBlocksGame.BONUS_NEW_HAND):
 		_apply_new_hand()
@@ -779,7 +799,32 @@ func _finish_game() -> void:
 		if daily:
 			GameState.record_daily(game.score())
 		GameState.record_game(game.score(), game.moves)
+		if journal != null:
+			var ended: String = "lost" if _is_finished() else "left"
+			Diagnostics.log_game(journal.finish(game, _journal_msec(), ended))
 	game = null
+	journal = null
+
+
+## The kind of game for the journal (the level screen has its own).
+func _journal_mode() -> String:
+	return "daily" if daily else "endless"
+
+
+## Notes a placed piece in the journal; gives `result` back (null: nothing placed).
+func _journal_move(result: MoveResult) -> MoveResult:
+	if result != null and journal != null:
+		journal.note_move(game, result, _journal_msec())
+	return result
+
+
+func _journal_event(kind: String) -> void:
+	if journal != null:
+		journal.note_event(kind, game, _journal_msec())
+
+
+func _journal_msec() -> int:
+	return Time.get_ticks_msec() - _journal_start_msec
 
 
 ## The seed of a new game: today's challenge, or a fresh one.

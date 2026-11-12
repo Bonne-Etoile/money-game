@@ -156,7 +156,9 @@ func test_the_continue_button_waits_for_an_ad() -> void:
 	assert_bool(button.disabled).is_false()
 
 
-func test_tapping_a_piece_turns_it() -> void:
+## Pieces come in each of their turns instead (TileBlocksRules.endless_can_rotate): the game
+## can be lost. The levels still turn them.
+func test_tapping_a_piece_does_not_turn_it_in_the_endless_game() -> void:
 	var runner: GdUnitSceneRunner = await _screen()
 	var screen: TileBlocksScreen = runner.scene() as TileBlocksScreen
 	var bar: Piece = Piece.new(
@@ -166,8 +168,9 @@ func test_tapping_a_piece_turns_it() -> void:
 	screen.refresh()
 	var tray: TrayView = runner.find_child("Tray") as TrayView
 	await Pointer.tap(runner, tray.slot_center(2))
-	assert_that(screen.game.hand[2].extent()).is_equal(Vector2i(1, 2))
+	assert_that(screen.game.hand[2].extent()).is_equal(Vector2i(2, 1))
 	assert_int(screen.game.grid.filled_count()).is_equal(0)
+	assert_bool((runner.find_child("HintLabel") as Label).visible).is_false()
 
 
 func test_new_pieces_are_free_once_then_cost_a_watched_ad() -> void:
@@ -220,9 +223,9 @@ func test_the_mirror_flips_the_next_tapped_piece() -> void:
 	await Pointer.tap(runner, tray.slot_center(2))
 	assert_that(screen.game.hand[2].cells).is_equal(s_shape.mirrored().cells)
 	assert_bool(screen.mirroring).is_false()
-	# The next tap turns the piece again, as usual.
+	# The next tap does nothing, as usual in the endless game (pieces do not turn).
 	await Pointer.tap(runner, tray.slot_center(2))
-	assert_that(screen.game.hand[2].extent()).is_equal(Vector2i(2, 3))
+	assert_that(screen.game.hand[2].cells).is_equal(s_shape.mirrored().cells)
 
 
 func test_the_mirror_can_be_cancelled_without_using_it() -> void:
