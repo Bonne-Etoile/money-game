@@ -24,8 +24,11 @@ func _draw() -> void:
 	var cell: float = minf(size.x / COLUMNS, size.y / rows)
 	var origin: Vector2 = (size - Vector2(COLUMNS, rows) * cell) / 2.0
 	var whole: Rect2 = Rect2(origin, Vector2(COLUMNS, rows) * cell).grow(cell * 0.12)
-	TileDrawing.draw_box(self, whole, art.tile_side)
-	TileDrawing.draw_box(self, whole.grow(-cell * 0.06), art.tile_face)
+	TileDrawing.draw_box(
+		self, whole.grow_side(SIDE_BOTTOM, cell * 0.1), art.tile_back_lip, cell * 0.3
+	)
+	TileDrawing.draw_box(self, whole.grow_side(SIDE_BOTTOM, cell * 0.04), art.tile_back, cell * 0.3)
+	TileDrawing.draw_box(self, whole.grow(-cell * 0.045), art.tile_face, cell * 0.26)
 	for index in tiles:
 		var rect: Rect2 = Rect2(
 			origin + Vector2(index % COLUMNS, index / COLUMNS) * cell, Vector2.ONE * cell
@@ -34,4 +37,8 @@ func _draw() -> void:
 		if index < won:
 			TileDrawing.draw_tile(self, rect, index % art.symbol_colors.size(), art)
 		else:
-			TileDrawing.draw_box(self, rect, art.empty_cell)
+			# A hollow waiting for its tile.
+			TileDrawing.draw_box(self, rect, art.tile_seam.darkened(0.12))
+			TileDrawing.draw_box(
+				self, rect.grow_side(SIDE_TOP, -cell * 0.04), art.tile_seam.lightened(0.15)
+			)

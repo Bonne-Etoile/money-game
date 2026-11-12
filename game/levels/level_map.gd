@@ -1,13 +1,14 @@
 class_name LevelMap
 extends Control
 ## The map of the level mode (G17): a big mahjong tile made of one small tile per level, which
-## takes its colours as levels are won, and a button per level (open once the ones before it
-## are won). Pressing one plays it (LevelScreen).
+## takes its colours as levels are won, and a tile-shaped button per level (open once the ones
+## before it are won: a star on the won ones, a padlock on the locked ones, the next one
+## beating). Pressing one plays it (LevelScreen).
 
 const LEVEL_SCENE: PackedScene = preload("res://game/levels/level.tscn")
 const MENU_SCENE: String = "res://game/ui/main_menu.tscn"
-## Text colour of a won level's button.
-const WON_COLOR: Color = Color(1.0, 0.85, 0.3)
+## Size of a level's button (a tile, a little taller than wide), in pixels.
+const BUTTON_SIZE: Vector2 = Vector2(124, 142)
 
 @export var levels: LevelSet
 @export var art: TileArt
@@ -27,13 +28,14 @@ func _ready() -> void:
 	_picture.tiles = levels.levels.size()
 	_picture.won = won
 	for index in levels.levels.size():
-		var button: Button = Button.new()
+		var button: LevelTileButton = LevelTileButton.new()
+		button.art = art
+		button.number = index + 1
 		button.text = tr("LEVEL_BUTTON") % (index + 1)
-		button.custom_minimum_size = Vector2(140, 88)
-		button.add_theme_font_size_override("font_size", 32)
+		button.custom_minimum_size = BUTTON_SIZE
 		button.disabled = index > won
-		if index < won:
-			button.add_theme_color_override("font_color", WON_COLOR)
+		button.won = index < won
+		button.current = index == won
 		button.pressed.connect(play.bind(index))
 		_buttons.add_child(button)
 

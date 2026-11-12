@@ -265,3 +265,92 @@ func test_a_lost_game_greys_the_grid_with_a_falling_phrase() -> void:
 	assert_bool(board.modulate.is_equal_approx(screen.art.game_over_tint)).is_true()
 	screen.start(2)
 	assert_bool(board.modulate.is_equal_approx(Color.WHITE)).is_true()
+
+
+func test_the_points_of_a_move_show_as_one_number() -> void:
+	var runner: GdUnitSceneRunner = await _screen()
+	var screen: TileBlocksScreen = runner.scene() as TileBlocksScreen
+	var effects: ClearEffects = runner.find_child("Effects") as ClearEffects
+	# The last tile of a row empties the grid: the points of the move and the bonus, together.
+	for x in 7:
+		screen.game.grid.set_symbol(Vector2i(x, 2), x % 2)
+	screen.game.hand[0] = _single(3)
+	screen.game.hand[1] = _single(1)
+	screen.refresh()
+	await _drag(runner, 0, Vector2i(7, 2))
+	assert_int(screen.game.grid.filled_count()).is_equal(0)
+	assert_array(effects.points_texts()).is_equal([tr("POINTS_GAINED") % screen.game.score()])
+	assert_array(effects.praise_texts()).is_equal([tr("PRAISE_EMPTY_GRID")])
+	assert_bool(effects.has_wave()).is_true()
+	# The next move's points take the place of the ones still on screen.
+	var before: int = screen.game.score()
+	await _drag(runner, 1, Vector2i(0, 0))
+	assert_array(effects.points_texts()).is_equal(
+		[tr("POINTS_GAINED") % (screen.game.score() - before)]
+	)
+
+
+func test_the_end_card_opens_on_a_clean_grid() -> void:
+	GameState.progress.stats.best_score = 400
+	var runner: GdUnitSceneRunner = await _screen()
+	var screen: TileBlocksScreen = runner.scene() as TileBlocksScreen
+	var effects: ClearEffects = runner.find_child("Effects") as ClearEffects
+	for x in 7:
+		screen.game.grid.set_symbol(Vector2i(x, 5), x % 2)
+	screen.game.grid.set_symbol(Vector2i(0, 0), 4)
+	screen.game.hand[0] = _single(3)
+	screen.refresh()
+	await _drag(runner, 0, Vector2i(7, 5))
+	assert_int(effects.fragment_count()).is_greater(0)
+	assert_bool((runner.find_child("ComboChip") as Control).visible).is_false()
+	_lose(screen)
+	# Nothing left flying under the card, and the score counts up to its value.
+	assert_int(effects.fragment_count()).is_equal(0)
+	assert_int(effects.light_count()).is_equal(0)
+	assert_array(effects.points_texts()).is_empty()
+	var final_score: Label = runner.find_child("FinalScoreLabel") as Label
+	for _frame in 120:
+		if final_score.text == str(screen.game.score()):
+			break
+		await runner.simulate_frames(1, 50)
+	assert_str(final_score.text).is_equal(str(screen.game.score()))
+	assert_float((runner.find_child("Card") as Control).scale.x).is_equal_approx(1.0, 0.2)
+
+
+func test_a_beaten_record_shows_a_banner_and_a_golden_score() -> void:
+	GameState.progress.stats.best_score = 10
+	var runner: GdUnitSceneRunner = await _screen()
+	var screen: TileBlocksScreen = runner.scene() as TileBlocksScreen
+	var effects: ClearEffects = runner.find_child("Effects") as ClearEffects
+	var score: Label = runner.find_child("ScoreLabel") as Label
+	screen.game.scores.score = 5
+	screen.refresh()
+	assert_array(effects.banner_texts()).is_empty()
+	screen.game.scores.score = 11
+	screen.refresh()
+	assert_array(effects.banner_texts()).is_equal([tr("NEW_RECORD")])
+	assert_that(score.get_theme_color("font_color")).is_equal(screen.art.gold_light)
+	# Said once: more points do not bring another banner.
+	screen.game.scores.score = 20
+	screen.refresh()
+	assert_int(effects.banner_texts().size()).is_equal(1)
+
+
+func test_bonus_buttons_in_trouble_turn_to_the_calling_look() -> void:
+	var runner: GdUnitSceneRunner = await _screen()
+	var screen: TileBlocksScreen = runner.scene() as TileBlocksScreen
+	var new_hand: Button = runner.find_child("NewHandButton") as Button
+	assert_str(String(new_hand.theme_type_variation)).is_equal(String(TileBlocksScreen.BONUS_STYLE))
+	var size: int = screen.game.grid.size
+	for y in size:
+		for x in size:
+			if (x * 5 + y * 3) % 11 != 0:
+				screen.game.grid.set_symbol(Vector2i(x, y), (x * 3 + y * 2) % 5)
+	screen.refresh()
+	if screen.is_calling_for_bonuses():
+		assert_str(String(new_hand.theme_type_variation)).is_equal(
+			String(TileBlocksScreen.CALL_STYLE)
+		)
+		assert_bool(new_hand.modulate.is_equal_approx(Color.WHITE)).is_true()
+	screen.start(2)
+	assert_str(String(new_hand.theme_type_variation)).is_equal(String(TileBlocksScreen.BONUS_STYLE))

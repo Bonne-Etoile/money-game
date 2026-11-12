@@ -10,13 +10,10 @@
 [ext_resource type="Script" path="res://game/board/clear_effects.gd" id="8_effects"]
 [ext_resource type="Script" path="res://game/audio/game_sounds.gd" id="9_sounds"]
 [ext_resource type="Script" path="res://game/board/game_background.gd" id="bg_script"]
-
-[sub_resource type="StyleBoxFlat" id="record_fill"]
-bg_color = Color(1, 0.85, 0.3, 1)
-corner_radius_top_left = 6
-corner_radius_top_right = 6
-corner_radius_bottom_right = 6
-corner_radius_bottom_left = 6
+[ext_resource type="Script" path="res://game/ui/icon_button.gd" id="10_icon_button"]
+[ext_resource type="Script" path="res://game/ui/glyph_icon.gd" id="11_glyph"]
+[ext_resource type="Script" path="res://game/ui/end_stars.gd" id="12_stars"]
+[ext_resource type="FontVariation" path="res://game/ui/display_font.tres" id="13_display"]
 
 [node name="TileBlocks" type="Control"]
 layout_mode = 3
@@ -42,82 +39,171 @@ mouse_filter = 2
 script = ExtResource("bg_script")
 art = ExtResource("3_art")
 
-[node name="TopBar" type="HBoxContainer" parent="."]
+[node name="ScoreLabel" type="Label" parent="."]
+unique_name_in_owner = true
 layout_mode = 1
-anchors_preset = 10
-anchor_right = 1.0
-offset_left = 24.0
-offset_top = 24.0
-offset_right = -24.0
-offset_bottom = 104.0
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -200.0
+offset_top = -632.0
+offset_right = 200.0
+offset_bottom = -544.0
 grow_horizontal = 2
-theme_override_constants/separation = 16
-
-[node name="MenuButton" type="Button" parent="TopBar"]
-unique_name_in_owner = true
-custom_minimum_size = Vector2(160, 72)
-layout_mode = 2
-theme_override_font_sizes/font_size = 28
-text = "BUTTON_MENU"
-
-[node name="LevelLabel" type="Label" parent="TopBar"]
-unique_name_in_owner = true
-layout_mode = 2
-size_flags_horizontal = 3
-theme_override_colors/font_color = Color(1, 1, 1, 0.6)
-theme_override_font_sizes/font_size = 28
+grow_vertical = 2
+theme_override_colors/font_outline_color = Color(0.043, 0.071, 0.133, 1)
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.35)
+theme_override_constants/outline_size = 10
+theme_override_constants/shadow_offset_y = 5
+theme_override_fonts/font = ExtResource("13_display")
+theme_override_font_sizes/font_size = 76
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="ScoreLabel" type="Label" parent="TopBar"]
-unique_name_in_owner = true
-layout_mode = 2
-size_flags_horizontal = 3
-theme_override_font_sizes/font_size = 40
-horizontal_alignment = 2
-vertical_alignment = 1
-
-[node name="RecordRow" type="HBoxContainer" parent="."]
+[node name="RecordCenter" type="CenterContainer" parent="."]
 layout_mode = 1
-anchors_preset = 10
-anchor_right = 1.0
-offset_left = 24.0
-offset_top = 108.0
-offset_right = -24.0
-offset_bottom = 142.0
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -340.0
+offset_top = -546.0
+offset_right = 340.0
+offset_bottom = -506.0
 grow_horizontal = 2
-theme_override_constants/separation = 16
+grow_vertical = 2
+mouse_filter = 2
 
-[node name="RecordLabel" type="Label" parent="RecordRow"]
+[node name="RecordChip" type="PanelContainer" parent="RecordCenter"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(240, 0)
 layout_mode = 2
-theme_override_colors/font_color = Color(1, 0.85, 0.3, 1)
-theme_override_font_sizes/font_size = 26
-vertical_alignment = 1
+mouse_filter = 2
+theme_type_variation = &"Chip"
 
-[node name="RecordProgress" type="ProgressBar" parent="RecordRow"]
-unique_name_in_owner = true
-custom_minimum_size = Vector2(0, 20)
+[node name="RecordRow" type="HBoxContainer" parent="RecordCenter/RecordChip"]
 layout_mode = 2
-size_flags_horizontal = 3
+mouse_filter = 2
+theme_override_constants/separation = 10
+
+[node name="RecordIcon" type="Control" parent="RecordCenter/RecordChip/RecordRow"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(26, 26)
+layout_mode = 2
 size_flags_vertical = 4
 mouse_filter = 2
-theme_override_styles/fill = SubResource("record_fill")
+script = ExtResource("11_glyph")
+glyph = &"crown"
+glyph_color = Color(0.91, 0.714, 0.298, 1)
+
+[node name="RecordLabel" type="Label" parent="RecordCenter/RecordChip/RecordRow"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(0.91, 0.714, 0.298, 1)
+theme_override_font_sizes/font_size = 24
+vertical_alignment = 1
+
+[node name="RecordProgress" type="ProgressBar" parent="."]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -210.0
+offset_top = -498.0
+offset_right = 210.0
+offset_bottom = -484.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
 show_percentage = false
 
-[node name="ComboLabel" type="Label" parent="."]
+[node name="RecordMarker" type="Control" parent="."]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = 216.0
+offset_top = -506.0
+offset_right = 246.0
+offset_bottom = -476.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("11_glyph")
+glyph = &"crown"
+glyph_color = Color(0.91, 0.714, 0.298, 1)
+
+[node name="ComboRow" type="HBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = 150.0
+offset_top = -618.0
+offset_right = 336.0
+offset_bottom = -566.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+alignment = 2
+
+[node name="ComboChip" type="PanelContainer" parent="ComboRow"]
 unique_name_in_owner = true
 visible = false
-layout_mode = 1
-anchors_preset = 10
-anchor_right = 1.0
-offset_top = 134.0
-offset_bottom = 178.0
-grow_horizontal = 2
-theme_override_colors/font_color = Color(1, 0.85, 0.3, 1)
-theme_override_font_sizes/font_size = 36
+layout_mode = 2
+mouse_filter = 2
+theme_type_variation = &"ComboChip"
+
+[node name="ComboLabel" type="Label" parent="ComboRow/ComboChip"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_outline_color = Color(0.502, 0.141, 0.086, 1)
+theme_override_constants/outline_size = 5
+theme_override_fonts/font = ExtResource("13_display")
+theme_override_font_sizes/font_size = 28
 horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="LevelLabel" type="Label" parent="."]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -252.0
+offset_top = -618.0
+offset_right = -92.0
+offset_bottom = -542.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_colors/font_color = Color(1, 1, 1, 0.9)
+theme_override_constants/line_spacing = -4
+theme_override_font_sizes/font_size = 22
+vertical_alignment = 1
+autowrap_mode = 3
+
+[node name="MenuButton" type="Button" parent="."]
+unique_name_in_owner = true
+layout_mode = 0
+offset_left = 24.0
+offset_top = 24.0
+offset_right = 96.0
+offset_bottom = 96.0
+theme_type_variation = &"RoundButton"
+script = ExtResource("10_icon_button")
+glyph = &"menu"
 
 [node name="Board" type="Control" parent="."]
 unique_name_in_owner = true
@@ -145,9 +231,9 @@ anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
 offset_left = -340.0
-offset_top = 226.0
+offset_top = 230.0
 offset_right = 340.0
-offset_bottom = 476.0
+offset_bottom = 452.0
 grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("5_tray")
@@ -161,15 +247,16 @@ anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
 offset_left = -340.0
-offset_top = 476.0
+offset_top = 456.0
 offset_right = 340.0
-offset_bottom = 516.0
+offset_bottom = 490.0
 grow_horizontal = 2
 grow_vertical = 2
-theme_override_colors/font_color = Color(1, 1, 1, 0.6)
-theme_override_font_sizes/font_size = 26
+theme_override_colors/font_color = Color(1, 1, 1, 0.5)
+theme_override_font_sizes/font_size = 22
 text = "HINT_ROTATE"
 horizontal_alignment = 1
+vertical_alignment = 1
 
 [node name="BonusBar" type="HBoxContainer" parent="."]
 layout_mode = 1
@@ -179,24 +266,32 @@ anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
 offset_left = -340.0
-offset_top = 528.0
+offset_top = 500.0
 offset_right = 340.0
-offset_bottom = 616.0
+offset_bottom = 592.0
 grow_horizontal = 2
 grow_vertical = 2
-theme_override_constants/separation = 20
+theme_override_constants/separation = 14
 
 [node name="NewHandButton" type="Button" parent="BonusBar"]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
-theme_override_font_sizes/font_size = 28
+theme_type_variation = &"BonusButton"
+theme_override_font_sizes/font_size = 23
+script = ExtResource("10_icon_button")
+glyph = &"new_pieces"
+glyph_color = Color(0.91, 0.714, 0.298, 1)
 
 [node name="MirrorButton" type="Button" parent="BonusBar"]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
-theme_override_font_sizes/font_size = 28
+theme_type_variation = &"BonusButton"
+theme_override_font_sizes/font_size = 23
+script = ExtResource("10_icon_button")
+glyph = &"mirror"
+glyph_color = Color(0.91, 0.714, 0.298, 1)
 
 [node name="Effects" type="Control" parent="."]
 unique_name_in_owner = true
@@ -233,7 +328,18 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-color = Color(0, 0, 0, 0.7)
+color = Color(0.027, 0.043, 0.086, 0.78)
+
+[node name="EndEffects" type="Control" parent="GameOver"]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("8_effects")
 
 [node name="Center" type="CenterContainer" parent="GameOver"]
 layout_mode = 1
@@ -243,80 +349,147 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="Page" type="VBoxContainer" parent="GameOver/Center"]
+[node name="Card" type="PanelContainer" parent="GameOver/Center"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(600, 0)
 layout_mode = 2
-theme_override_constants/separation = 24
+theme_type_variation = &"CardBack"
 
-[node name="GameOverTitle" type="Label" parent="GameOver/Center/Page"]
+[node name="Face" type="PanelContainer" parent="GameOver/Center/Card"]
+layout_mode = 2
+theme_type_variation = &"CardFace"
+
+[node name="Page" type="VBoxContainer" parent="GameOver/Center/Card/Face"]
+layout_mode = 2
+theme_override_constants/separation = 0
+
+[node name="Header" type="PanelContainer" parent="GameOver/Center/Card/Face/Page"]
+layout_mode = 2
+theme_type_variation = &"CardHeader"
+
+[node name="GameOverTitle" type="Label" parent="GameOver/Center/Card/Face/Page/Header"]
 unique_name_in_owner = true
 layout_mode = 2
-theme_override_font_sizes/font_size = 56
+theme_override_colors/font_color = Color(0.957, 0.933, 0.863, 1)
+theme_override_colors/font_outline_color = Color(0.122, 0.353, 0.275, 1)
+theme_override_constants/outline_size = 8
+theme_override_fonts/font = ExtResource("13_display")
+theme_override_font_sizes/font_size = 46
 text = "GAME_OVER"
 horizontal_alignment = 1
 
-[node name="FinalScoreLabel" type="Label" parent="GameOver/Center/Page"]
+[node name="Margin" type="MarginContainer" parent="GameOver/Center/Card/Face/Page"]
+layout_mode = 2
+theme_override_constants/margin_left = 32
+theme_override_constants/margin_top = 20
+theme_override_constants/margin_right = 32
+theme_override_constants/margin_bottom = 0
+
+[node name="Body" type="VBoxContainer" parent="GameOver/Center/Card/Face/Page/Margin"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="Stars" type="Control" parent="GameOver/Center/Card/Face/Page/Margin/Body"]
+unique_name_in_owner = true
+visible = false
+custom_minimum_size = Vector2(0, 104)
+layout_mode = 2
+mouse_filter = 2
+script = ExtResource("12_stars")
+
+[node name="ScoreCaption" type="Label" parent="GameOver/Center/Card/Face/Page/Margin/Body"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.227, 0.102, 0.039, 0.6)
+theme_override_font_sizes/font_size = 24
+text = "END_SCORE"
+horizontal_alignment = 1
+uppercase = true
+
+[node name="FinalScoreLabel" type="Label" parent="GameOver/Center/Card/Face/Page/Margin/Body"]
 unique_name_in_owner = true
 layout_mode = 2
-theme_override_font_sizes/font_size = 40
+theme_override_colors/font_color = Color(0.227, 0.102, 0.039, 1)
+theme_override_fonts/font = ExtResource("13_display")
+theme_override_font_sizes/font_size = 84
 horizontal_alignment = 1
 
-[node name="BestScoreLabel" type="Label" parent="GameOver/Center/Page"]
+[node name="BestScoreLabel" type="Label" parent="GameOver/Center/Card/Face/Page/Margin/Body"]
 unique_name_in_owner = true
 layout_mode = 2
-theme_override_colors/font_color = Color(1, 0.85, 0.3, 1)
-theme_override_font_sizes/font_size = 32
+theme_override_colors/font_color = Color(0.62, 0.43, 0.1, 1)
+theme_override_font_sizes/font_size = 28
 horizontal_alignment = 1
 
-[node name="RecordGapLabel" type="Label" parent="GameOver/Center/Page"]
+[node name="RecordGapLabel" type="Label" parent="GameOver/Center/Card/Face/Page/Margin/Body"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(560, 0)
+custom_minimum_size = Vector2(520, 0)
 layout_mode = 2
-theme_override_colors/font_color = Color(1, 0.85, 0.3, 1)
-theme_override_font_sizes/font_size = 30
+theme_override_colors/font_color = Color(0.227, 0.102, 0.039, 0.7)
+theme_override_font_sizes/font_size = 24
 horizontal_alignment = 1
 autowrap_mode = 3
 
-[node name="NextLevelButton" type="Button" parent="GameOver/Center/Page"]
-theme_type_variation = &"PrimaryButton"
+[node name="Gap" type="Control" parent="GameOver/Center/Card/Face/Page/Margin/Body"]
+custom_minimum_size = Vector2(0, 4)
+layout_mode = 2
+mouse_filter = 2
+
+[node name="NextLevelButton" type="Button" parent="GameOver/Center/Card/Face/Page/Margin/Body"]
 unique_name_in_owner = true
 visible = false
-custom_minimum_size = Vector2(400, 88)
+custom_minimum_size = Vector2(0, 96)
 layout_mode = 2
-theme_override_font_sizes/font_size = 36
+theme_type_variation = &"PrimaryButton"
+theme_override_font_sizes/font_size = 38
 text = "BUTTON_NEXT_LEVEL"
 
-[node name="ExtraPiecesButton" type="Button" parent="GameOver/Center/Page"]
+[node name="ExtraPiecesButton" type="Button" parent="GameOver/Center/Card/Face/Page/Margin/Body"]
 unique_name_in_owner = true
 visible = false
-custom_minimum_size = Vector2(400, 88)
+custom_minimum_size = Vector2(0, 96)
 layout_mode = 2
-theme_override_font_sizes/font_size = 36
+theme_type_variation = &"AdButton"
+theme_override_font_sizes/font_size = 30
 text = "BUTTON_EXTRA_PIECES_AD"
+script = ExtResource("10_icon_button")
+ad = true
 
-[node name="ContinueButton" type="Button" parent="GameOver/Center/Page"]
+[node name="ContinueButton" type="Button" parent="GameOver/Center/Card/Face/Page/Margin/Body"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(400, 88)
+custom_minimum_size = Vector2(0, 96)
 layout_mode = 2
-theme_override_font_sizes/font_size = 36
+theme_type_variation = &"AdButton"
+theme_override_font_sizes/font_size = 30
 text = "BUTTON_CONTINUE_AD"
+script = ExtResource("10_icon_button")
+ad = true
 
-[node name="GameOverNewHandButton" type="Button" parent="GameOver/Center/Page"]
+[node name="GameOverNewHandButton" type="Button" parent="GameOver/Center/Card/Face/Page/Margin/Body"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(400, 88)
+custom_minimum_size = Vector2(0, 84)
 layout_mode = 2
-theme_override_font_sizes/font_size = 36
+theme_type_variation = &"BonusButton"
+theme_override_font_sizes/font_size = 30
+script = ExtResource("10_icon_button")
+glyph = &"new_pieces"
+glyph_color = Color(0.91, 0.714, 0.298, 1)
 
-[node name="ReplayButton" type="Button" parent="GameOver/Center/Page"]
+[node name="Row" type="HBoxContainer" parent="GameOver/Center/Card/Face/Page/Margin/Body"]
+layout_mode = 2
+theme_override_constants/separation = 16
+
+[node name="GameOverMenuButton" type="Button" parent="GameOver/Center/Card/Face/Page/Margin/Body/Row"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(96, 88)
+layout_mode = 2
+script = ExtResource("10_icon_button")
+glyph = &"home"
+
+[node name="ReplayButton" type="Button" parent="GameOver/Center/Card/Face/Page/Margin/Body/Row"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 88)
+layout_mode = 2
+size_flags_horizontal = 3
 theme_type_variation = &"PrimaryButton"
-unique_name_in_owner = true
-custom_minimum_size = Vector2(400, 88)
-layout_mode = 2
-theme_override_font_sizes/font_size = 36
+theme_override_font_sizes/font_size = 34
 text = "BUTTON_REPLAY"
-
-[node name="GameOverMenuButton" type="Button" parent="GameOver/Center/Page"]
-unique_name_in_owner = true
-custom_minimum_size = Vector2(400, 88)
-layout_mode = 2
-theme_override_font_sizes/font_size = 36
-text = "BUTTON_MENU"

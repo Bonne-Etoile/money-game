@@ -1,7 +1,8 @@
 class_name MainMenu
 extends Control
-## The start menu: play (endless), the levels, the daily challenge, the options worth a button
-## (how the pieces come back, vibration, music, sounds), quit.
+## The start menu: the game's name in tiles, play (endless) as the main action, the levels
+## and the daily challenge as two cards, and behind the gear the settings (music, sounds,
+## vibration, how the pieces come back) and quit (not on a phone: the system closes apps).
 ## After a crash, it opens on the crash report, to copy and paste to Claude (Diagnostics).
 
 const TILE_BLOCKS_SCENE: String = "res://game/proto_tiles/tile_blocks.tscn"
@@ -23,6 +24,7 @@ var chosen_scene: String = ""
 @onready var _music: Button = %MusicButton
 @onready var _sounds: Button = %SoundsButton
 @onready var _quit: Button = %QuitButton
+@onready var _settings: Control = %Settings
 @onready var _crash: Control = %Crash
 @onready var _report_text: TextEdit = %ReportText
 @onready var _crash_copy: Button = %CrashCopyButton
@@ -38,6 +40,9 @@ func _ready() -> void:
 	_music.pressed.connect(toggle_music)
 	_sounds.pressed.connect(toggle_sounds)
 	_quit.pressed.connect(func() -> void: get_tree().quit())
+	_quit.visible = not OS.has_feature("mobile")
+	(%SettingsButton as Button).pressed.connect(show_page.bind(&"settings"))
+	(%SettingsCloseButton as Button).pressed.connect(show_page.bind(&"main"))
 	_show_options()
 	_crash_copy.pressed.connect(copy_crash_report)
 	_crash_close.pressed.connect(close_crash_report)
@@ -48,16 +53,22 @@ func _unhandled_input(event: InputEvent) -> void:
 	if event.is_action_pressed("pause") and _crash.visible:
 		close_crash_report()
 		get_viewport().set_input_as_handled()
+	elif event.is_action_pressed("pause") and _settings.visible:
+		show_page(&"main")
+		get_viewport().set_input_as_handled()
 
 
-## Shows one page of the menu: `main` or `crash`.
+## Shows one page of the menu: `main`, `settings` (over the main page) or `crash`.
 func show_page(page: StringName) -> void:
-	_main.visible = page == &"main"
+	_main.visible = page != &"crash"
+	_settings.visible = page == &"settings"
 	_crash.visible = page == &"crash"
 	if page == &"crash":
 		_report_text.text = Diagnostics.crash_report
 		_crash_copy.text = "CRASH_COPY"
 		_crash_copy.grab_focus()
+	elif page == &"settings":
+		(%SettingsCloseButton as Button).grab_focus()
 	else:
 		_play.grab_focus()
 

@@ -80,3 +80,16 @@ func test_the_menu_opens_on_the_crash_report_after_a_crash() -> void:
 	(runner.find_child("CrashCloseButton") as Button).pressed.emit()
 	assert_bool((runner.find_child("Main") as Control).visible).is_true()
 	assert_str(Diagnostics.crash_report).is_empty()
+
+
+func test_the_gear_opens_the_settings_over_the_menu() -> void:
+	var runner: GdUnitSceneRunner = _menu()
+	await runner.simulate_frames(2)
+	var settings: Control = runner.find_child("Settings") as Control
+	assert_bool(settings.visible).is_false()
+	(runner.find_child("SettingsButton") as Button).pressed.emit()
+	assert_bool(settings.visible).is_true()
+	assert_bool((runner.find_child("MusicButton") as Button).is_visible_in_tree()).is_true()
+	(runner.find_child("SettingsCloseButton") as Button).pressed.emit()
+	assert_bool(settings.visible).is_false()
+	assert_bool((runner.find_child("Main") as Control).visible).is_true()

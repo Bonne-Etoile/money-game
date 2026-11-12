@@ -3,6 +3,9 @@
 [ext_resource type="Script" path="res://game/ui/main_menu.gd" id="1_menu"]
 [ext_resource type="Script" path="res://game/board/game_background.gd" id="bg_script"]
 [ext_resource type="Resource" path="res://game/data/tile_art.tres" id="bg_art"]
+[ext_resource type="Script" path="res://game/ui/title_logo.gd" id="2_logo"]
+[ext_resource type="Script" path="res://game/ui/icon_button.gd" id="3_icon_button"]
+[ext_resource type="FontVariation" path="res://game/ui/display_font.tres" id="4_display"]
 
 [node name="MainMenu" type="Control"]
 layout_mode = 3
@@ -24,7 +27,7 @@ mouse_filter = 2
 script = ExtResource("bg_script")
 art = ExtResource("bg_art")
 
-[node name="Main" type="CenterContainer" parent="."]
+[node name="Main" type="Control" parent="."]
 unique_name_in_owner = true
 layout_mode = 1
 anchors_preset = 15
@@ -33,84 +36,162 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="Page" type="VBoxContainer" parent="Main"]
-layout_mode = 2
-theme_override_constants/separation = 24
+[node name="Center" type="CenterContainer" parent="Main"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
 
-[node name="Title" type="Label" parent="Main/Page"]
-theme_override_colors/font_color = Color(1, 0.85, 0.35, 1)
-theme_override_colors/font_outline_color = Color(0.35, 0.15, 0.45, 1)
-theme_override_constants/outline_size = 14
-theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.35)
-theme_override_constants/shadow_offset_y = 6
+[node name="Page" type="VBoxContainer" parent="Main/Center"]
 layout_mode = 2
-theme_override_font_sizes/font_size = 64
-text = "GAME_TITLE"
-horizontal_alignment = 1
+theme_override_constants/separation = 28
 
-[node name="PlayButton" type="Button" parent="Main/Page"]
-theme_type_variation = &"PrimaryButton"
+[node name="Logo" type="Control" parent="Main/Center/Page"]
+custom_minimum_size = Vector2(600, 310)
+layout_mode = 2
+mouse_filter = 2
+script = ExtResource("2_logo")
+art = ExtResource("bg_art")
+
+[node name="Gap" type="Control" parent="Main/Center/Page"]
+custom_minimum_size = Vector2(0, 24)
+layout_mode = 2
+mouse_filter = 2
+
+[node name="PlayButton" type="Button" parent="Main/Center/Page"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(560, 88)
+custom_minimum_size = Vector2(600, 124)
 layout_mode = 2
-size_flags_horizontal = 4
-theme_override_font_sizes/font_size = 32
+theme_type_variation = &"PrimaryButton"
+theme_override_font_sizes/font_size = 52
 text = "MENU_PLAY"
 
-[node name="LevelsButton" type="Button" parent="Main/Page"]
-unique_name_in_owner = true
-custom_minimum_size = Vector2(560, 88)
+[node name="Modes" type="HBoxContainer" parent="Main/Center/Page"]
 layout_mode = 2
-size_flags_horizontal = 4
-theme_override_font_sizes/font_size = 30
+theme_override_constants/separation = 20
+
+[node name="LevelsButton" type="Button" parent="Main/Center/Page/Modes"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 190)
+layout_mode = 2
+size_flags_horizontal = 3
+theme_type_variation = &"CardButton"
+theme_override_font_sizes/font_size = 28
 text = "MENU_LEVELS"
+script = ExtResource("3_icon_button")
+glyph = &"tiles"
+glyph_color = Color(0.91, 0.714, 0.298, 1)
+glyph_above = true
 
-[node name="DailyButton" type="Button" parent="Main/Page"]
+[node name="DailyButton" type="Button" parent="Main/Center/Page/Modes"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(560, 88)
+custom_minimum_size = Vector2(0, 190)
 layout_mode = 2
-size_flags_horizontal = 4
-theme_override_font_sizes/font_size = 30
+size_flags_horizontal = 3
+theme_type_variation = &"CardButton"
+theme_override_font_sizes/font_size = 28
+autowrap_mode = 3
+script = ExtResource("3_icon_button")
+glyph = &"calendar"
+glyph_color = Color(0.91, 0.714, 0.298, 1)
+glyph_above = true
 
-[node name="RefillButton" type="Button" parent="Main/Page"]
+[node name="SettingsButton" type="Button" parent="Main"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(560, 72)
-layout_mode = 2
-size_flags_horizontal = 4
-theme_override_font_sizes/font_size = 26
+layout_mode = 1
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -96.0
+offset_top = 24.0
+offset_right = -24.0
+offset_bottom = 96.0
+grow_horizontal = 0
+theme_type_variation = &"RoundButton"
+script = ExtResource("3_icon_button")
+glyph = &"gear"
 
-[node name="VibrationButton" type="Button" parent="Main/Page"]
+[node name="Settings" type="ColorRect" parent="."]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(560, 72)
-layout_mode = 2
-size_flags_horizontal = 4
-theme_override_font_sizes/font_size = 26
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.027, 0.043, 0.086, 0.8)
 
-[node name="SoundRow" type="HBoxContainer" parent="Main/Page"]
-custom_minimum_size = Vector2(560, 72)
+[node name="Center" type="CenterContainer" parent="Settings"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Plate" type="PanelContainer" parent="Settings/Center"]
+custom_minimum_size = Vector2(620, 0)
 layout_mode = 2
-size_flags_horizontal = 4
+theme_type_variation = &"Plate"
+
+[node name="Page" type="VBoxContainer" parent="Settings/Center/Plate"]
+layout_mode = 2
+theme_override_constants/separation = 18
+
+[node name="Title" type="Label" parent="Settings/Center/Plate/Page"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.91, 0.714, 0.298, 1)
+theme_override_fonts/font = ExtResource("4_display")
+theme_override_font_sizes/font_size = 44
+text = "MENU_SETTINGS"
+horizontal_alignment = 1
+
+[node name="SoundRow" type="HBoxContainer" parent="Settings/Center/Plate/Page"]
+custom_minimum_size = Vector2(0, 84)
+layout_mode = 2
 theme_override_constants/separation = 16
 
-[node name="MusicButton" type="Button" parent="Main/Page/SoundRow"]
+[node name="MusicButton" type="Button" parent="Settings/Center/Plate/Page/SoundRow"]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_font_sizes/font_size = 26
 
-[node name="SoundsButton" type="Button" parent="Main/Page/SoundRow"]
+[node name="SoundsButton" type="Button" parent="Settings/Center/Plate/Page/SoundRow"]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_font_sizes/font_size = 26
 
-[node name="QuitButton" type="Button" parent="Main/Page"]
+[node name="VibrationButton" type="Button" parent="Settings/Center/Plate/Page"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(560, 88)
+custom_minimum_size = Vector2(0, 84)
 layout_mode = 2
-size_flags_horizontal = 4
-theme_override_font_sizes/font_size = 32
+theme_override_font_sizes/font_size = 26
+
+[node name="RefillButton" type="Button" parent="Settings/Center/Plate/Page"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 84)
+layout_mode = 2
+theme_override_font_sizes/font_size = 26
+
+[node name="QuitButton" type="Button" parent="Settings/Center/Plate/Page"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 84)
+layout_mode = 2
+theme_override_font_sizes/font_size = 26
 text = "MENU_QUIT"
+
+[node name="SettingsCloseButton" type="Button" parent="Settings/Center/Plate/Page"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 96)
+layout_mode = 2
+theme_type_variation = &"PrimaryButton"
+theme_override_font_sizes/font_size = 34
+text = "MENU_SETTINGS_CLOSE"
 
 [node name="Crash" type="CenterContainer" parent="."]
 unique_name_in_owner = true
@@ -132,6 +213,7 @@ layout_mode = 2
 theme_override_font_sizes/font_size = 40
 text = "CRASH_TITLE"
 horizontal_alignment = 1
+autowrap_mode = 3
 
 [node name="Explanation" type="Label" parent="Crash/Page"]
 layout_mode = 2
@@ -153,14 +235,14 @@ theme_override_constants/separation = 24
 
 [node name="CrashCopyButton" type="Button" parent="Crash/Page/Buttons"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(320, 56)
+custom_minimum_size = Vector2(320, 72)
 layout_mode = 2
 theme_override_font_sizes/font_size = 28
 text = "CRASH_COPY"
 
 [node name="CrashCloseButton" type="Button" parent="Crash/Page/Buttons"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(320, 56)
+custom_minimum_size = Vector2(320, 72)
 layout_mode = 2
 theme_override_font_sizes/font_size = 28
 text = "CRASH_CLOSE"

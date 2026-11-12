@@ -10,6 +10,8 @@ Tout ce qui est fait « au mieux » pour avancer et doit être repris, vérifié
 
 - [ ] Sons faits par le code (G13, enrichis en G20 : `game/audio/sound_synth.gd`, `GameSounds`) : à faire juger par Stelio, à remplacer s'ils ne plaisent pas (`docs/recettes/sons-et-musique.md`).
 - [ ] Musique composée par le code (G20, `assets/sounds/music_calm.ogg`, `tools/assets/compose_music.py`) : une seule boucle de 42 s ; à faire juger, et prévoir d'autres morceaux ou des silences pour ne pas lasser.
+- [ ] Refonte visuelle de G20 (2026-11-12) : palette, tuiles, effets, carte de fin, menu : à faire juger par Stelio sur son téléphone (lisibilité des symboles en petit dans le plateau, taille des textes, effets ni trop ni trop peu). La police Fredoka (OFL) n'a pas l'espace fine insécable (U+202F) : elle est rendue par la police de secours, vérifier le rendu des « : » et « ! » en français.
+- [ ] Étoiles d'un niveau réussi (G20, `LevelSet.star_pieces` : 1 pièce restante → 2 étoiles, 3 → 3 étoiles) : seuils de départ, affichés sur la carte de fin seulement ; décider s'ils sont sauvegardés et montrés sur la carte des niveaux.
 - [ ] Effets visuels de G20 (`juice_rules.tres`, `tile_art.tres`) : chiffres de départ, à régler à l'œil ; vérifier la fluidité sur un petit téléphone (alléger les effets si besoin).
 - [ ] Mots d'encouragement, éclats, tremblement, vibration (G13, `game/data/juice_rules.tres`) : chiffres de départ, à régler à l'œil et au toucher.
 - [ ] Délai de l'aide à l'hésitation (G15, 10 s, `hint_after_seconds`) : à régler avec les tests.
@@ -36,6 +38,6 @@ Tout ce qui est fait « au mieux » pour avancer et doit être repris, vérifié
 - [ ] Questionnaire de contenu de Steamworks : chaque asset généré par IA (liste dans `assets/LICENSES.md`).
 - [ ] Licences de chaque asset externe vérifiées (usage commercial, attribution).
 - [ ] Écran de crédits : chaque auteur humain cité, même en CC0.
-- [ ] Licences des polices jointes au jeu exporté (OFL).
+- [ ] Licences des polices jointes au jeu exporté (OFL) : Fredoka (`assets/fonts/OFL.txt`) à citer dans l'écran de crédits.
 - [ ] Crédits du moteur (licence de Godot et de ses composants).
 - [ ] Formulaire de consentement AdMob (UMP) : le créer dans la console AdMob (RGPD) et vérifier qu'il s'affiche dans l'Espace économique européen ; déclarer la pub dans la fiche Google Play et la section « Sécurité des données ».

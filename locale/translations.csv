@@ -37,7 +37,7 @@ PRAISE_1,Nice!,Bien !,"Word of praise rising over the grid after a good clear 
 PRAISE_2,Great!,Super !,Word of praise after a better clear (stronger than PRAISE_1)
 PRAISE_3,Awesome!,Génial !,Word of praise after a great clear (stronger than PRAISE_2)
 PRAISE_4,Incredible!,Incroyable !,"Word of praise after the best clears, the strongest"
-PRAISE_EMPTY_GRID,Grid cleared! +%d,Grille vide ! +%d,Rising over the grid when a move empties the whole grid; %d is the bonus points
+PRAISE_EMPTY_GRID,Grid cleared!,Grille vide !,"On its ribbon over the grid when a move empties the whole grid (the bonus points are in the points of the move, shown apart)"
 BUTTON_CONTINUE_FREE,Continue (free gift),Continuer (offert),"Game-over panel: the first continue of the day is free after a few days away (no ad); clears a cross in the middle of the grid"
 HUD_DAILY,Daily challenge,Défi du jour,"Top bar during the daily challenge: the same pieces for everyone today"
 HUD_DAILY_STREAK,Daily challenges in a row: %d,Défis du jour d’affilée : %d,"Daily challenge game-over panel: %d is the days in a row the player played the challenge"
@@ -49,7 +49,9 @@ MENU_LEVELS,Levels,Niveaux,"Start menu: the level mode, hand-made levels with a 
 LEVELS_TITLE,Levels,Niveaux,Title of the level map
 LEVELS_PICTURE_HINT,Each level won colours a tile of the big mahjong tile.,Chaque niveau réussi colore une tuile de la grande tuile de mahjong.,"Level map, under the big tile made of one small tile per level"
 LEVEL_BUTTON,%d,%d,"Level map: a level's button; %d is its number"
-HUD_LEVEL_PIECES,Level %d · %d pieces,Niveau %d · %d pièces,"Level mode, top bar: the level's number, then the pieces the player may still place"
+HUD_LEVEL_PIECES,"Level %d
+%d pieces","Niveau %d
+%d pièces","Level mode, top left, on two lines: the number of the level, then the pieces the player may still place"
 GOAL_SCORE,Score %d points,Marquer %d points,"Level goal, under the top bar; %d is the points to reach"
 GOAL_TRIOS,Clear %d groups of %s,Effacer %d groupes de %s,"Level goal: clear groups of 3 or more identical symbols; %d is how many, %s the symbol name (SYMBOL_*)"
 GOAL_GOLD,Free the gold tiles,Libérer les tuiles dorées,"Level goal: clear every gold-framed tile, by a line or a group"
@@ -64,3 +66,6 @@ LEVEL_NO_PIECES,Out of pieces!,Plus de pièces !,Level mode: end panel title w
 BUTTON_NEXT_LEVEL,Next level,Niveau suivant,Level mode end panel: plays the next level
 BUTTON_RETRY,Try again,Recommencer,Level mode end panel: plays the same level again from the start
 BUTTON_EXTRA_PIECES_AD,+%d pieces (watch an ad),+%d pièces (regarder une pub),"Level mode end panel when the pieces ran out: shows a rewarded ad, then gives %d more pieces. Must say that an ad plays (ad network rules)"
+END_SCORE,Score,Score,"End card: small caption above the big number of the final score"
+MENU_SETTINGS,Settings,Réglages,"Start menu: title of the settings panel opened by the gear button (music, sounds, vibration)"
+MENU_SETTINGS_CLOSE,Done,OK,"Settings panel: closes it and goes back to the start menu"

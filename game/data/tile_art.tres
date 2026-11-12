@@ -4,33 +4,4 @@
 
 [resource]
 script = ExtResource("1_art")
-background = Color(0.1, 0.11, 0.25, 1)
-grid_background = Color(0.07, 0.07, 0.16, 1)
-empty_cell = Color(0.13, 0.15, 0.28, 1)
-tile_face = Color(0.96, 0.93, 0.85, 1)
-tile_side = Color(0.72, 0.62, 0.45, 1)
-ghost_valid = Color(1, 1, 1, 0.5)
-ghost_invalid = Color(1, 0.3, 0.3, 0.35)
-flash = Color(1, 0.95, 0.6, 1)
-hint_tint = Color(1, 1, 1, 0.4)
-stone_face = Color(0.5, 0.52, 0.56, 1)
-stone_side = Color(0.32, 0.33, 0.37, 1)
-gold_color = Color(1, 0.8, 0.2, 1)
-ice_color = Color(0.7, 0.9, 1, 0.55)
-symbol_colors = Array[Color]([Color(0.85, 0.2, 0.2, 1), Color(0.15, 0.6, 0.3, 1), Color(0.15, 0.4, 0.85, 1), Color(0.6, 0.25, 0.75, 1), Color(0.9, 0.6, 0.05, 1), Color(0.1, 0.6, 0.65, 1)])
-cell_gap = 0.06
-drag_lift_cells = 1.2
-tray_scale = 0.6
-flash_seconds = 0.35
-background_top = Color(0.16, 0.13, 0.32, 1)
-background_bottom = Color(0.05, 0.09, 0.2, 1)
-light_color = Color(0.6, 0.7, 1, 0.12)
-light_count = 14
-frame_color = Color(0.32, 0.36, 0.6, 1)
-frame_width = 0.12
-empty_cell_rim = Color(0.22, 0.27, 0.4, 1)
-tile_gloss = Color(1, 1, 1, 0.55)
-side_tint = 0.55
-preview_glow = Color(1, 0.95, 0.55, 0.55)
-drag_shadow = Color(0, 0, 0, 0.3)
-game_over_tint = Color(0.55, 0.55, 0.62, 1)
+symbol_colors = Array[Color]([Color(0.784, 0.251, 0.184, 1), Color(0.184, 0.561, 0.416, 1), Color(0.184, 0.373, 0.702, 1), Color(0.478, 0.247, 0.561, 1), Color(0.851, 0.565, 0.118, 1), Color(0.122, 0.549, 0.549, 1)])

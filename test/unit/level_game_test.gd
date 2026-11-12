@@ -171,3 +171,19 @@ func test_levels_won_are_saved_and_a_version_3_save_is_migrated() -> void:
 	var migrated: Dictionary = SaveGame.migrate(old, 3)
 	var read: Dictionary = JsonRead.dictionary(JsonRead.dictionary(migrated, "progress"), "stats")
 	assert_bool(read.has("levels_won")).is_true()
+
+
+func test_a_won_level_earns_stars_for_the_pieces_left() -> void:
+	var level: LevelGame = _level(["........"], LevelDefinition.Goal.SCORE, 1)
+	var thresholds: Array[int] = [1, 3]
+	assert_int(level.stars(thresholds)).is_equal(0)
+	level.game.hand[0] = _single(1)
+	assert_object(level.place(0, Vector2i(0, 0))).is_not_null()
+	assert_bool(level.is_won()).is_true()
+	# Two pieces left of three: one star for winning, one for a piece to spare.
+	assert_int(level.pieces_left).is_equal(2)
+	assert_int(level.stars(thresholds)).is_equal(2)
+	level.pieces_left = 3
+	assert_int(level.stars(thresholds)).is_equal(3)
+	level.pieces_left = 0
+	assert_int(level.stars(thresholds)).is_equal(1)
